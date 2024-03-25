@@ -55,7 +55,8 @@ int main(void)
 
     while (1){
         gd_eval_led_on(LED2);
-        delay_1ms(50);
+        delay_1ms(500);
         gd_eval_led_off(LED2);
+        delay_1ms(500);
     }
 }
