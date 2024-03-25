@@ -37,32 +37,7 @@ OF SUCH DAMAGE.
 
 #include "gd32f30x.h"
 #include "systick.h"
-#include <stdio.h>
-#include "main.h"
 #include "gd32f303e_eval.h"
-/*!
-    \brief      toggle the led every 500ms
-    \param[in]  none
-    \param[out] none
-    \retval     none
-*/
-void led_spark(void)
-{
-    static  uint32_t timingdelaylocal = 0U;
-
-    if(timingdelaylocal){
-
-        if(timingdelaylocal < 500U){
-            gd_eval_led_on(LED2);
-        }else{
-            gd_eval_led_off(LED2);
-        }
-
-        timingdelaylocal--;
-    }else{
-        timingdelaylocal = 1000U;
-    }
-}
 
 /*!
     \brief      main function
@@ -77,16 +52,10 @@ int main(void)
     systick_config();
     /* initilize the LEDs, USART and key */
     gd_eval_led_init(LED2); 
-    gd_eval_led_init(LED3); 
-    gd_eval_led_init(LED4);
-    gd_eval_key_init(KEY_WAKEUP, KEY_MODE_GPIO);
 
     while (1){
-        if(RESET == gd_eval_key_state_get(KEY_WAKEUP)){
-            gd_eval_led_on(LED3);
-            delay_1ms(500);
-            gd_eval_led_off(LED3);
-            gd_eval_led_toggle(LED4);
-        }
+        gd_eval_led_on(LED2);
+        delay_1ms(50);
+        gd_eval_led_off(LED2);
     }
 }

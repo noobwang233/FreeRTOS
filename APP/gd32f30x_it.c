@@ -36,7 +36,6 @@ OF SUCH DAMAGE.
 */
 
 #include "gd32f30x_it.h"
-#include "main.h"
 #include "systick.h"
 
 /*!
@@ -139,6 +138,5 @@ void PendSV_Handler(void)
 */
 void SysTick_Handler(void)
 {
-    led_spark();
     delay_decrement();
 }
