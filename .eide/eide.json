@@ -116,7 +116,7 @@
       "compileConfig": {
         "cpuType": "Cortex-M4",
         "floatingPointHardware": "none",
-        "scatterFilePath": "C:\\workspace\\MCU\\FreeRTOS\\Demo_GD32F303\\GD32F303_Flash.lds",
+        "scatterFilePath": "./GD32F303_Flash.lds",
         "useCustomScatterFile": true,
         "storageLayout": {
           "RAM": [],
@@ -128,7 +128,7 @@
       "uploadConfig": {
         "bin": "",
         "target": "stm32f1x",
-        "interface": "stlink",
+        "interface": "cmsis-dap",
         "baseAddr": "0x08000000"
       },
       "uploadConfigMap": {
