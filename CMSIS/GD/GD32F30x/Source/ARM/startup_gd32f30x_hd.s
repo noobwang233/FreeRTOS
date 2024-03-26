@@ -83,6 +83,7 @@ Infinite_Loop:
 .size g_pfnVectors, .-g_pfnVectors
 
 g_pfnVectors:
+                    /* 上电之后MCU 会自动将0地址的数据加载到MSP */
                     .word _estack                    /*在当前位置放置一个word型的值，这个值为_estack；已下同理  */
                     .word Reset_Handler              /* Vector Number 1,Reset Handler */
                     .word NMI_Handler                /* Vector Number 2,NMI Handler */
