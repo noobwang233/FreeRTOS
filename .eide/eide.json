@@ -24,6 +24,52 @@
         "folders": []
       },
       {
+        "name": "FreeRTOS",
+        "files": [
+          {
+            "path": "FreeRTOS/croutine.c"
+          },
+          {
+            "path": "FreeRTOS/event_groups.c"
+          },
+          {
+            "path": "FreeRTOS/list.c"
+          },
+          {
+            "path": "FreeRTOS/queue.c"
+          },
+          {
+            "path": "FreeRTOS/stream_buffer.c"
+          },
+          {
+            "path": "FreeRTOS/tasks.c"
+          },
+          {
+            "path": "FreeRTOS/timers.c"
+          }
+        ],
+        "folders": [
+          {
+            "name": "MemMang",
+            "files": [
+              {
+                "path": "FreeRTOS/portable/MemMang/heap_4.c"
+              }
+            ],
+            "folders": []
+          },
+          {
+            "name": "portable",
+            "files": [
+              {
+                "path": "FreeRTOS/portable/GCC/ARM_CM4F/port.c"
+              }
+            ],
+            "folders": []
+          }
+        ]
+      },
+      {
         "name": "Standard_peripheral",
         "files": [
           {
@@ -152,7 +198,10 @@
           "APP",
           "CMSIS",
           "CMSIS/GD/GD32F30x/Include",
-          "GD32F30x_standard_peripheral/Include"
+          "GD32F30x_standard_peripheral/Include",
+          "FreeRTOS/include",
+          "FreeRTOS/portable/GCC/ARM_CM4F",
+          "FreeRTOS"
         ],
         "libList": [],
         "sourceDirList": [],
