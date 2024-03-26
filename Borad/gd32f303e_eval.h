@@ -48,12 +48,12 @@ OF SUCH DAMAGE.
 typedef enum 
 {
     LED1 = 0,
-    LED2 = 0,
+    LED2 = 1
 } led_typedef_enum;
 
 typedef enum 
 {
-    KEY_USER1 = 2,
+    KEY_USER1 = 0,
 } key_typedef_enum;
 
 typedef enum 

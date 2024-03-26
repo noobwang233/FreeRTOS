@@ -127,7 +127,7 @@
       "uploader": "OpenOCD",
       "uploadConfig": {
         "bin": "",
-        "target": "stm32f1x",
+        "target": "stm32f3x",
         "interface": "cmsis-dap",
         "baseAddr": "0x08000000"
       },
