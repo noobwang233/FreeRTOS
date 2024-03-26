@@ -161,7 +161,7 @@
       "toolchain": "GCC",
       "compileConfig": {
         "cpuType": "Cortex-M4",
-        "floatingPointHardware": "none",
+        "floatingPointHardware": "single",
         "scatterFilePath": "./GD32F303_Flash.lds",
         "useCustomScatterFile": true,
         "storageLayout": {

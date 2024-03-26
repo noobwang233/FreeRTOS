@@ -36,20 +36,27 @@ OF SUCH DAMAGE.
 */
 
 #include "gd32f30x.h"
-#include "systick.h"
 #include "gd32f303e_eval.h"
+#include "FreeRTOS.h"
+#include "task.h"
+#include <stdint.h>
 
-/*!
-    \brief      main function
-    \param[in]  none
-    \param[out] none
-    \retval     none
-*/
+/* system clock frequency (core clock) */
+extern uint32_t SystemCoreClock;
+void delay_ms(uint16_t ms)
+{
+    uint32_t count = 0;
+
+    while (count < ms) 
+    {
+        for (uint32_t i = 0; i < (SystemCoreClock / 10000); i++) {
+        }
+        count++;
+    }
+}
 
 int main(void)
 {
-    /* configure systick */
-    systick_config();
     /* initilize the LEDs, USART and key */
     gd_eval_led_init(LED1); 
     gd_eval_led_init(LED2); 
@@ -57,9 +64,9 @@ int main(void)
     while (1){
         gd_eval_led_on(LED1);
         gd_eval_led_on(LED2);
-        delay_1ms(500);
+        delay_ms(500);
         gd_eval_led_off(LED1);
         gd_eval_led_off(LED2);
-        delay_1ms(500);
+        delay_ms(500);
     }
 }

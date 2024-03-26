@@ -1,6 +1,6 @@
   .syntax unified   /* 意思是下面的指令是ARM和THUMB通用格式的 */
   .cpu cortex-m4    /* CPU内核型号 */
-  .fpu softvfp      /* 选择使用的浮点单元，与-mfpu命令行选项的相同 */
+  .fpu fpv4-sp-d16  /* 选择使用的浮点单元，与-mfpu命令行选项的相同 */
   .thumb            /* 选择使用thumb指令 */
 
 /* 声明可以被汇编器使用的符号 */
