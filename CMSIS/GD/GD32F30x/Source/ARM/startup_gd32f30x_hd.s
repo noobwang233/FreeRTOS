@@ -25,9 +25,10 @@
 .word  _ebss
 
 /* 定义Reset_Handler函数，该函数的作用1.设置堆栈指针；2.全局变量的初始化 */
-  .section  .text.Reset_Handler
-  .weak  Reset_Handler
-  .type  Reset_Handler, %function
+.section  .text.Reset_Handler
+.weak  Reset_Handler
+.type  Reset_Handler, %function 
+/*这行指令设置了 Reset_Handler 符号的类型为函数（function）。这有助于编译器和链接器识别 Reset_Handler 符号是一个函数，而不是其他类型的符号。*/
 
 Reset_Handler:
 /* copy the data segment into ram */  
@@ -63,19 +64,26 @@ Zerobss:
   bl main
   bx lr
 .size Reset_Handler, .-Reset_Handler
+/* 设置了 Reset_Handler 符号的大小。
+.size 指令的语法是 .size symbol, expression，它用于指定符号的大小。
+在这里，. 表示当前地址，.-Reset_Handler 表示当前地址与 Reset_Handler 符号地址的差值，即 Reset_Handler 符号的大小。 */
 
-    .section .text.Default_Handler,"ax",%progbits
+
+/* "ax": 这是节的标志（flags）。在这里，a 表示该节是可分配的（allocatable），x 表示该节是可执行的（executable）。这意味着该节中的代码可以被加载到内存并执行。*/
+/* %progbits: 这是节的属性（attributes）。%progbits 属性表示该节包含了程序数据。这意味着该节中的内容是实际的程序代码或数据。*/
+.section .text.Default_Handler,"ax",%progbits
 Default_Handler:
 Infinite_Loop:
   b Infinite_Loop
   .size Default_Handler, .-Default_Handler
 
-  .section .isr_vector,"a",%progbits
-  .type g_pfnVectors, %object
-  .size g_pfnVectors, .-g_pfnVectors
+.section .isr_vector,"a",%progbits
+.type g_pfnVectors, %object
+/* %object：表示该符号是一个对象（object），在汇编语言中一般用于数据或变量。对象类型的符号在链接时会被保留，并且它们的地址是可用的。*/
+.size g_pfnVectors, .-g_pfnVectors
 
 g_pfnVectors:
-                    .word _estack
+                    .word _estack                    /*在当前位置放置一个word型的值，这个值为_estack；已下同理  */
                     .word Reset_Handler              /* Vector Number 1,Reset Handler */
                     .word NMI_Handler                /* Vector Number 2,NMI Handler */
                     .word HardFault_Handler          /* Vector Number 3,Hard Fault Handler */
@@ -154,8 +162,8 @@ g_pfnVectors:
                     .word DMA1_Channel2_IRQHandler       /* Vector Number 74,DMA1 Channel2 */
                     .word DMA1_Channel3_4_IRQHandler     /* Vector Number 75,DMA1 Channel3 and Channel4 */
 
-  .weak NMI_Handler
-  .thumb_set NMI_Handler,Default_Handler
+  .weak NMI_Handler   /*弱定义一个符号，名字叫 NMI_Handler*/
+  .thumb_set NMI_Handler,Default_Handler /*如果没有重写这个弱定义的符号，则执行 Default_Handler，反之则执行重写的NMI_Handler，已下同理 */
 
   .weak HardFault_Handler
   .thumb_set HardFault_Handler,Default_Handler

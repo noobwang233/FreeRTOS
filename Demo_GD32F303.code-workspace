@@ -24,6 +24,14 @@
             "editor.insertSpaces": true,
             "editor.tabSize": 4,
             "editor.autoIndent": "advanced"
+        },
+        "search.exclude": {
+            "**/.eide": true,
+            "**/.pack": true
+        },
+        "files.exclude": {
+            "**/.eide": true,
+            "**/.pack": true
         }
     },
     "extensions": {
