@@ -104,7 +104,7 @@
     ]
   },
   "outDir": "build",
-  "deviceName": "GD32F303RC",
+  "deviceName": "GD32F303CG",
   "packDir": ".pack/GigaDevice/GD32F30x_DFP.2.2.3",
   "miscInfo": {
     "uid": "26e66d9cf4ee1eb25339cd889766137c"
@@ -157,9 +157,9 @@
         "libList": [],
         "sourceDirList": [],
         "defineList": [
-          "GD32F30X_HD",
           "USE_STDPERIPH_DRIVER",
-          "GD32F30x"
+          "GD32F30x",
+          "GD32F30X_XD"
         ]
       }
     }

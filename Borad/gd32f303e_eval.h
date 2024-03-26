@@ -47,6 +47,7 @@ OF SUCH DAMAGE.
 /* exported types */
 typedef enum 
 {
+    LED1 = 0,
     LED2 = 0,
 } led_typedef_enum;
 
@@ -62,12 +63,16 @@ typedef enum
 } keymode_typedef_enum;
 
 /* eval board low layer led */
-#define LEDn                             1U
+#define LEDn                             2U
 
-#define LED2_PIN                         GPIO_PIN_6
-#define LED2_GPIO_PORT                   GPIOC
-#define LED2_GPIO_CLK                    RCU_GPIOC
-  
+#define LED1_PIN                         GPIO_PIN_14
+#define LED1_GPIO_PORT                   GPIOB
+#define LED1_GPIO_CLK                    RCU_GPIOB
+
+#define LED2_PIN                         GPIO_PIN_15
+#define LED2_GPIO_PORT                   GPIOB
+#define LED2_GPIO_CLK                    RCU_GPIOB
+
 #define COMn                             1U
 
 #define EVAL_COM1                        USART1

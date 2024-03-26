@@ -1,49 +1,57 @@
-  .syntax unified
-  .cpu cortex-m4
-  .fpu softvfp
-  .thumb
+  .syntax unified   /* 意思是下面的指令是ARM和THUMB通用格式的 */
+  .cpu cortex-m4    /* CPU内核型号 */
+  .fpu softvfp      /* 选择使用的浮点单元，与-mfpu命令行选项的相同 */
+  .thumb            /* 选择使用thumb指令 */
 
-.global  g_pfnVectors
-.global  Default_Handler
+/* 声明可以被汇编器使用的符号 */
+.global g_pfnVectors    /* 在文件末尾定义的中断向量 */
+.global Default_Handler /* 是一个死循环，用来处理异常情况 */
 
 /* start address of the static initialization data */
 .word  _sidata
-/* start address of the data section */ 
+/* start address of the data section */
+/* .data对应初始化了的全局变量，编译后将位于可执行文件中，
+    由启动代码负责加载到数据区中（在单片机中这部分数据会存于flash中，需要由启动代码把这部分内容拷贝到ram中）
+*/
 .word  _sdata
 /* end address of the data section */
 .word  _edata
 /* start address of the bss section */
+/*
+  .bss段是没有初始值的全局变量，由启动代码把这 部分内容全初始化为0
+*/
 .word  _sbss
 /* end address of the bss section */
 .word  _ebss
 
-    .section  .text.Reset_Handler
+/* 定义Reset_Handler函数，该函数的作用1.设置堆栈指针；2.全局变量的初始化 */
+  .section  .text.Reset_Handler
   .weak  Reset_Handler
   .type  Reset_Handler, %function
 
 Reset_Handler:
 /* copy the data segment into ram */  
-  movs r1, #0
-  b DataInit
+  movs r1, #0  // 将r1赋值为0
+  b DataInit   // 跳转到DataInit
 
 CopyData:
-  ldr r3, =_sidata
-  ldr r3, [r3, r1]
-  str r3, [r0, r1]
-  adds r1, r1, #4
+  ldr r3, =_sidata // 将初始化数据地址加载到r3中
+  ldr r3, [r3, r1] // 寄存器间接寻址，将r3 + r1地址中的数据加载到r3中 
+  str r3, [r0, r1] // 将r3的内容写入 r0 + r1地址中
+  adds r1, r1, #4  // r1 + 4, 然后将结果写入r1，
 
 DataInit:
-  ldr r0, =_sdata
-  ldr r3, =_edata
-  adds r2, r0, r1
-  cmp r2, r3
-  bcc CopyData
-  ldr r2, =_sbss
-  b Zerobss
+  ldr r0, =_sdata  // r0为需要初始化的全局变量起始地址
+  ldr r3, =_edata  // r3为需要初始化的全局变量结束地址
+  adds r2, r0, r1  // 将r0 + r1 相加，保存到r2 同时检查溢出标志
+  cmp r2, r3       // 比较r2 和 r3，如果r2小于r3继续拷贝数据
+  bcc CopyData     // 如果r2小于r3继续拷贝数据
+  ldr r2, =_sbss   // 将r2赋值为没有初始值的全局变量起始地址即bss区首地址
+  b Zerobss        // 跳转到Zerobss
 /* zero the bss segment */ 
 FillZerobss:
   movs r3, #0
-  str r3, [r2], #4
+  str r3, [r2], #4 //采用后变址，先将r3中的值写入r2，也就是bss数据区首地址中，然后r2自加4
 
 Zerobss:
   ldr r3, = _ebss

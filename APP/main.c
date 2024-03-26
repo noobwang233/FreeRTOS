@@ -51,11 +51,14 @@ int main(void)
     /* configure systick */
     systick_config();
     /* initilize the LEDs, USART and key */
+    gd_eval_led_init(LED1); 
     gd_eval_led_init(LED2); 
 
     while (1){
+        gd_eval_led_on(LED1);
         gd_eval_led_on(LED2);
         delay_1ms(500);
+        gd_eval_led_off(LED1);
         gd_eval_led_off(LED2);
         delay_1ms(500);
     }

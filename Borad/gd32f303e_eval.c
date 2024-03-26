@@ -39,8 +39,8 @@ OF SUCH DAMAGE.
 #include "gd32f303e_eval.h"
 
 /* private variables */
-static uint32_t GPIO_PORT[LEDn] = {LED2_GPIO_PORT};
-static uint32_t GPIO_PIN[LEDn] = {LED2_PIN};
+static uint32_t GPIO_PORT[LEDn] = {LED1_GPIO_PORT, LED2_GPIO_PORT};
+static uint32_t GPIO_PIN[LEDn] = {LED1_PIN, LED2_PIN};
 
 static rcu_periph_enum COM_CLK[COMn] = {EVAL_COM1_CLK};
 static uint32_t COM_TX_PIN[COMn] = {EVAL_COM1_TX_PIN};
@@ -48,7 +48,7 @@ static uint32_t COM_RX_PIN[COMn] = {EVAL_COM1_RX_PIN};
 static uint32_t COM_GPIO_PORT[COMn] = {EVAL_COM1_GPIO_PORT};
 static rcu_periph_enum COM_GPIO_CLK[COMn] = {EVAL_COM1_GPIO_CLK};
 
-static rcu_periph_enum GPIO_CLK[LEDn] = {LED2_GPIO_CLK};
+static rcu_periph_enum GPIO_CLK[LEDn] = {LED1_GPIO_CLK, LED2_GPIO_CLK};
 
 static uint32_t KEY_PORT[KEYn] = {USER_KEY1_GPIO_PORT,};
 static uint32_t KEY_PIN[KEYn] = {USER_KEY1_PIN};
@@ -62,7 +62,7 @@ static uint8_t KEY_IRQn[KEYn] = {USER_KEY1_EXTI_IRQn};
     \brief      configure led GPIO
     \param[in]  lednum: specify the led to be configured
       \arg        LED2
-      \arg        LED3
+      \arg        LED2
       \arg        LED4
       \arg        LED5
     \param[out] none
@@ -82,7 +82,7 @@ void  gd_eval_led_init (led_typedef_enum lednum)
     \brief      turn on selected led
     \param[in]  lednum: specify the led to be turned on
       \arg        LED2
-      \arg        LED3
+      \arg        LED2
       \arg        LED4
       \arg        LED5
     \param[out] none
@@ -97,7 +97,7 @@ void gd_eval_led_on(led_typedef_enum lednum)
     \brief      turn off selected led
     \param[in]  lednum: specify the led to be turned off
       \arg        LED2
-      \arg        LED3
+      \arg        LED2
       \arg        LED4
       \arg        LED5
     \param[out] none
@@ -112,7 +112,7 @@ void gd_eval_led_off(led_typedef_enum lednum)
     \brief      toggle selected led
     \param[in]  lednum: specify the led to be toggled
       \arg        LED2
-      \arg        LED3
+      \arg        LED2
       \arg        LED4
       \arg        LED5
     \param[out] none
