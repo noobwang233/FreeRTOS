@@ -1,15 +1,12 @@
 /*!
-    \file    gd32f303e_eval.h
-    \brief   definitions for GD32F303E_EVAL's leds, keys and COM ports hardware resources
+    \file  gd32f303c_start.h
+    \brief definitions for GD32f303C_START's leds, keys and COM ports hardware resources
 
-    \version 2017-02-10, V1.0.0, firmware for GD32F30x
-    \version 2018-10-10, V1.1.0, firmware for GD32F30x
-    \version 2018-12-25, V2.0.0, firmware for GD32F30x
-    \version 2020-09-30, V2.1.0, firmware for GD32F30x 
+    \version 2021-03-23, V2.0.0, demo for GD32F30x
 */
 
 /*
-    Copyright (c) 2020, GigaDevice Semiconductor Inc.
+    Copyright (c) 2021, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -35,10 +32,10 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#ifndef GD32F303E_EVAL_H
-#define GD32F303E_EVAL_H
+#ifndef GD32F303C_START_H
+#define GD32F303C_START_H
 
-#ifdef __cplusplus
+#ifdef cplusplus
  extern "C" {
 #endif
 
@@ -47,13 +44,13 @@ OF SUCH DAMAGE.
 /* exported types */
 typedef enum 
 {
-    LED1 = 0,
-    LED2 = 1
+    LED1,
+    LED2
 } led_typedef_enum;
 
 typedef enum 
 {
-    KEY_USER1 = 0,
+    KEY_USER
 } key_typedef_enum;
 
 typedef enum 
@@ -73,26 +70,32 @@ typedef enum
 #define LED2_GPIO_PORT                   GPIOB
 #define LED2_GPIO_CLK                    RCU_GPIOB
 
-#define COMn                             1U
-
-#define EVAL_COM1                        USART1
-#define EVAL_COM1_CLK                    RCU_USART1
-#define EVAL_COM1_TX_PIN                 GPIO_PIN_2
-#define EVAL_COM1_RX_PIN                 GPIO_PIN_3
-#define EVAL_COM1_GPIO_PORT              GPIOA
-#define EVAL_COM1_GPIO_CLK               RCU_GPIOA
-
 #define KEYn                             1U
 
 /* user push-button */
-#define USER_KEY1_PIN                    GPIO_PIN_0
-#define USER_KEY1_GPIO_PORT              GPIOA
-#define USER_KEY1_GPIO_CLK               RCU_GPIOA
-#define USER_KEY1_EXTI_LINE              EXTI_0
-#define USER_KEY1_EXTI_PORT_SOURCE       GPIO_PORT_SOURCE_GPIOA
-#define USER_KEY1_EXTI_PIN_SOURCE        GPIO_PIN_SOURCE_0
-#define USER_KEY1_EXTI_IRQn              EXTI0_IRQn
+#define USER_KEY_PIN                     GPIO_PIN_0
+#define USER_KEY_GPIO_PORT               GPIOA
+#define USER_KEY_GPIO_CLK                RCU_GPIOA
+#define USER_KEY_EXTI_LINE               EXTI_0
+#define USER_KEY_EXTI_PORT_SOURCE        GPIO_PORT_SOURCE_GPIOA
+#define USER_KEY_EXTI_PIN_SOURCE         GPIO_PIN_SOURCE_0
+#define USER_KEY_EXTI_IRQn               EXTI0_IRQn
 
+#define COMn                             2U
+
+#define EVAL_COM1                        USART0
+#define EVAL_COM1_CLK                    RCU_USART0
+#define EVAL_COM1_TX_PIN                 GPIO_PIN_9
+#define EVAL_COM1_RX_PIN                 GPIO_PIN_10
+#define EVAL_COM1_GPIO_PORT              GPIOA
+#define EVAL_COM1_GPIO_CLK               RCU_GPIOA
+
+#define EVAL_COM2                        USART1
+#define EVAL_COM2_CLK                    RCU_USART1
+#define EVAL_COM2_TX_PIN                 GPIO_PIN_2
+#define EVAL_COM2_RX_PIN                 GPIO_PIN_3
+#define EVAL_COM2_GPIO_PORT              GPIOA
+#define EVAL_COM2_GPIO_CLK               RCU_GPIOA
 
 /* function declarations */
 /* configure led GPIO */
@@ -109,9 +112,8 @@ void gd_eval_key_init(key_typedef_enum key_num, keymode_typedef_enum key_mode);
 uint8_t gd_eval_key_state_get(key_typedef_enum key);
 /* configure COM port */
 void gd_eval_com_init(uint32_t com);
-
-#ifdef __cplusplus
+#ifdef cplusplus
 }
 #endif
 
-#endif /* GD32F303E_EVAL_H */
+#endif /* GD32F303C_START_H */

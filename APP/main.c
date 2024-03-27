@@ -36,37 +36,93 @@ OF SUCH DAMAGE.
 */
 
 #include "gd32f30x.h"
-#include "gd32f303e_eval.h"
+#include "gd32f303c_start.h"
 #include "FreeRTOS.h"
 #include "task.h"
 #include <stdint.h>
+#include <stdio.h>
 
-/* system clock frequency (core clock) */
-extern uint32_t SystemCoreClock;
-void delay_ms(uint16_t ms)
+static void LED1_Task(void* parameter)
 {
-    uint32_t count = 0;
-
-    while (count < ms) 
+    gd_eval_led_init(LED1);
+    while (1)
     {
-        for (uint32_t i = 0; i < (SystemCoreClock / 10000); i++) {
-        }
-        count++;
+        gd_eval_led_on(LED1);
+        vTaskDelay(500); /* 延时500 个tick */
+        gd_eval_led_off(LED1);
+        vTaskDelay(500); /* 延时500 个tick */
+    }
+}
+
+
+static void LED2_Task(void* parameter)
+{
+    while (1)
+    {
+        gd_eval_led_on(LED2);
+        vTaskDelay(1000); /* 延时500 个tick */
+        gd_eval_led_off(LED2);
+        vTaskDelay(1000); /* 延时500 个tick */
     }
 }
 
 int main(void)
 {
-    /* initilize the LEDs, USART and key */
-    gd_eval_led_init(LED1); 
-    gd_eval_led_init(LED2); 
+    TaskHandle_t LED1_Task_Handle = NULL; /* 任务句柄 */
+    TaskHandle_t LED2_Task_Handle = NULL;
 
-    while (1){
-        gd_eval_led_on(LED1);
-        gd_eval_led_on(LED2);
-        delay_ms(500);
-        gd_eval_led_off(LED1);
-        gd_eval_led_off(LED2);
-        delay_ms(500);
+    BaseType_t xReturn = pdPASS;/* 定义一个创建信息返回值，默认为pdPASS */
+
+    gd_eval_led_init(LED1);
+    gd_eval_led_on(LED1);
+    gd_eval_led_init(LED2);
+    gd_eval_led_on(LED2);
+    gd_eval_com_init(EVAL_COM1);
+
+    xReturn = xTaskCreate(  (TaskFunction_t )LED1_Task, /* 任务入口函数 */
+                                (const char* )"LED1_Task",/* 任务名字 */
+                            (uint16_t )512, /* 任务栈大小 */
+                            (void* )NULL, /* 任务入口函数参数 */
+                            (UBaseType_t )2, /* 任务的优先级 */
+                            (TaskHandle_t* )&LED1_Task_Handle);/* 任务句柄指针 */
+    if (pdPASS == xReturn)
+    {
+        printf("LED1_Task create successfully!\n");
     }
+    else
+    {
+        return -1;
+        printf("LED1_Task create failed!\n");
+    }
+
+
+    xReturn = xTaskCreate(  (TaskFunction_t )LED2_Task, /* 任务入口函数 */
+                                (const char* )"LED2_Task",/* 任务名字 */
+                            (uint16_t )512, /* 任务栈大小 */
+                            (void* )NULL, /* 任务入口函数参数 */
+                            (UBaseType_t )2, /* 任务的优先级 */
+                            (TaskHandle_t* )&LED2_Task_Handle);/* 任务句柄指针 */
+    if (pdPASS == xReturn)
+    {
+        printf("LED2_Task create successfully!\n");
+    }
+    else
+    {
+        return -1;
+        printf("LED2_Task create failed!\n");
+    }
+
+    vTaskStartScheduler(); /* 启动任务，开启调度 */
+    while (1){}
+}
+
+/* retarget the C library printf function to the USART */
+int _write (int fd, char *pBuffer, int size)  
+{  
+    for (int i = 0; i < size; i++)  
+    {  
+		usart_data_transmit(EVAL_COM1, (uint8_t)pBuffer[i]);
+		while(RESET == usart_flag_get(EVAL_COM1, USART_FLAG_TBE));		
+    }  
+    return size;  
 }
