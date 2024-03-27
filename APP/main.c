@@ -42,6 +42,11 @@ OF SUCH DAMAGE.
 #include <stdint.h>
 #include <stdio.h>
 
+
+TaskHandle_t LED1_Task_Handle = NULL; /* 任务句柄 */
+TaskHandle_t LED2_Task_Handle = NULL;
+TaskHandle_t TaskCreate_Handle = NULL;
+
 static void LED1_Task(void* parameter)
 {
     while (1)
@@ -65,18 +70,11 @@ static void LED2_Task(void* parameter)
     }
 }
 
-int main(void)
+static void TaskCreate_Task(void* parameter)
 {
-    TaskHandle_t LED1_Task_Handle = NULL; /* 任务句柄 */
-    TaskHandle_t LED2_Task_Handle = NULL;
-
     BaseType_t xReturn = pdPASS;/* 定义一个创建信息返回值，默认为pdPASS */
 
-    gd_eval_led_init(LED1);
-    gd_eval_led_on(LED1);
-    gd_eval_led_init(LED2);
-    gd_eval_led_on(LED2);
-    gd_eval_com_init(EVAL_COM1);
+    taskENTER_CRITICAL(); //进入临界区
 
     xReturn = xTaskCreate(  (TaskFunction_t )LED1_Task, /* 任务入口函数 */
                                 (const char* )"LED1_Task",/* 任务名字 */
@@ -86,14 +84,12 @@ int main(void)
                             (TaskHandle_t* )&LED1_Task_Handle);/* 任务句柄指针 */
     if (pdPASS == xReturn)
     {
-        printf("LED1_Task create successfully!\n");
+        printf("Create LED1_Task successfully!\r\n");
     }
     else
     {
-        printf("LED1_Task create failed!\n");
-        return -1;
+        printf("Create LED1_Task failed!\r\n");
     }
-
 
     xReturn = xTaskCreate(  (TaskFunction_t )LED2_Task, /* 任务入口函数 */
                                 (const char* )"LED2_Task",/* 任务名字 */
@@ -103,15 +99,35 @@ int main(void)
                             (TaskHandle_t* )&LED2_Task_Handle);/* 任务句柄指针 */
     if (pdPASS == xReturn)
     {
-        printf("LED2_Task create successfully!\n");
+        printf("Create LED2_Task successfully!\r\n");
     }
     else
     {
-        printf("LED2_Task create failed!\n");
-        return -1;
+        printf("Create LED2_Task failed!\r\n");
     }
 
-    vTaskStartScheduler(); /* 启动任务，开启调度 */
+    vTaskDelete(TaskCreate_Handle); //删除TaskCreate 任务
+
+    taskEXIT_CRITICAL(); //退出临界区
+}
+
+int main(void)
+{
+    BaseType_t xReturn = pdPASS;/* 定义一个创建信息返回值，默认为pdPASS */
+
+    gd_eval_led_init(LED1);
+    gd_eval_led_init(LED2);
+    gd_eval_com_init(EVAL_COM1);
+
+    xReturn = xTaskCreate(  (TaskFunction_t )TaskCreate_Task, /* 任务入口函数 */
+                                (const char* )"TaskCreate_Task",/* 任务名字 */
+                            (uint16_t )128, /* 任务栈大小 */
+                            (void* )NULL, /* 任务入口函数参数 */
+                            (UBaseType_t )3, /* 任务的优先级 */
+                            (TaskHandle_t* )&TaskCreate_Handle);/* 任务句柄指针 */
+    if (pdPASS == xReturn)
+        vTaskStartScheduler(); /* 启动任务，开启调度 */
+
     while (1){}
 }
 
