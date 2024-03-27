@@ -44,7 +44,6 @@ OF SUCH DAMAGE.
 
 static void LED1_Task(void* parameter)
 {
-    gd_eval_led_init(LED1);
     while (1)
     {
         gd_eval_led_on(LED1);
