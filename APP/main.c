@@ -90,8 +90,8 @@ int main(void)
     }
     else
     {
-        return -1;
         printf("LED1_Task create failed!\n");
+        return -1;
     }
 
 
@@ -107,8 +107,8 @@ int main(void)
     }
     else
     {
-        return -1;
         printf("LED2_Task create failed!\n");
+        return -1;
     }
 
     vTaskStartScheduler(); /* 启动任务，开启调度 */
