@@ -725,59 +725,55 @@ static void prvAddNewTaskToReadyList( TCB_t * pxNewTCB ) PRIVILEGED_FUNCTION;
                             UBaseType_t uxPriority,
                             TaskHandle_t * const pxCreatedTask )
     {
-        TCB_t * pxNewTCB;
-        BaseType_t xReturn;
+        TCB_t * pxNewTCB;   // 动态分配的任务控制块（TCB）地址
+        BaseType_t xReturn; // 返回值
 
-        /* If the stack grows down then allocate the stack then the TCB so the stack
-         * does not grow into the TCB.  Likewise if the stack grows up then allocate
-         * the TCB then the stack. */
-        #if ( portSTACK_GROWTH > 0 )
+        /* 根据栈的增长方向选择栈和TCB的分配顺序 */
+        /* 如果栈向下增长，则先分配栈和再分配TCB */
+        /* 如果栈向上增长，则先分配TCB再分配栈 */
+        /* 这样做是为了防止栈溢出后破坏TCB */
+        #if ( portSTACK_GROWTH > 0 )// 栈向上增长
         {
-            /* Allocate space for the TCB.  Where the memory comes from depends on
-             * the implementation of the port malloc function and whether or not static
-             * allocation is being used. */
+            /* 分配TCB的空间，具体空间的分配方式取决于pvPortMalloc的实现方式 */
             pxNewTCB = ( TCB_t * ) pvPortMalloc( sizeof( TCB_t ) );
 
-            if( pxNewTCB != NULL )
+            if( pxNewTCB != NULL ) // TCB地址分配成功
             {
-                memset( ( void * ) pxNewTCB, 0x00, sizeof( TCB_t ) );
+                memset( ( void * ) pxNewTCB, 0x00, sizeof( TCB_t ) ); //将TCB区域清0
 
-                /* Allocate space for the stack used by the task being created.
-                 * The base of the stack memory stored in the TCB so the task can
-                 * be deleted later if required. */
-                pxNewTCB->pxStack = ( StackType_t * ) pvPortMallocStack( ( ( ( size_t ) usStackDepth ) * sizeof( StackType_t ) ) ); /*lint !e961 MISRA exception as the casts are only redundant for some ports. */
+                /* 为新创建的任务分配任务栈空间， 大小为usStackDepth * sizeof( StackType_t ) 即 usStackDepth * sizeof(uint32_t) */
+                pxNewTCB->pxStack = ( StackType_t * ) pvPortMallocStack( ( ( ( size_t ) usStackDepth ) * sizeof( StackType_t ) ) );
 
-                if( pxNewTCB->pxStack == NULL )
+                if( pxNewTCB->pxStack == NULL )// 栈地址分配失败
                 {
-                    /* Could not allocate the stack.  Delete the allocated TCB. */
+                    /* 释放已经分配的TCB空间 */
                     vPortFree( pxNewTCB );
                     pxNewTCB = NULL;
                 }
             }
         }
-        #else /* portSTACK_GROWTH */
+        #else /* portSTACK_GROWTH */ // 栈向下增长
         {
             StackType_t * pxStack;
 
-            /* Allocate space for the stack used by the task being created. */
-            pxStack = pvPortMallocStack( ( ( ( size_t ) usStackDepth ) * sizeof( StackType_t ) ) ); /*lint !e9079 All values returned by pvPortMalloc() have at least the alignment required by the MCU's stack and this allocation is the stack. */
+            /* 先分配任务栈空间 */
+            pxStack = pvPortMallocStack( ( ( ( size_t ) usStackDepth ) * sizeof( StackType_t ) ) );
 
             if( pxStack != NULL )
             {
-                /* Allocate space for the TCB. */
-                pxNewTCB = ( TCB_t * ) pvPortMalloc( sizeof( TCB_t ) ); /*lint !e9087 !e9079 All values returned by pvPortMalloc() have at least the alignment required by the MCU's stack, and the first member of TCB_t is always a pointer to the task's stack. */
+                /* 再分配TCB空间 */
+                pxNewTCB = ( TCB_t * ) pvPortMalloc( sizeof( TCB_t ) );
 
                 if( pxNewTCB != NULL )
                 {
                     memset( ( void * ) pxNewTCB, 0x00, sizeof( TCB_t ) );
 
-                    /* Store the stack location in the TCB. */
+                    /* 将栈的起始地址放入TCB中的pxStack */
                     pxNewTCB->pxStack = pxStack;
                 }
                 else
                 {
-                    /* The stack cannot be used as the TCB was not created.  Free
-                     * it again. */
+                    /* TCB空间分配失败，释放已经创建的栈空间 */
                     vPortFreeStack( pxStack );
                 }
             }
@@ -788,23 +784,23 @@ static void prvAddNewTaskToReadyList( TCB_t * pxNewTCB ) PRIVILEGED_FUNCTION;
         }
         #endif /* portSTACK_GROWTH */
 
-        if( pxNewTCB != NULL )
+        if( pxNewTCB != NULL )// 栈空间和TCB空间分配成功
         {
-            #if ( tskSTATIC_AND_DYNAMIC_ALLOCATION_POSSIBLE != 0 ) /*lint !e9029 !e731 Macro has been consolidated for readability reasons. */
+            #if ( tskSTATIC_AND_DYNAMIC_ALLOCATION_POSSIBLE != 0 )
             {
-                /* Tasks can be created statically or dynamically, so note this
-                 * task was created dynamically in case it is later deleted. */
+                /* 设置标志，表示此任务的TCB和栈均为动态分配，用于指示之后的任务删除函数该如何删除此任务 */
                 pxNewTCB->ucStaticallyAllocated = tskDYNAMICALLY_ALLOCATED_STACK_AND_TCB;
             }
             #endif /* tskSTATIC_AND_DYNAMIC_ALLOCATION_POSSIBLE */
 
+            // 初始化新任务
             prvInitialiseNewTask( pxTaskCode, pcName, ( uint32_t ) usStackDepth, pvParameters, uxPriority, pxCreatedTask, pxNewTCB, NULL );
-            prvAddNewTaskToReadyList( pxNewTCB );
-            xReturn = pdPASS;
+            prvAddNewTaskToReadyList( pxNewTCB ); // 将此任务添加到就绪列表
+            xReturn = pdPASS; //设置返回值
         }
         else
         {
-            xReturn = errCOULD_NOT_ALLOCATE_REQUIRED_MEMORY;
+            xReturn = errCOULD_NOT_ALLOCATE_REQUIRED_MEMORY; //设置返回值
         }
 
         return xReturn;

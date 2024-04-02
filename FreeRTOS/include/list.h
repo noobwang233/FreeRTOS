@@ -143,21 +143,21 @@
 struct xLIST;
 struct xLIST_ITEM
 {
-    listFIRST_LIST_ITEM_INTEGRITY_CHECK_VALUE           /*< Set to a known value if configUSE_LIST_DATA_INTEGRITY_CHECK_BYTES is set to 1. */
-    configLIST_VOLATILE TickType_t xItemValue;          /*< The value being listed.  In most cases this is used to sort the list in ascending order. */
-    struct xLIST_ITEM * configLIST_VOLATILE pxNext;     /*< Pointer to the next ListItem_t in the list. */
-    struct xLIST_ITEM * configLIST_VOLATILE pxPrevious; /*< Pointer to the previous ListItem_t in the list. */
-    void * pvOwner;                                     /*< Pointer to the object (normally a TCB) that contains the list item.  There is therefore a two way link between the object containing the list item and the list item itself. */
-    struct xLIST * configLIST_VOLATILE pxContainer;     /*< Pointer to the list in which this list item is placed (if any). */
-    listSECOND_LIST_ITEM_INTEGRITY_CHECK_VALUE          /*< Set to a known value if configUSE_LIST_DATA_INTEGRITY_CHECK_BYTES is set to 1. */
+    listFIRST_LIST_ITEM_INTEGRITY_CHECK_VALUE           /* 列表项的第一个校验值 */
+    configLIST_VOLATILE TickType_t xItemValue;          /* 列表项的值 */
+    struct xLIST_ITEM * configLIST_VOLATILE pxNext;     /* 下一个列表项的地址 */
+    struct xLIST_ITEM * configLIST_VOLATILE pxPrevious; /* 前一个列表项的地址 */
+    void * pvOwner;                                     /* 列表项的拥有者Object（通常是TCB），所以列表项和其对应的拥有者Object通常存在双向对应 */
+    struct xLIST * configLIST_VOLATILE pxContainer;     /* 列表项所在的列表 */
+    listSECOND_LIST_ITEM_INTEGRITY_CHECK_VALUE          /* 列表项的第二个校验值 */
 };
-typedef struct xLIST_ITEM ListItem_t;                   /* For some reason lint wants this as two separate definitions. */
+typedef struct xLIST_ITEM ListItem_t;
 
 #if ( configUSE_MINI_LIST_ITEM == 1 )
     struct xMINI_LIST_ITEM
     {
-        listFIRST_LIST_ITEM_INTEGRITY_CHECK_VALUE /*< Set to a known value if configUSE_LIST_DATA_INTEGRITY_CHECK_BYTES is set to 1. */
-        configLIST_VOLATILE TickType_t xItemValue;
+        listFIRST_LIST_ITEM_INTEGRITY_CHECK_VALUE       /* 列表项的第一个校验值 */
+        configLIST_VOLATILE TickType_t xItemValue;      /* 列表项的值 */
         struct xLIST_ITEM * configLIST_VOLATILE pxNext;
         struct xLIST_ITEM * configLIST_VOLATILE pxPrevious;
     };
@@ -171,11 +171,11 @@ typedef struct xLIST_ITEM ListItem_t;                   /* For some reason lint 
  */
 typedef struct xLIST
 {
-    listFIRST_LIST_INTEGRITY_CHECK_VALUE      /*< Set to a known value if configUSE_LIST_DATA_INTEGRITY_CHECK_BYTES is set to 1. */
-    volatile UBaseType_t uxNumberOfItems;
-    ListItem_t * configLIST_VOLATILE pxIndex; /*< Used to walk through the list.  Points to the last item returned by a call to listGET_OWNER_OF_NEXT_ENTRY (). */
-    MiniListItem_t xListEnd;                  /*< List item that contains the maximum possible item value meaning it is always at the end of the list and is therefore used as a marker. */
-    listSECOND_LIST_INTEGRITY_CHECK_VALUE     /*< Set to a known value if configUSE_LIST_DATA_INTEGRITY_CHECK_BYTES is set to 1. */
+    listFIRST_LIST_INTEGRITY_CHECK_VALUE      	/* 列表第一个校验值 */
+    volatile UBaseType_t uxNumberOfItems;		/* 列表中列表项的数量 */
+    ListItem_t * configLIST_VOLATILE pxIndex;   /* 列表项索索引指针，用于遍历列表 */ 
+    MiniListItem_t xListEnd;                    /* 最后一个列表项 */ 
+    listSECOND_LIST_INTEGRITY_CHECK_VALUE       /* 列表第二个校验值 */
 } List_t;
 
 /*
@@ -185,6 +185,7 @@ typedef struct xLIST
  * \page listSET_LIST_ITEM_OWNER listSET_LIST_ITEM_OWNER
  * \ingroup LinkedList
  */
+//设置列表项的所有者
 #define listSET_LIST_ITEM_OWNER( pxListItem, pxOwner )    ( ( pxListItem )->pvOwner = ( void * ) ( pxOwner ) )
 
 /*
@@ -194,6 +195,7 @@ typedef struct xLIST
  * \page listGET_LIST_ITEM_OWNER listSET_LIST_ITEM_OWNER
  * \ingroup LinkedList
  */
+//获得列表项的所有者
 #define listGET_LIST_ITEM_OWNER( pxListItem )             ( ( pxListItem )->pvOwner )
 
 /*
@@ -203,6 +205,7 @@ typedef struct xLIST
  * \page listSET_LIST_ITEM_VALUE listSET_LIST_ITEM_VALUE
  * \ingroup LinkedList
  */
+//设置列表项的值
 #define listSET_LIST_ITEM_VALUE( pxListItem, xValue )     ( ( pxListItem )->xItemValue = ( xValue ) )
 
 /*
@@ -213,6 +216,7 @@ typedef struct xLIST
  * \page listGET_LIST_ITEM_VALUE listGET_LIST_ITEM_VALUE
  * \ingroup LinkedList
  */
+//获取列表项的值
 #define listGET_LIST_ITEM_VALUE( pxListItem )             ( ( pxListItem )->xItemValue )
 
 /*
@@ -222,6 +226,7 @@ typedef struct xLIST
  * \page listGET_LIST_ITEM_VALUE listGET_LIST_ITEM_VALUE
  * \ingroup LinkedList
  */
+//获取列表第一个元素的值
 #define listGET_ITEM_VALUE_OF_HEAD_ENTRY( pxList )        ( ( ( pxList )->xListEnd ).pxNext->xItemValue )
 
 /*
@@ -230,6 +235,7 @@ typedef struct xLIST
  * \page listGET_HEAD_ENTRY listGET_HEAD_ENTRY
  * \ingroup LinkedList
  */
+//获取列表第一个列表项的指针
 #define listGET_HEAD_ENTRY( pxList )                      ( ( ( pxList )->xListEnd ).pxNext )
 
 /*
@@ -238,6 +244,7 @@ typedef struct xLIST
  * \page listGET_NEXT listGET_NEXT
  * \ingroup LinkedList
  */
+//获取当前列表项下一个列表项的指针
 #define listGET_NEXT( pxListItem )                        ( ( pxListItem )->pxNext )
 
 /*
@@ -246,6 +253,7 @@ typedef struct xLIST
  * \page listGET_END_MARKER listGET_END_MARKER
  * \ingroup LinkedList
  */
+ //获取列表最后一个列表项的指针
 #define listGET_END_MARKER( pxList )                      ( ( ListItem_t const * ) ( &( ( pxList )->xListEnd ) ) )
 
 /*
@@ -255,11 +263,13 @@ typedef struct xLIST
  * \page listLIST_IS_EMPTY listLIST_IS_EMPTY
  * \ingroup LinkedList
  */
+//确认列表是否为空，为空返回pdTRUE不为空返回pdFALSE
 #define listLIST_IS_EMPTY( pxList )                       ( ( ( pxList )->uxNumberOfItems == ( UBaseType_t ) 0 ) ? pdTRUE : pdFALSE )
 
 /*
  * Access macro to return the number of items in the list.
  */
+//获取列表当前长度
 #define listCURRENT_LIST_LENGTH( pxList )                 ( ( pxList )->uxNumberOfItems )
 
 /*
@@ -282,6 +292,8 @@ typedef struct xLIST
  * \page listGET_OWNER_OF_NEXT_ENTRY listGET_OWNER_OF_NEXT_ENTRY
  * \ingroup LinkedList
  */
+//获取列表下一个列表项的所有者，pxTCB是返回的所有者，pxList为输入的列表
+//最后一个列表项是mini列表项，没有所有者，跳过。
 #define listGET_OWNER_OF_NEXT_ENTRY( pxTCB, pxList )                                           \
     {                                                                                          \
         List_t * const pxConstList = ( pxList );                                               \
@@ -311,6 +323,7 @@ typedef struct xLIST
  * \page listREMOVE_ITEM listREMOVE_ITEM
  * \ingroup LinkedList
  */
+ //删除某个列表项
 #define listREMOVE_ITEM( pxItemToRemove ) \
     {                                     \
         /* The list item knows which list it is in.  Obtain the list from the list \
@@ -351,6 +364,7 @@ typedef struct xLIST
  * \page listINSERT_END listINSERT_END
  * \ingroup LinkedList
  */
+//将列表项插入列表的index之前，pxNewListItem为插入的列表项，pxList为被插入的列表
 #define listINSERT_END( pxList, pxNewListItem )           \
     {                                                     \
         ListItem_t * const pxIndex = ( pxList )->pxIndex; \
@@ -392,6 +406,7 @@ typedef struct xLIST
  * \page listGET_OWNER_OF_HEAD_ENTRY listGET_OWNER_OF_HEAD_ENTRY
  * \ingroup LinkedList
  */
+//获取列表第一个列表项的所有者
 #define listGET_OWNER_OF_HEAD_ENTRY( pxList )            ( ( &( ( pxList )->xListEnd ) )->pxNext->pvOwner )
 
 /*
@@ -403,6 +418,7 @@ typedef struct xLIST
  * @param pxListItem The list item we want to know if is in the list.
  * @return pdTRUE if the list item is in the list, otherwise pdFALSE.
  */
+//判断列表项pxListItem是否属于列表pxList
 #define listIS_CONTAINED_WITHIN( pxList, pxListItem )    ( ( ( pxListItem )->pxContainer == ( pxList ) ) ? ( pdTRUE ) : ( pdFALSE ) )
 
 /*
@@ -411,6 +427,7 @@ typedef struct xLIST
  * @param pxListItem The list item being queried.
  * @return A pointer to the List_t object that references the pxListItem
  */
+//获取列表项pxListItem的所属列表
 #define listLIST_ITEM_CONTAINER( pxListItem )            ( ( pxListItem )->pxContainer )
 
 /*
@@ -418,6 +435,7 @@ typedef struct xLIST
  * pxList->xListEnd.xItemValue is set to portMAX_DELAY by the vListInitialise()
  * function.
  */
+//判断列表pxList是否初始化，已初始化的列表的xListEnd的值为TickType_t所能表示的最大值0xffffffffUL(32位定时器的情况下)
 #define listLIST_IS_INITIALISED( pxList )                ( ( pxList )->xListEnd.xItemValue == portMAX_DELAY )
 
 /*
