@@ -254,69 +254,81 @@
  */
 typedef struct tskTaskControlBlock       /* The old naming convention is used to prevent breaking kernel aware debuggers. */
 {
-    volatile StackType_t * pxTopOfStack; /*< Points to the location of the last item placed on the tasks stack.  THIS MUST BE THE FIRST MEMBER OF THE TCB STRUCT. */
+    volatile StackType_t * pxTopOfStack; /* 指向任务栈最新的元素的指针（即栈顶指针），必须为该结构体的第一个元素 */
 
+    //启用MPU包装器，即使能MPU
     #if ( portUSING_MPU_WRAPPERS == 1 )
-        xMPU_SETTINGS xMPUSettings; /*< The MPU settings are defined as part of the port layer.  THIS MUST BE THE SECOND MEMBER OF THE TCB STRUCT. */
+        xMPU_SETTINGS xMPUSettings;     /* MPU设置项，必须为该结构体的第二个元素 */
     #endif
 
-    ListItem_t xStateListItem;                  /*< The list that the state list item of a task is reference from denotes the state of that task (Ready, Blocked, Suspended ). */
-    ListItem_t xEventListItem;                  /*< Used to reference a task from an event list. */
-    UBaseType_t uxPriority;                     /*< The priority of the task.  0 is the lowest priority. */
-    StackType_t * pxStack;                      /*< Points to the start of the stack. */
-    char pcTaskName[ configMAX_TASK_NAME_LEN ]; /*< Descriptive name given to the task when created.  Facilitates debugging only. */ /*lint !e971 Unqualified char types are allowed for strings and single characters only. */
+    ListItem_t xStateListItem;          /* 任务状态的列表项 */
+    ListItem_t xEventListItem;          /* 任务等待事件的列表项 */
+    UBaseType_t uxPriority;             /* 任务的优先级，0表示最低优先级 */
+    StackType_t * pxStack;              /* 指向任务栈的起始地址，对于栈向下增长的处理器来说，即栈底地址 */
+    char pcTaskName[ configMAX_TASK_NAME_LEN ]; /* 任务创建时为任务指定的描述性名称。仅便于调试 */
 
+    //portSTACK_GROWTH指定任务堆栈的生长方向, portSTACK_GROWTH > 0表示向上增长，否则为向下增长
+    //configRECORD_STACK_HIGH_ADDRESS配置项表示是否使能记录栈的高地址，此配置项仅用于调试
     #if ( ( portSTACK_GROWTH > 0 ) || ( configRECORD_STACK_HIGH_ADDRESS == 1 ) )
-        StackType_t * pxEndOfStack; /*< Points to the highest valid address for the stack. */
+        StackType_t * pxEndOfStack;     /* 指向任务栈的高位地址，对于栈向上增长的处理器来说，即栈底地址 */
     #endif
-
+    //portCRITICAL_NESTING_IN_TCB用于指定是否将临界区嵌套计数器放置在任务控制块（TCB）中。
     #if ( portCRITICAL_NESTING_IN_TCB == 1 )
-        UBaseType_t uxCriticalNesting; /*< Holds the critical section nesting depth for ports that do not maintain their own count in the port layer. */
+        UBaseType_t uxCriticalNesting;  /* 记录任务独自的临界区嵌套次数 */
     #endif
 
+    //configUSE_TRACE_FACILITY配置项表示是否启用跟踪功能。仅用于调试。
     #if ( configUSE_TRACE_FACILITY == 1 )
-        UBaseType_t uxTCBNumber;  /*< Stores a number that increments each time a TCB is created.  It allows debuggers to determine when a task has been deleted and then recreated. */
-        UBaseType_t uxTaskNumber; /*< Stores a number specifically for use by third party trace code. */
+        UBaseType_t uxTCBNumber;        /* TCB的编号，由系统分配（每创建一个任务，值增加一），分配任务的值都不同，用于调试 */
+        UBaseType_t uxTaskNumber;       /* 任务编号，由函数 vTaskSetTaskNumber()设置，用于调试 */
     #endif
 
+    //configUSE_MUTEXES指定是否启用互斥信号量（Mutexes）功能。
     #if ( configUSE_MUTEXES == 1 )
-        UBaseType_t uxBasePriority; /*< The priority last assigned to the task - used by the priority inheritance mechanism. */
-        UBaseType_t uxMutexesHeld;
+        UBaseType_t uxBasePriority;     /*  保存任务原始优先级，用于互斥信号量的优先级翻转 */
+        UBaseType_t uxMutexesHeld;      /* 记录任务获取的互斥信号量数量 */
     #endif
 
+    //configUSE_APPLICATION_TASK_TAG指定是否启用应用程序任务标记功能。
     #if ( configUSE_APPLICATION_TASK_TAG == 1 )
-        TaskHookFunction_t pxTaskTag;
+        TaskHookFunction_t pxTaskTag;   /* 应用程序任务标记 */
     #endif
 
+    //configNUM_THREAD_LOCAL_STORAGE_POINTERS用于指定每个任务可以使用的线程本地存储指针（TLS，Thread Local Storage）的数量。
     #if ( configNUM_THREAD_LOCAL_STORAGE_POINTERS > 0 )
-        void * pvThreadLocalStoragePointers[ configNUM_THREAD_LOCAL_STORAGE_POINTERS ];
+        void * pvThreadLocalStoragePointers[ configNUM_THREAD_LOCAL_STORAGE_POINTERS ]; /* 保存任务独有的数据 */
     #endif
 
+    //configGENERATE_RUN_TIME_STATS用于指定是否启用运行时统计信息的生成。
     #if ( configGENERATE_RUN_TIME_STATS == 1 )
-        configRUN_TIME_COUNTER_TYPE ulRunTimeCounter; /*< Stores the amount of time the task has spent in the Running state. */
+        configRUN_TIME_COUNTER_TYPE ulRunTimeCounter; /* 记录任务处于运行态的时间  */
     #endif
 
+    //configUSE_NEWLIB_REENTRANT用于指定是否使用 Newlib（标准 C 库）的可重入版本。
+    //configUSE_C_RUNTIME_TLS_SUPPORT是否启用 C 运行时线程局部存储（TLS，Thread Local Storage）的支持。
     #if ( ( configUSE_NEWLIB_REENTRANT == 1 ) || ( configUSE_C_RUNTIME_TLS_SUPPORT == 1 ) )
-        configTLS_BLOCK_TYPE xTLSBlock; /*< Memory block used as Thread Local Storage (TLS) Block for the task. */
+        configTLS_BLOCK_TYPE xTLSBlock; /* 线程局部存储（TLS，Thread Local Storage）的块。 */
     #endif
 
+    //configUSE_TASK_NOTIFICATIONS用于指定是否启用任务通知功能。
     #if ( configUSE_TASK_NOTIFICATIONS == 1 )
-        volatile uint32_t ulNotifiedValue[ configTASK_NOTIFICATION_ARRAY_ENTRIES ];
-        volatile uint8_t ucNotifyState[ configTASK_NOTIFICATION_ARRAY_ENTRIES ];
+        volatile uint32_t ulNotifiedValue[ configTASK_NOTIFICATION_ARRAY_ENTRIES ]; /* 任务通知值 */
+        volatile uint8_t ucNotifyState[ configTASK_NOTIFICATION_ARRAY_ENTRIES ];    /* 任务通知状态 */
     #endif
 
-    /* See the comments in FreeRTOS.h with the definition of
-     * tskSTATIC_AND_DYNAMIC_ALLOCATION_POSSIBLE. */
-    #if ( tskSTATIC_AND_DYNAMIC_ALLOCATION_POSSIBLE != 0 ) /*lint !e731 !e9029 Macro has been consolidated for readability reasons. */
-        uint8_t ucStaticallyAllocated;                     /*< Set to pdTRUE if the task is a statically allocated to ensure no attempt is made to free the memory. */
+    //tskSTATIC_AND_DYNAMIC_ALLOCATION_POSSIBLE指示是否支持同时使用静态分配和动态分配任务控制块（TCB）和任务堆栈
+    #if ( tskSTATIC_AND_DYNAMIC_ALLOCATION_POSSIBLE != 0 )
+        uint8_t ucStaticallyAllocated;                     /* 设置不同的状态来表示当前任务的TCB和任务栈是动态分配还是静态分配 */
     #endif
 
+    //INCLUDE_xTaskAbortDelay用于指定是否包含任务中止延迟的功能。vTaskDelay()函数可以提前取消任务的延迟等待，并立即将其从阻塞状态唤醒。
     #if ( INCLUDE_xTaskAbortDelay == 1 )
-        uint8_t ucDelayAborted;
+        uint8_t ucDelayAborted;         /* 延迟是否被终止的标志 */
     #endif
 
+    //configUSE_POSIX_ERRNO用于指定是否启用 POSIX 兼容的 errno 错误码。
     #if ( configUSE_POSIX_ERRNO == 1 )
-        int iTaskErrno;
+        int iTaskErrno;                 /* POSIX错误码 */
     #endif
 } tskTCB;
 
@@ -562,52 +574,56 @@ static void prvAddNewTaskToReadyList( TCB_t * pxNewTCB ) PRIVILEGED_FUNCTION;
 #if ( configSUPPORT_STATIC_ALLOCATION == 1 )
 
     TaskHandle_t xTaskCreateStatic( TaskFunction_t pxTaskCode,
-                                    const char * const pcName, /*lint !e971 Unqualified char types are allowed for strings and single characters only. */
+                                    const char * const pcName,
                                     const uint32_t ulStackDepth,
                                     void * const pvParameters,
                                     UBaseType_t uxPriority,
                                     StackType_t * const puxStackBuffer,
                                     StaticTask_t * const pxTaskBuffer )
     {
-        TCB_t * pxNewTCB;
-        TaskHandle_t xReturn;
+        TCB_t * pxNewTCB; //被创建任务的任务控制块指针
+        TaskHandle_t xReturn; //返回值
 
+        //使用configASSERT检测传入的两个buffer的指针是否有效，无效则会关闭中断，并使程序进入死循环
         configASSERT( puxStackBuffer != NULL );
         configASSERT( pxTaskBuffer != NULL );
 
+        //configASSERT_DEFINED == 1 表示已经定义了configASSERT(x)宏函数
         #if ( configASSERT_DEFINED == 1 )
         {
-            /* Sanity check that the size of the structure used to declare a
-             * variable of type StaticTask_t equals the size of the real task
-             * structure. */
+            /* 判断StaticTask_t大小和TCB_t是否一样，不一样则会关闭中断，并使程序进入死循环*/
             volatile size_t xSize = sizeof( StaticTask_t );
             configASSERT( xSize == sizeof( TCB_t ) );
-            ( void ) xSize; /* Prevent lint warning when configASSERT() is not used. */
+            ( void ) xSize;
         }
         #endif /* configASSERT_DEFINED */
 
+        //再次判断传入的两个buffer的指针是否有效，防止configASSERT没有定义，实现为空
         if( ( pxTaskBuffer != NULL ) && ( puxStackBuffer != NULL ) )
         {
-            /* The memory used for the task's TCB and stack are passed into this
-             * function - use them. */
-            pxNewTCB = ( TCB_t * ) pxTaskBuffer; /*lint !e740 !e9087 Unusual cast is ok as the structures are designed to have the same alignment, and the size is checked by an assert. */
-            memset( ( void * ) pxNewTCB, 0x00, sizeof( TCB_t ) );
-            pxNewTCB->pxStack = ( StackType_t * ) puxStackBuffer;
+            /* 用于存储TCB的内存buffer检测完毕，可以让pxNewTCB指向这块buffer */
+            pxNewTCB = ( TCB_t * ) pxTaskBuffer;
+            memset( ( void * ) pxNewTCB, 0x00, sizeof( TCB_t ) );//TCB的buffer清0
+            pxNewTCB->pxStack = ( StackType_t * ) puxStackBuffer;//TCB的任务栈指针指向传入的栈buffer
 
-            #if ( tskSTATIC_AND_DYNAMIC_ALLOCATION_POSSIBLE != 0 ) /*lint !e731 !e9029 Macro has been consolidated for readability reasons. */
+            /* 宏 tskSTATIC_AND_DYNAMIC_ALLOCATION_POSSIBLE 用于
+            * 指示系统是否同时支持静态和动态方式创建任务
+            * 如果系统同时支持多种任务创建方式，
+            * 则需要标记任务具体是静态方式还是动态方式创建的
+            */
+            #if ( tskSTATIC_AND_DYNAMIC_ALLOCATION_POSSIBLE != 0 )//如果可以同时动态分配和静态分配TCB及任务栈的内存空间
             {
-                /* Tasks can be created statically or dynamically, so note this
-                 * task was created statically in case the task is later deleted. */
+                //将TCB的分配标志标记为TCB和任务栈均为静态分配，用于指示之后的任务删除函数该如何删除此任务
                 pxNewTCB->ucStaticallyAllocated = tskSTATICALLY_ALLOCATED_STACK_AND_TCB;
             }
             #endif /* tskSTATIC_AND_DYNAMIC_ALLOCATION_POSSIBLE */
-
+            //初始化新任务
             prvInitialiseNewTask( pxTaskCode, pcName, ulStackDepth, pvParameters, uxPriority, &xReturn, pxNewTCB, NULL );
-            prvAddNewTaskToReadyList( pxNewTCB );
+            prvAddNewTaskToReadyList( pxNewTCB );//将任务添加到就绪列表
         }
         else
         {
-            xReturn = NULL;
+            xReturn = NULL;//传入的buffer无效，返回值为NULL
         }
 
         return xReturn;
@@ -690,9 +706,7 @@ static void prvAddNewTaskToReadyList( TCB_t * pxNewTCB ) PRIVILEGED_FUNCTION;
 
                 #if ( tskSTATIC_AND_DYNAMIC_ALLOCATION_POSSIBLE != 0 )
                 {
-                    /* Tasks can be created statically or dynamically, so note
-                     * this task had a statically allocated stack in case it is
-                     * later deleted.  The TCB was allocated dynamically. */
+                    /* 标记任务栈是静态分配的，而TCB是动态分配的 */
                     pxNewTCB->ucStaticallyAllocated = tskSTATICALLY_ALLOCATED_STACK_ONLY;
                 }
                 #endif /* tskSTATIC_AND_DYNAMIC_ALLOCATION_POSSIBLE */
@@ -809,22 +823,24 @@ static void prvAddNewTaskToReadyList( TCB_t * pxNewTCB ) PRIVILEGED_FUNCTION;
 #endif /* configSUPPORT_DYNAMIC_ALLOCATION */
 /*-----------------------------------------------------------*/
 
-static void prvInitialiseNewTask( TaskFunction_t pxTaskCode,
-                                  const char * const pcName, /*lint !e971 Unqualified char types are allowed for strings and single characters only. */
-                                  const uint32_t ulStackDepth,
-                                  void * const pvParameters,
-                                  UBaseType_t uxPriority,
-                                  TaskHandle_t * const pxCreatedTask,
-                                  TCB_t * pxNewTCB,
-                                  const MemoryRegion_t * const xRegions )
+static void prvInitialiseNewTask( TaskFunction_t pxTaskCode,                /* 任务函数 */
+                                  const char * const pcName,                /* 任务名 */
+                                  const uint32_t ulStackDepth,              /* 任务栈大小 */
+                                  void * const pvParameters,                /* 任务函数参数 */
+                                  UBaseType_t uxPriority,                   /* 任务优先级 */
+                                  TaskHandle_t * const pxCreatedTask,       /* 返回的任务句柄指针 */
+                                  TCB_t * pxNewTCB,                         /* 任务控制块指针 */
+                                  const MemoryRegion_t * const xRegions )   /* MPU 相关 */
 {
-    StackType_t * pxTopOfStack;
+    StackType_t * pxTopOfStack;//任务栈顶
     UBaseType_t x;
 
-    #if ( portUSING_MPU_WRAPPERS == 1 )
-        /* Should the task be created in privileged mode? */
+    #if ( portUSING_MPU_WRAPPERS == 1 )//如果启用MPU
+        /* 用于标志此任务是否要设置为特权模式，即只能使用特权模式运行 */
         BaseType_t xRunPrivileged;
 
+        //portPRIVILEGE_BIT 是一个 FreeRTOS 的配置选项，用于指定在处理器架构中表示特权级别（Privilege Level）的位数。
+        //对于Cortex-m架构来说特权级别可以是 0（最高特权级别）和 1（用户特权级别），因此 portPRIVILEGE_BIT 可能被设置为 1。
         if( ( uxPriority & portPRIVILEGE_BIT ) != 0U )
         {
             xRunPrivileged = pdTRUE;
@@ -833,46 +849,49 @@ static void prvInitialiseNewTask( TaskFunction_t pxTaskCode,
         {
             xRunPrivileged = pdFALSE;
         }
-        uxPriority &= ~portPRIVILEGE_BIT;
+        uxPriority &= ~portPRIVILEGE_BIT;//将uxPriority中表示特权级别的位清除，使uxPriority仅包含优先级信息
     #endif /* portUSING_MPU_WRAPPERS == 1 */
 
-    /* Avoid dependency on memset() if it is not required. */
+    // tskSET_NEW_STACKS_TO_KNOWN_VALUE 是 FreeRTOS 的一个配置，用于指定在创建新任务时是否将任务堆栈初始化为已知的值。
+    /* 这个配置依赖于以下配置项 */
+    //if ( configCHECK_FOR_STACK_OVERFLOW > 1 ) || ( configUSE_TRACE_FACILITY == 1 ) || ( INCLUDE_uxTaskGetStackHighWaterMark == 1 ) || ( INCLUDE_uxTaskGetStackHighWaterMark2 == 1 )
+    //     #define tskSET_NEW_STACKS_TO_KNOWN_VALUE    1
     #if ( tskSET_NEW_STACKS_TO_KNOWN_VALUE == 1 )
     {
-        /* Fill the stack with a known value to assist debugging. */
+        /* 将栈填充为tskSTACK_FILL_BYTE */
+        // #define tskSTACK_FILL_BYTE                        ( 0xa5U )
         ( void ) memset( pxNewTCB->pxStack, ( int ) tskSTACK_FILL_BYTE, ( size_t ) ulStackDepth * sizeof( StackType_t ) );
     }
     #endif /* tskSET_NEW_STACKS_TO_KNOWN_VALUE */
 
-    /* Calculate the top of stack address.  This depends on whether the stack
-     * grows from high memory to low (as per the 80x86) or vice versa.
-     * portSTACK_GROWTH is used to make the result positive or negative as required
-     * by the port. */
+    /* 如果栈是向下增长 */
     #if ( portSTACK_GROWTH < 0 )
     {
+        //此时栈顶指针应指向栈空间的最后一个区域，（区域大小由StackType_t大小决定，这里是32bit）
         pxTopOfStack = &( pxNewTCB->pxStack[ ulStackDepth - ( uint32_t ) 1 ] );
-        pxTopOfStack = ( StackType_t * ) ( ( ( portPOINTER_SIZE_TYPE ) pxTopOfStack ) & ( ~( ( portPOINTER_SIZE_TYPE ) portBYTE_ALIGNMENT_MASK ) ) ); /*lint !e923 !e9033 !e9078 MISRA exception.  Avoiding casts between pointers and integers is not practical.  Size differences accounted for using portPOINTER_SIZE_TYPE type.  Checked by assert(). */
+        //将栈顶指针以portBYTE_ALIGNMENT_MASK即8字节对齐
+        pxTopOfStack = ( StackType_t * ) ( ( ( portPOINTER_SIZE_TYPE ) pxTopOfStack ) & ( ~( ( portPOINTER_SIZE_TYPE ) portBYTE_ALIGNMENT_MASK ) ) ); 
 
-        /* Check the alignment of the calculated top of stack is correct. */
+        /* 确认栈顶指针是否对齐 */
         configASSERT( ( ( ( portPOINTER_SIZE_TYPE ) pxTopOfStack & ( portPOINTER_SIZE_TYPE ) portBYTE_ALIGNMENT_MASK ) == 0UL ) );
 
+        //configRECORD_STACK_HIGH_ADDRESS 是 FreeRTOS 的一个配置选项，用于指定是否记录任务堆栈的高地址，仅在调试阶段使用
         #if ( configRECORD_STACK_HIGH_ADDRESS == 1 )
         {
-            /* Also record the stack's high address, which may assist
-             * debugging. */
+            /* 由于地址向下增长，所以栈空间的高地址就是此时的栈顶指针 */
             pxNewTCB->pxEndOfStack = pxTopOfStack;
         }
         #endif /* configRECORD_STACK_HIGH_ADDRESS */
     }
-    #else /* portSTACK_GROWTH */
+    #else /* portSTACK_GROWTH */ /* 如果栈是向上增长 */
     {
+        //此时栈顶指针应指向栈空间的起始地址
         pxTopOfStack = pxNewTCB->pxStack;
 
-        /* Check the alignment of the stack buffer is correct. */
+        /* 确认栈顶指针是否对齐 */
         configASSERT( ( ( ( portPOINTER_SIZE_TYPE ) pxNewTCB->pxStack & ( portPOINTER_SIZE_TYPE ) portBYTE_ALIGNMENT_MASK ) == 0UL ) );
 
-        /* The other extreme of the stack space is required if stack checking is
-         * performed. */
+        /* 栈空间的高地址应指向栈空间的最后一个区域，（区域大小由StackType_t大小决定，这里是32bit）*/
         pxNewTCB->pxEndOfStack = pxNewTCB->pxStack + ( ulStackDepth - ( uint32_t ) 1 );
     }
     #endif /* portSTACK_GROWTH */
@@ -884,21 +903,19 @@ static void prvInitialiseNewTask( TaskFunction_t pxTaskCode,
         {
             pxNewTCB->pcTaskName[ x ] = pcName[ x ];
 
-            /* Don't copy all configMAX_TASK_NAME_LEN if the string is shorter than
-             * configMAX_TASK_NAME_LEN characters just in case the memory after the
-             * string is not accessible (extremely unlikely). */
+            /* 只拷贝name的有效部分 */
             if( pcName[ x ] == ( char ) 0x00 )
             {
                 break;
             }
             else
             {
+                //mtCOVERAGE_TEST_MARKER 是一个用于代码覆盖率测试的宏，通常用于 FreeRTOS 中的单元测试或者集成测试中。
                 mtCOVERAGE_TEST_MARKER();
             }
         }
 
-        /* Ensure the name string is terminated in the case that the string length
-         * was greater or equal to configMAX_TASK_NAME_LEN. */
+        /* 将最后一个字符赋值为\0 */
         pxNewTCB->pcTaskName[ configMAX_TASK_NAME_LEN - 1 ] = '\0';
     }
     else
@@ -906,18 +923,19 @@ static void prvInitialiseNewTask( TaskFunction_t pxTaskCode,
         mtCOVERAGE_TEST_MARKER();
     }
 
-    /* This is used as an array index so must ensure it's not too large. */
+    //判断优先级是否小于最大FreeRTOS的最大优先级
     configASSERT( uxPriority < configMAX_PRIORITIES );
 
     if( uxPriority >= ( UBaseType_t ) configMAX_PRIORITIES )
     {
+        //如果大于等于最大优先级,将其修改为configMAX_PRIORITIES - 1，这里是防止configASSERT()没有定义
         uxPriority = ( UBaseType_t ) configMAX_PRIORITIES - ( UBaseType_t ) 1U;
     }
     else
     {
         mtCOVERAGE_TEST_MARKER();
     }
-
+    //将优先级赋值到TCB
     pxNewTCB->uxPriority = uxPriority;
     #if ( configUSE_MUTEXES == 1 )
     {
@@ -925,44 +943,42 @@ static void prvInitialiseNewTask( TaskFunction_t pxTaskCode,
     }
     #endif /* configUSE_MUTEXES */
 
+    //将TCB的状态列表项和任务列表项初始化
     vListInitialiseItem( &( pxNewTCB->xStateListItem ) );
     vListInitialiseItem( &( pxNewTCB->xEventListItem ) );
 
-    /* Set the pxNewTCB as a link back from the ListItem_t.  This is so we can get
-     * back to  the containing TCB from a generic item in a list. */
+    /* 设置状态列表项的所有者是此新建任务的TCB */
     listSET_LIST_ITEM_OWNER( &( pxNewTCB->xStateListItem ), pxNewTCB );
 
-    /* Event lists are always in priority order. */
+    /* 设置事件列表项的值为( TickType_t ) configMAX_PRIORITIES - ( TickType_t ) uxPriority */
     listSET_LIST_ITEM_VALUE( &( pxNewTCB->xEventListItem ), ( TickType_t ) configMAX_PRIORITIES - ( TickType_t ) uxPriority ); /*lint !e961 MISRA exception as the casts are only redundant for some ports. */
+     /* 设置事件列表项的所有者是此新建任务的TCB */
     listSET_LIST_ITEM_OWNER( &( pxNewTCB->xEventListItem ), pxNewTCB );
 
     #if ( portUSING_MPU_WRAPPERS == 1 )
     {
+        //如果启用了MPU,则保存MPU设置，之后详细介绍
         vPortStoreTaskMPUSettings( &( pxNewTCB->xMPUSettings ), xRegions, pxNewTCB->pxStack, ulStackDepth );
     }
     #else
     {
-        /* Avoid compiler warning about unreferenced parameter. */
+        /* 避免编译器报错 */
         ( void ) xRegions;
     }
     #endif
 
     #if ( ( configUSE_NEWLIB_REENTRANT == 1 ) || ( configUSE_C_RUNTIME_TLS_SUPPORT == 1 ) )
     {
-        /* Allocate and initialize memory for the task's TLS Block. */
+        /* 设置线程局部存储（TLS，Thread Local Storage）的块 */
         configINIT_TLS_BLOCK( pxNewTCB->xTLSBlock );
     }
     #endif
 
-    /* Initialize the TCB stack to look as if the task was already running,
-     * but had been interrupted by the scheduler.  The return address is set
-     * to the start of the task function. Once the stack has been initialised
-     * the top of stack variable is updated. */
+    /* 将任务控制块（TCB）的堆栈初始化，使其看起来就像任务已经在运行，但被调度器中断了一样。设置返回地址为任务函数的起始地址。一旦堆栈被初始化，栈顶变量就会被更新 */
+    /* 如果使能了MPU，则要把任务运行的权限等级xRunPrivileged传入 */
     #if ( portUSING_MPU_WRAPPERS == 1 )
     {
-        /* If the port has capability to detect stack overflow,
-         * pass the stack end address to the stack initialization
-         * function as well. */
+        /* 如果使能了栈溢出检测，就要把栈底地址也传入给函数pxPortInitialiseStack */
         #if ( portHAS_STACK_OVERFLOW_CHECKING == 1 )
         {
             #if ( portSTACK_GROWTH < 0 )
@@ -983,9 +999,7 @@ static void prvInitialiseNewTask( TaskFunction_t pxTaskCode,
     }
     #else /* portUSING_MPU_WRAPPERS */
     {
-        /* If the port has capability to detect stack overflow,
-         * pass the stack end address to the stack initialization
-         * function as well. */
+        /* 如果使能了栈溢出检测，就要把栈底地址也传入给函数pxPortInitialiseStack */
         #if ( portHAS_STACK_OVERFLOW_CHECKING == 1 )
         {
             #if ( portSTACK_GROWTH < 0 )
@@ -1006,10 +1020,12 @@ static void prvInitialiseNewTask( TaskFunction_t pxTaskCode,
     }
     #endif /* portUSING_MPU_WRAPPERS */
 
+    /* 如果传入的任务句柄的地址有效，则将地址上的值设置为pxNewTCB */
     if( pxCreatedTask != NULL )
     {
-        /* Pass the handle out in an anonymous way.  The handle can be used to
-         * change the created task's priority, delete the created task, etc.*/
+        /*  pxCreatedTask类型：TaskHandle_t * 即 struct tskTaskControlBlock **
+            pxNewTCB类型：struct tskTaskControlBlock *
+         */
         *pxCreatedTask = ( TaskHandle_t ) pxNewTCB;
     }
     else
@@ -1021,23 +1037,22 @@ static void prvInitialiseNewTask( TaskFunction_t pxTaskCode,
 
 static void prvAddNewTaskToReadyList( TCB_t * pxNewTCB )
 {
-    /* Ensure interrupts don't access the task lists while the lists are being
-     * updated. */
+    /* 进入临界区，确保在把新任务添加到就绪列表时，就绪列表不会被中断访问 */
     taskENTER_CRITICAL();
     {
+        /* uxCurrentNumberOfTasks是一个全局变量，由于表示当前有多少个任务 */
         uxCurrentNumberOfTasks++;
 
+        /* pxCurrentTCB是一个全局变量，指向当前正在执行的任务的TCB，即当前系统中处于就绪态任务中优先级最高的任务 */
+        /* 如果该全局变量为空（NULL）即表示当前创建的任务为系统中的唯一的就绪任务 */
         if( pxCurrentTCB == NULL )
         {
-            /* There are no other tasks, or all the other tasks are in
-             * the suspended state - make this the current task. */
+            /* 设置当前运行任务为此新任务 */
             pxCurrentTCB = pxNewTCB;
 
             if( uxCurrentNumberOfTasks == ( UBaseType_t ) 1 )
             {
-                /* This is the first task to be created so do the preliminary
-                 * initialisation required.  We will not recover if this call
-                 * fails, but we will report the failure. */
+                /* 如果这是任务列表的第一个任务，则需要先对任务列表初始化 */
                 prvInitialiseTaskLists();
             }
             else
@@ -1047,11 +1062,10 @@ static void prvAddNewTaskToReadyList( TCB_t * pxNewTCB )
         }
         else
         {
-            /* If the scheduler is not already running, make this task the
-             * current task if it is the highest priority task to be created
-             * so far. */
+            /* xSchedulerRunning也是一个全局变量，用于表示调度器是否在运行，pdFALSE表示调度器不在运行. */
             if( xSchedulerRunning == pdFALSE )
             {
+                //当前执行任务的优先级小于新任务的优先级，将当前执行任务设置为pxNewTCB
                 if( pxCurrentTCB->uxPriority <= pxNewTCB->uxPriority )
                 {
                     pxCurrentTCB = pxNewTCB;
@@ -1067,28 +1081,34 @@ static void prvAddNewTaskToReadyList( TCB_t * pxNewTCB )
             }
         }
 
+        //任务编号，由系统分配，每创建一个任务加1，初始值为0
         uxTaskNumber++;
 
         #if ( configUSE_TRACE_FACILITY == 1 )
         {
-            /* Add a counter into the TCB for tracing only. */
+            /* 设置TCB编号为uxTaskNumber */
             pxNewTCB->uxTCBNumber = uxTaskNumber;
         }
         #endif /* configUSE_TRACE_FACILITY */
+        //traceTASK_CREATE 是一个宏，在 FreeRTOS 的跟踪功能中使用。它用于记录任务创建事件，并将相关信息传递给跟踪宏，以便在跟踪输出中记录任务创建的细节。
         traceTASK_CREATE( pxNewTCB );
 
+        //将pxNewTCB添加到ready列表里
         prvAddTaskToReadyList( pxNewTCB );
 
+        //将pxNewTCB强转为void
         portSETUP_TCB( pxNewTCB );
     }
     taskEXIT_CRITICAL();
+    //退出临界区
 
+    //如果调度器在运行
     if( xSchedulerRunning != pdFALSE )
     {
-        /* If the created task is of a higher priority than the current task
-         * then it should run now. */
+        /* 如果当前创建的新任务的优先级大于当前所执行的任务 */
         if( pxCurrentTCB->uxPriority < pxNewTCB->uxPriority )
         {
+            /* 任务切换 */
             taskYIELD_IF_USING_PREEMPTION();
         }
         else
@@ -1951,8 +1971,8 @@ void vTaskStartScheduler( void )
 {
     BaseType_t xReturn;
 
-    /* Add the idle task at the lowest priority. */
-    #if ( configSUPPORT_STATIC_ALLOCATION == 1 )
+    /* 添加空闲任务，并设置优先级为最低，空闲任务的详细内容我们之后在介绍 */
+    #if ( configSUPPORT_STATIC_ALLOCATION == 1 )/* 支持静态分配，便使用静态分配的方式创建任务，之后会详细介绍 */
     {
         StaticTask_t * pxIdleTaskTCBBuffer = NULL;
         StackType_t * pxIdleTaskStackBuffer = NULL;
@@ -1978,6 +1998,7 @@ void vTaskStartScheduler( void )
             xReturn = pdFAIL;
         }
     }
+    /* 使用动态分配的方式创建任务，之后会详细介绍 */
     #else /* if ( configSUPPORT_STATIC_ALLOCATION == 1 ) */
     {
         /* The Idle task is being created using dynamically allocated RAM. */
@@ -1990,11 +2011,12 @@ void vTaskStartScheduler( void )
     }
     #endif /* configSUPPORT_STATIC_ALLOCATION */
 
+    //configUSE_TIMERS 是 FreeRTOS 的一个配置选项，用于启用或禁用 FreeRTOS 中的软件定时器功能
     #if ( configUSE_TIMERS == 1 )
     {
         if( xReturn == pdPASS )
         {
-            xReturn = xTimerCreateTimerTask();
+            xReturn = xTimerCreateTimerTask();//创建软件计时任务
         }
         else
         {
@@ -2010,15 +2032,11 @@ void vTaskStartScheduler( void )
          * the only macro called by the function. */
         #ifdef FREERTOS_TASKS_C_ADDITIONS_INIT
         {
-            freertos_tasks_c_additions_init();
+            freertos_tasks_c_additions_init();// 此函数用于添加一些附加初始化，不用理会 
         }
         #endif
 
-        /* Interrupts are turned off here, to ensure a tick does not occur
-         * before or during the call to xPortStartScheduler().  The stacks of
-         * the created tasks contain a status word with interrupts switched on
-         * so interrupts will automatically get re-enabled when the first task
-         * starts to run. */
+        /* 关闭中断，以确保下面代码运行时不会发生时钟节拍 */
         portDISABLE_INTERRUPTS();
 
         #if ( ( configUSE_NEWLIB_REENTRANT == 1 ) || ( configUSE_C_RUNTIME_TLS_SUPPORT == 1 ) )
@@ -2029,45 +2047,45 @@ void vTaskStartScheduler( void )
         }
         #endif
 
+        /* 初始化一些全局变量
+         * xNextTaskUnblockTime: 下一个距离取消任务阻塞的时间，初始化为最大值
+         * xSchedulerRunning: 任务调度器运行标志，设为已运行
+         * xTickCount: 系统使用节拍计数器，宏 configINITIAL_TICK_COUNT 默认为 0
+         */
         xNextTaskUnblockTime = portMAX_DELAY;
         xSchedulerRunning = pdTRUE;
         xTickCount = ( TickType_t ) configINITIAL_TICK_COUNT;
 
-        /* If configGENERATE_RUN_TIME_STATS is defined then the following
-         * macro must be defined to configure the timer/counter used to generate
-         * the run time counter time base.   NOTE:  If configGENERATE_RUN_TIME_STATS
-         * is set to 0 and the following line fails to build then ensure you do not
-         * have portCONFIGURE_TIMER_FOR_RUN_TIME_STATS() defined in your
-         * FreeRTOSConfig.h file. */
+        /* 为任务运行时间统计功能初始化功能时基定时器
+         * 是否启用该功能，可在 FreeRTOSConfig.h 文件中进行配置
+         */
         portCONFIGURE_TIMER_FOR_RUN_TIME_STATS();
 
+        /* 调试使用，不用理会 */
         traceTASK_SWITCHED_IN();
 
-        /* Setting up the timer tick is hardware specific and thus in the
-         * portable interface. */
+        /* 设置用于系统时钟节拍的硬件定时器（SysTick）
+         * 会在这个函数中进入第一个任务，并开始任务调度
+         * 任务调度开启后，便不会再返回 */
         xPortStartScheduler();
 
-        /* In most cases, xPortStartScheduler() will not return. If it
-         * returns pdTRUE then there was not enough heap memory available
-         * to create either the Idle or the Timer task. If it returned
-         * pdFALSE, then the application called xTaskEndScheduler().
-         * Most ports don't implement xTaskEndScheduler() as there is
-         * nothing to return to. */
+
+        /* 在大多数情况下，xPortStartScheduler() 不会返回。
+           如果返回 pdTRUE，则表示没有足够的堆内存可用于创建空闲任务或定时器任务。
+           如果返回 pdFALSE，则表示应用程序调用了 xTaskEndScheduler()。
+           大多数端口不实现 xTaskEndScheduler()，因为没有什么可返回的。 
+        */
     }
     else
     {
-        /* This line will only be reached if the kernel could not be started,
-         * because there was not enough FreeRTOS heap to create the idle task
-         * or the timer task. */
+        /* 如果动态方式创建空闲任务和定时器服务任务（如果有）的创建失败，因分配给 FreeRTOS 的堆空间不足，导致任务无法成功创建 */
         configASSERT( xReturn != errCOULD_NOT_ALLOCATE_REQUIRED_MEMORY );
     }
 
-    /* Prevent compiler warnings if INCLUDE_xTaskGetIdleTaskHandle is set to 0,
-     * meaning xIdleTaskHandle is not used anywhere else. */
+    /* 防止编译器警告 */
     ( void ) xIdleTaskHandle;
 
-    /* OpenOCD makes use of uxTopUsedPriority for thread debugging. Prevent uxTopUsedPriority
-     * from getting optimized out as it is no longer used by the kernel. */
+    /* 调试使用 */
     ( void ) uxTopUsedPriority;
 }
 /*-----------------------------------------------------------*/

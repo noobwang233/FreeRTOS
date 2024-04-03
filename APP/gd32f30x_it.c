@@ -99,15 +99,6 @@ void UsageFault_Handler(void)
     }
 }
 
-// /*!
-//     \brief      this function handles SVC exception
-//     \param[in]  none
-//     \param[out] none
-//     \retval     none
-// */
-// void SVC_Handler(void)
-// {
-// }
 
 /*!
     \brief      this function handles DebugMon exception
@@ -118,23 +109,3 @@ void UsageFault_Handler(void)
 void DebugMon_Handler(void)
 {
 }
-
-// /*!
-//     \brief      this function handles PendSV exception
-//     \param[in]  none
-//     \param[out] none
-//     \retval     none
-// */
-// void PendSV_Handler(void)
-// {
-// }
-
-// /*!
-//     \brief      this function handles SysTick exception
-//     \param[in]  none
-//     \param[out] none
-//     \retval     none
-// */
-// void SysTick_Handler(void)
-// {
-// }

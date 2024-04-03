@@ -176,7 +176,10 @@
 
         /* Obtain the number of the currently executing interrupt. */
         __asm volatile ( "mrs %0, ipsr" : "=r" ( ulCurrentInterrupt )::"memory" );
-
+        /* "=r" 是一个修饰符，用于指定操作数的约束（constraint）。
+            在这种情况下，"=r" 表示操作数是一个通用寄存器（register），
+            并且在汇编指令执行完成后，结果会被写回到该寄存器中。*/
+        /* "memory" 告诉编译器，这段内联汇编代码可能会对内存进行读写操作，并且这些读写操作的顺序不能被编译器所优化或重排。*/
         if( ulCurrentInterrupt == 0 )
         {
             xReturn = pdFALSE;
@@ -202,6 +205,7 @@
             "	isb														\n"\
             "	dsb														\n"\
             : "=r" ( ulNewBASEPRI ) : "i" ( configMAX_SYSCALL_INTERRUPT_PRIORITY ) : "memory"
+            //"i" 表示操作数是一个立即数（immediate value），即一个常数。
         );
     }
 

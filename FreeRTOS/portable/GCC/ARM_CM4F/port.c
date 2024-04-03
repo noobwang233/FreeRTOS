@@ -189,34 +189,35 @@ static UBaseType_t uxCriticalNesting = 0xaaaaaaaa;
 /*
  * See header file for description.
  */
-StackType_t * pxPortInitialiseStack( StackType_t * pxTopOfStack,
-                                     TaskFunction_t pxCode,
-                                     void * pvParameters )
+StackType_t * pxPortInitialiseStack( StackType_t * pxTopOfStack,    /* 任务栈顶指针 */
+                                     TaskFunction_t pxCode,         /* 任务函数地址 */
+                                     void * pvParameters )          /* 任务函数传入参数 */
 {
-    /* Simulate the stack frame as it would be created by a context switch
-     * interrupt. */
-
-    /* Offset added to account for the way the MCU uses the stack on entry/exit
-     * of interrupts, and to ensure alignment. */
+    /* 模拟栈的格式将信息保存到任务栈中，用于上下文切换 */
     pxTopOfStack--;
 
+    /* xPSR 寄存器初始值为 0x01000000 */
     *pxTopOfStack = portINITIAL_XPSR;                                    /* xPSR */
     pxTopOfStack--;
+    /* 任务函数的地址（PC 寄存器），偶对齐*/
     *pxTopOfStack = ( ( StackType_t ) pxCode ) & portSTART_ADDRESS_MASK; /* PC */
     pxTopOfStack--;
+    /* 设置任务函数的返回地址（LR 寄存器），portTASK_RETURN_ADDRESS执行的函数为死循环，所以任务函数不能返回！ */
     *pxTopOfStack = ( StackType_t ) portTASK_RETURN_ADDRESS;             /* LR */
 
-    /* Save code space by skipping register initialisation. */
+    /* 为R12, R3, R2 and R1 预留空间 */
     pxTopOfStack -= 5;                            /* R12, R3, R2 and R1. */
+    /* 设置R0寄存器的位置为pvParameters，用于传递参数 */
     *pxTopOfStack = ( StackType_t ) pvParameters; /* R0 */
 
-    /* A save method is being used that requires each task to maintain its
-     * own exec return value. */
+    /* 保存任务执行的返回值 */
     pxTopOfStack--;
     *pxTopOfStack = portINITIAL_EXC_RETURN;
 
+    /* 为 R11、R10、R9、R8、R7、R6、R5、R4 寄存器预留空间 */
     pxTopOfStack -= 8; /* R11, R10, R9, R8, R7, R6, R5 and R4. */
 
+    /* 返回初始化之后的栈指针 */
     return pxTopOfStack;
 }
 /*-----------------------------------------------------------*/
@@ -250,18 +251,20 @@ static void prvTaskExitError( void )
 void vPortSVCHandler( void )
 {
     __asm volatile (
-        "	ldr	r3, pxCurrentTCBConst2		\n"/* Restore the context. */
-        "	ldr r1, [r3]					\n"/* Use pxCurrentTCBConst to get the pxCurrentTCB address. */
-        "	ldr r0, [r1]					\n"/* The first item in pxCurrentTCB is the task top of stack. */
-        "	ldmia r0!, {r4-r11, r14}		\n"/* Pop the registers that are not automatically saved on exception entry and the critical nesting count. */
-        "	msr psp, r0						\n"/* Restore the task stack pointer. */
-        "	isb								\n"
-        "	mov r0, #0 						\n"
-        "	msr	basepri, r0					\n"
-        "	bx r14							\n"
+        "	ldr	r3, pxCurrentTCBConst2		\n"/* 将pxCurrentTCBConst2符号处的值加载到r3寄存器，即pxCurrentTCB的地址,类型TCB_t ** */
+        "	ldr r1, [r3]					\n"/* 将pxCurrentTCB加载到r1寄存器，类型TCB_t * */
+        "	ldr r0, [r1]					\n"/* 将pxCurrentTCB地址处的值加载到r0寄存器，而TCB中第一个元素便是任务的任务栈指针，且元素长度为32bit */
+                                               /* 此时r0里面的值便是当前所要运行任务的栈指针 */
+        "	ldmia r0!, {r4-r11, r14}		\n"/* 将在进入异常时为自动保存的寄存器的值取出到r4-r11和r14(LR) */
+        "	msr psp, r0						\n"/* 将此时的r0指针赋值给线程栈指针（psp） */
+                                               /* 到这一步为止，将要执行的任务的现场已经恢复完成 */
+        "	isb								\n"/* 确保指令流水线中的指令在 ISB 指令之前的所有指令都已经完成执行，然后再执行 ISB 指令后的指令。*/
+        "	mov r0, #0 						\n"/* 将r0赋值为0 */
+        "	msr	basepri, r0					\n"/* basepri赋值为0，即不屏蔽任何中断，开启中断 */
+        "	bx r14							\n"/* 跳转到r14(LR)存储的地址处执行 */
         "									\n"
-        "	.align 4						\n"
-        "pxCurrentTCBConst2: .word pxCurrentTCB				\n"
+        "	.align 4						\n"/* 4字节对齐 */
+        "pxCurrentTCBConst2: .word pxCurrentTCB				\n" //定义了一个名为 pxCurrentTCBConst2 的符号，值为pxCurrentTCB变量的地址,类型TCB_t **
         );
 }
 /*-----------------------------------------------------------*/
@@ -412,14 +415,12 @@ void vPortEndScheduler( void )
 
 void vPortEnterCritical( void )
 {
+    //调用portDISABLE_INTERRUPTS，将受 FreeRTOS 管理的中断全部屏蔽
     portDISABLE_INTERRUPTS();
+    /* 临界区支持嵌套,临界区嵌套计数 */
     uxCriticalNesting++;
 
-    /* This is not the interrupt safe version of the enter critical function so
-     * assert() if it is being called from an interrupt context.  Only API
-     * functions that end in "FromISR" can be used in an interrupt.  Only assert if
-     * the critical nesting count is 1 to protect against recursive calls if the
-     * assert function also uses a critical section. */
+    /* 这个函数不能在中断中调用 */
     if( uxCriticalNesting == 1 )
     {
         configASSERT( ( portNVIC_INT_CTRL_REG & portVECTACTIVE_MASK ) == 0 );
@@ -445,15 +446,15 @@ void xPortPendSVHandler( void )
 
     __asm volatile
     (
-        "	mrs r0, psp							\n"
+        "	mrs r0, psp							\n"/* 将此时的线程栈指针保存到r0之中 */
         "	isb									\n"
         "										\n"
-        "	ldr	r3, pxCurrentTCBConst			\n"/* Get the location of the current TCB. */
-        "	ldr	r2, [r3]						\n"
+        "	ldr	r3, pxCurrentTCBConst			\n"/* 将pxCurrentTCB的地址加载到r3之中 */
+        "	ldr	r2, [r3]						\n"/* 将pxCurrentTCB加载到r2之中，即当前将要运行任务的TCB地址 */
         "										\n"
-        "	tst r14, #0x10						\n"/* Is the task using the FPU context?  If so, push high vfp registers. */
-        "	it eq								\n"
-        "	vstmdbeq r0!, {s16-s31}				\n"
+        "	tst r14, #0x10						\n"/* 判断当前任务是否使用到了FPU(浮点运算单元) */
+        "	it eq								\n"/* 如果使用了FPU，则执行下一条指令，否则跳过下一条指令 */
+        "	vstmdbeq r0!, {s16-s31}				\n"/* 将VFP的s16-s31寄存器压入当前的任务栈 */
         "										\n"
         "	stmdb r0!, {r4-r11, r14}			\n"/* Save the core registers. */
         "	str r0, [r2]						\n"/* Save the new top of stack into the first member of the TCB. */
