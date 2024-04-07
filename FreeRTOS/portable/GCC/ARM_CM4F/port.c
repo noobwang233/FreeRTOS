@@ -459,7 +459,7 @@ void xPortPendSVHandler( void )
         "	stmdb r0!, {r4-r11, r14}			\n"/* 保存内核寄存器 */
         "	str r0, [r2]						\n"/* 将现在的任务栈顶指针保存到TCB的第一个元素中 */
         "										\n"
-        "	stmdb sp!, {r0, r3}					\n"/* 将r0, r3压入当前的msp */
+        "	stmdb sp!, {r0, r3}					\n"/* 将r0, r3压入当前的sp, 对于处理模式，使用的是msp */
         "	mov r0, %0 							\n"
         "	msr basepri, r0						\n"/* 将basepri寄存器赋值为configMAX_SYSCALL_INTERRUPT_PRIORITY，即屏蔽FreeRTOS管理的所有中断 */
         "	dsb									\n"

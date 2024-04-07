@@ -3024,17 +3024,19 @@ void vTaskSwitchContext( void )
 {
     if( uxSchedulerSuspended != ( UBaseType_t ) pdFALSE )
     {
-        /* The scheduler is currently suspended - do not allow a context
-         * switch. */
-        xYieldPending = pdTRUE;
+        /* 当前调度器暂停，不允许切换上下文 */
+        xYieldPending = pdTRUE;/* 将上下文切换Pending标志位置起 */
     }
     else
     {
+        /* 将上下文切换Pending标志位清除 */
         xYieldPending = pdFALSE;
-        traceTASK_SWITCHED_OUT();
+        traceTASK_SWITCHED_OUT();/* 调试使用 */
 
+        /* 如果使能运行时间统计 */
         #if ( configGENERATE_RUN_TIME_STATS == 1 )
         {
+            /* 更新任务的运行时间 */
             #ifdef portALT_GET_RUN_TIME_COUNTER_VALUE
                 portALT_GET_RUN_TIME_COUNTER_VALUE( ulTotalRunTime );
             #else
@@ -3061,10 +3063,10 @@ void vTaskSwitchContext( void )
         }
         #endif /* configGENERATE_RUN_TIME_STATS */
 
-        /* Check for stack overflow, if configured. */
+        /* 如果定义了堆栈溢出检测配置，检测任务的堆栈是否溢出 */
         taskCHECK_FOR_STACK_OVERFLOW();
 
-        /* Before the currently running task is switched out, save its errno. */
+        /* 在当前任务切换之前，保持其posix错误号 */
         #if ( configUSE_POSIX_ERRNO == 1 )
         {
             pxCurrentTCB->iTaskErrno = FreeRTOS_errno;
