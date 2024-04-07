@@ -3033,10 +3033,10 @@ void vTaskSwitchContext( void )
         xYieldPending = pdFALSE;
         traceTASK_SWITCHED_OUT();/* 调试使用 */
 
-        /* 如果使能运行时间统计 */
+        /* 如果使能运行时间统计, 更新当前任务的运行时间 */
         #if ( configGENERATE_RUN_TIME_STATS == 1 )
         {
-            /* 更新任务的运行时间 */
+            /* 系统的运行时间 */
             #ifdef portALT_GET_RUN_TIME_COUNTER_VALUE
                 portALT_GET_RUN_TIME_COUNTER_VALUE( ulTotalRunTime );
             #else
@@ -3050,35 +3050,34 @@ void vTaskSwitchContext( void )
              * overflows.  The guard against negative values is to protect
              * against suspect run time stat counter implementations - which
              * are provided by the application, not the kernel. */
-            if( ulTotalRunTime > ulTaskSwitchedInTime )
+            if( ulTotalRunTime > ulTaskSwitchedInTime )//上次任务切换的时间
             {
-                pxCurrentTCB->ulRunTimeCounter += ( ulTotalRunTime - ulTaskSwitchedInTime );
+                pxCurrentTCB->ulRunTimeCounter += ( ulTotalRunTime - ulTaskSwitchedInTime );//更新当前任务的运行时间
             }
             else
             {
                 mtCOVERAGE_TEST_MARKER();
             }
 
-            ulTaskSwitchedInTime = ulTotalRunTime;
+            ulTaskSwitchedInTime = ulTotalRunTime;//更新任务切换的时间
         }
         #endif /* configGENERATE_RUN_TIME_STATS */
 
         /* 如果定义了堆栈溢出检测配置，检测任务的堆栈是否溢出 */
         taskCHECK_FOR_STACK_OVERFLOW();
 
-        /* 在当前任务切换之前，保持其posix错误号 */
+        /* 在当前任务切换之前，保存其posix错误号 */
         #if ( configUSE_POSIX_ERRNO == 1 )
         {
             pxCurrentTCB->iTaskErrno = FreeRTOS_errno;
         }
         #endif
 
-        /* Select a new task to run using either the generic C or port
-         * optimised asm code. */
-        taskSELECT_HIGHEST_PRIORITY_TASK(); /*lint !e9079 void * is used as this macro is used with timers and co-routines too.  Alignment is known to be fine as the type of the pointer stored and retrieved is the same. */
-        traceTASK_SWITCHED_IN();
+        /* 选择一个新的任务来运行 */
+        taskSELECT_HIGHEST_PRIORITY_TASK();
+        traceTASK_SWITCHED_IN();//调试使用
 
-        /* After the new task is switched in, update the global errno. */
+        /* 新任务切换后，更新全局的posix错误号*/
         #if ( configUSE_POSIX_ERRNO == 1 )
         {
             FreeRTOS_errno = pxCurrentTCB->iTaskErrno;

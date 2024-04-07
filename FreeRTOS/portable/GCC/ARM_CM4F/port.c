@@ -503,17 +503,17 @@ void xPortSysTickHandler( void )
      * executes all interrupts must be unmasked.  There is therefore no need to
      * save and then restore the interrupt mask value as its value is already
      * known. */
-    portDISABLE_INTERRUPTS();
+    portDISABLE_INTERRUPTS();//屏蔽FreeRTOS管理的所有中断
     {
         /* Increment the RTOS tick. */
         if( xTaskIncrementTick() != pdFALSE )
         {
             /* A context switch is required.  Context switching is performed in
              * the PendSV interrupt.  Pend the PendSV interrupt. */
-            portNVIC_INT_CTRL_REG = portNVIC_PENDSVSET_BIT;
+            portNVIC_INT_CTRL_REG = portNVIC_PENDSVSET_BIT;//触发PendSV中断
         }
     }
-    portENABLE_INTERRUPTS();
+    portENABLE_INTERRUPTS();//开中断
 }
 /*-----------------------------------------------------------*/
 
