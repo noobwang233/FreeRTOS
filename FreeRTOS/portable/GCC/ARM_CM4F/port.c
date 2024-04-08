@@ -271,22 +271,21 @@ void vPortSVCHandler( void )
 
 static void prvPortStartFirstTask( void )
 {
-    /* Start the first task.  This also clears the bit that indicates the FPU is
-     * in use in case the FPU was used before the scheduler was started - which
-     * would otherwise result in the unnecessary leaving of space in the SVC stack
-     * for lazy saving of FPU registers. */
+    /* 开始第一项任务。这也会清除是否使用FPU的标志位 
+       因为在启动第一个任务之后便不会返回，所以没有必要保留FPU的寄存器到栈里面
+    */  
     __asm volatile (
-        " ldr r0, =0xE000ED08 	\n"/* Use the NVIC offset register to locate the stack. */
+        " ldr r0, =0xE000ED08 	\n"/* 使用NVIC offset 寄存器来找到栈指针 */
         " ldr r0, [r0] 			\n"
-        " ldr r0, [r0] 			\n"
-        " msr msp, r0			\n"/* Set the msp back to the start of the stack. */
-        " mov r0, #0			\n"/* Clear the bit that indicates the FPU is in use, see comment above. */
-        " msr control, r0		\n"
-        " cpsie i				\n"/* Globally enable interrupts. */
-        " cpsie f				\n"
+        " ldr r0, [r0] 			\n"/* 此时r0就是栈底指针 */
+        " msr msp, r0			\n"/* 设置msp回到栈底指针，相对于清除栈，因为启动第一个任务之后不会再返回，所以之前的栈也不用保留 */
+        " mov r0, #0			\n"
+        " msr control, r0		\n"/* 清除使用FPU的标志位 */
+        " cpsie i				\n"/* 开启中断 */
+        " cpsie f				\n"/* 开启中断 */
         " dsb					\n"
-        " isb					\n"
-        " svc 0					\n"/* System call to start first task. */
+        " isb					\n"/* 流水线同步 */
+        " svc 0					\n"/* 触发SVC */
         " nop					\n"
         " .ltorg				\n"
         );
@@ -298,17 +297,15 @@ static void prvPortStartFirstTask( void )
  */
 BaseType_t xPortStartScheduler( void )
 {
-    /* configMAX_SYSCALL_INTERRUPT_PRIORITY must not be set to 0.
-     * See https://www.FreeRTOS.org/RTOS-Cortex-M3-M4.html */
+    /* configMAX_SYSCALL_INTERRUPT_PRIORITY 必须不为0 */
     configASSERT( configMAX_SYSCALL_INTERRUPT_PRIORITY );
 
-    /* This port can be used on all revisions of the Cortex-M7 core other than
-     * the r0p1 parts.  r0p1 parts should use the port from the
-     * /source/portable/GCC/ARM_CM7/r0p1 directory. */
+    /* 下面的代码不能支持cortex-m7 r0p1 和 r0p0 */
     configASSERT( portCPUID != portCORTEX_M7_r0p1_ID );
     configASSERT( portCPUID != portCORTEX_M7_r0p0_ID );
 
-    #if ( configASSERT_DEFINED == 1 )
+    /* 判断是否启用ASSERT */
+    #if ( configASSERT_DEFINED == 1 )/* 检测用户在 FreeRTOSConfig.h 文件中对中断相关部分的配置是否有误，代码省略 */
     {
         volatile uint32_t ulOriginalPriority;
         volatile uint8_t * const pucFirstUserPriorityRegister = ( volatile uint8_t * const ) ( portNVIC_IP_REGISTERS_OFFSET_16 + portFIRST_USER_INTERRUPT_NUMBER );
@@ -371,36 +368,42 @@ BaseType_t xPortStartScheduler( void )
     }
     #endif /* configASSERT_DEFINED */
 
-    /* Make PendSV and SysTick the lowest priority interrupts. */
+    /* 设置 PendSV 和 SysTick 的中断优先级为最低优先级 */
     portNVIC_SHPR3_REG |= portNVIC_PENDSV_PRI;
     portNVIC_SHPR3_REG |= portNVIC_SYSTICK_PRI;
 
-    /* Start the timer that generates the tick ISR.  Interrupts are disabled
-     * here already. */
+
+    /* 配置 SysTick
+    * 清空 SysTick 的计数值
+    * 根据 configTICK_RATE_HZ 配置 SysTick 的重装载值
+    * 开启 SysTick 计数和中断
+    */
     vPortSetupTimerInterrupt();
 
-    /* Initialise the critical nesting count ready for the first task. */
+    /* 初始化临界区嵌套次数计数器为 0 */
     uxCriticalNesting = 0;
 
-    /* Ensure the VFP is enabled - it should be anyway. */
+    /* 使能 FPU
+    * 仅 ARM Cortex-M4/M7 内核 MCU 才有此行代码
+    * ARM Cortex-M3 内核 MCU 无 FPU
+    */
     vPortEnableVFP();
 
-    /* Lazy save always. */
+    /* 在进出异常时，自动保存和恢复 FPU 相关寄存器
+    * 仅 ARM Cortex-M4/M7 内核 MCU 才有此行代码
+    * ARM Cortex-M3 内核 MCU 无 FPU
+    */
     *( portFPCCR ) |= portASPEN_AND_LSPEN_BITS;
 
-    /* Start the first task. */
+    /* 启动第一个任务 */
     prvPortStartFirstTask();
 
-    /* Should never get here as the tasks will now be executing!  Call the task
-     * exit error function to prevent compiler warnings about a static function
-     * not being called in the case that the application writer overrides this
-     * functionality by defining configTASK_RETURN_ADDRESS.  Call
-     * vTaskSwitchContext() so link time optimisation does not remove the
-     * symbol. */
+    /* 下面的代码永远不会执行 */
+    /* 下面的代码仅仅是不让编译器报错 */
     vTaskSwitchContext();
     prvTaskExitError();
 
-    /* Should not get here! */
+    /* 不会返回这里 */
     return 0;
 }
 /*-----------------------------------------------------------*/

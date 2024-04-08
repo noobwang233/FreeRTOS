@@ -2736,22 +2736,20 @@ BaseType_t xTaskIncrementTick( void )
     TickType_t xItemValue;
     BaseType_t xSwitchRequired = pdFALSE;
 
-    /* Called by the portable layer each time a tick interrupt occurs.
-     * Increments the tick then checks to see if the new tick value will cause any
-     * tasks to be unblocked. */
+    /* 调试使用 */
     traceTASK_INCREMENT_TICK( xTickCount );
 
+    /* 调度器是否暂停 */
     if( uxSchedulerSuspended == ( UBaseType_t ) pdFALSE )
     {
-        /* Minor optimisation.  The tick count cannot change in this
-         * block. */
+        /* tick计数加1，并且使用常量保存此时的tick计数防止其被改变 */
         const TickType_t xConstTickCount = xTickCount + ( TickType_t ) 1;
 
-        /* Increment the RTOS tick, switching the delayed and overflowed
-         * delayed lists if it wraps to 0. */
+        /* 更新全局变量xTickCount */
         xTickCount = xConstTickCount;
 
-        if( xConstTickCount == ( TickType_t ) 0U ) /*lint !e774 'if' does not always evaluate to false as it is looking for an overflow. */
+        /* 如果发生溢出，则交换阻塞列表 */
+        if( xConstTickCount == ( TickType_t ) 0U )
         {
             taskSWITCH_DELAYED_LISTS();
         }
