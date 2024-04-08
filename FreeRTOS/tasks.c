@@ -115,14 +115,11 @@
     #define configIDLE_TASK_NAME    "IDLE"
 #endif
 
+/* configUSE_PORT_OPTIMISED_TASK_SELECTION 用于启用或禁用特定于端口的任务选择优化。
+   当这个宏被定义为 1 时，FreeRTOS 使用特定于端口的优化算法来选择下一个要运行的任务，以提高任务调度的效率。 
+*/
 #if ( configUSE_PORT_OPTIMISED_TASK_SELECTION == 0 )
-
-/* If configUSE_PORT_OPTIMISED_TASK_SELECTION is 0 then task selection is
- * performed in a generic way that is not optimised to any particular
- * microcontroller architecture. */
-
-/* uxTopReadyPriority holds the priority of the highest priority ready
- * state task. */
+    /* 用于记录当前就绪任务列表的最高优先级 */
     #define taskRECORD_READY_PRIORITY( uxPriority ) \
     {                                               \
         if( ( uxPriority ) > uxTopReadyPriority )   \
@@ -131,97 +128,94 @@
         }                                           \
     } /* taskRECORD_READY_PRIORITY */
 
-/*-----------------------------------------------------------*/
-
+    /* 选择处于就绪任务列表里的最高优先级的任务 */
     #define taskSELECT_HIGHEST_PRIORITY_TASK()                                \
     {                                                                         \
         UBaseType_t uxTopPriority = uxTopReadyPriority;                       \
                                                                               \
-        /* Find the highest priority queue that contains ready tasks. */      \
+        /* 寻找当前就绪列表数组里的最高优先级任务列表 */      \
         while( listLIST_IS_EMPTY( &( pxReadyTasksLists[ uxTopPriority ] ) ) ) \
         {                                                                     \
             configASSERT( uxTopPriority );                                    \
             --uxTopPriority;                                                  \
         }                                                                     \
                                                                               \
-        /* listGET_OWNER_OF_NEXT_ENTRY indexes through the list, so the tasks of \
-         * the  same priority get an equal share of the processor time. */                    \
+        /* 选取最高优先级任务列表里的下一个列表项，所以处于同一优先级的任务拥有平等的执行权 */  \
         listGET_OWNER_OF_NEXT_ENTRY( pxCurrentTCB, &( pxReadyTasksLists[ uxTopPriority ] ) ); \
+        /* 更新当前就绪任务列表的最高优先级uxTopReadyPriority */
         uxTopReadyPriority = uxTopPriority;                                                   \
     } /* taskSELECT_HIGHEST_PRIORITY_TASK */
 
-/*-----------------------------------------------------------*/
-
-/* Define away taskRESET_READY_PRIORITY() and portRESET_READY_PRIORITY() as
- * they are only required when a port optimised method of task selection is
- * being used. */
+    /* 下面这两个宏只在使用特定于端口的优化算法下才会使用 */
     #define taskRESET_READY_PRIORITY( uxPriority )
     #define portRESET_READY_PRIORITY( uxPriority, uxTopReadyPriority )
 
 #else /* configUSE_PORT_OPTIMISED_TASK_SELECTION */
+    /* 启用特定于端口的优化算法来选择下一个要运行的任务 */
+    /* 此时uxTopReadyPriority对于的每一位表示一个优先级，所以优先级的个数上限是 uxTopReadyPriority的类型即32个 */
 
-/* If configUSE_PORT_OPTIMISED_TASK_SELECTION is 1 then task selection is
- * performed in a way that is tailored to the particular microcontroller
- * architecture being used. */
-
-/* A port optimised version is provided.  Call the port defined macros. */
+    /* 将uxTopReadyPriority指定位置1 */
     #define taskRECORD_READY_PRIORITY( uxPriority )    portRECORD_READY_PRIORITY( ( uxPriority ), uxTopReadyPriority )
-
-/*-----------------------------------------------------------*/
+    //#define portRECORD_READY_PRIORITY( uxPriority, uxReadyPriorities )    ( uxReadyPriorities ) |= ( 1UL << ( uxPriority ) )
 
     #define taskSELECT_HIGHEST_PRIORITY_TASK()                                                  \
     {                                                                                           \
         UBaseType_t uxTopPriority;                                                              \
                                                                                                 \
-        /* Find the highest priority list that contains ready tasks. */                         \
+        /* 使用硬件前导零计算找到最高的任务优先级 */                         \
         portGET_HIGHEST_PRIORITY( uxTopPriority, uxTopReadyPriority );                          \
         configASSERT( listCURRENT_LIST_LENGTH( &( pxReadyTasksLists[ uxTopPriority ] ) ) > 0 ); \
+        /* 选取最高优先级任务列表里的下一个列表项，所以处于同一优先级的任务拥有平等的执行权 */    \
         listGET_OWNER_OF_NEXT_ENTRY( pxCurrentTCB, &( pxReadyTasksLists[ uxTopPriority ] ) );   \
     } /* taskSELECT_HIGHEST_PRIORITY_TASK() */
 
-/*-----------------------------------------------------------*/
-
-/* A port optimised version is provided, call it only if the TCB being reset
- * is being referenced from a ready list.  If it is referenced from a delayed
- * or suspended list then it won't be in a ready list. */
+    /* 当就绪列表数组中uxPriority优先级列表的任务数量为0时，清除此优先级在uxTopReadyPriority对应的位 */
     #define taskRESET_READY_PRIORITY( uxPriority )                                                     \
     {                                                                                                  \
         if( listCURRENT_LIST_LENGTH( &( pxReadyTasksLists[ ( uxPriority ) ] ) ) == ( UBaseType_t ) 0 ) \
         {                                                                                              \
             portRESET_READY_PRIORITY( ( uxPriority ), ( uxTopReadyPriority ) );                        \
+            /*#define portRESET_READY_PRIORITY( uxPriority, uxReadyPriorities )     ( uxReadyPriorities ) &= ~( 1UL << ( uxPriority ) )*/\
         }                                                                                              \
     }
-
 #endif /* configUSE_PORT_OPTIMISED_TASK_SELECTION */
 
 /*-----------------------------------------------------------*/
 
-/* pxDelayedTaskList and pxOverflowDelayedTaskList are switched when the tick
- * count overflows. */
+/* 当tick计数溢出的时候，交换pxDelayedTaskList 和 pxOverflowDelayedTaskList两个阻塞任务列表 */
 #define taskSWITCH_DELAYED_LISTS()                                                \
     {                                                                             \
         List_t * pxTemp;                                                          \
                                                                                   \
-        /* The delayed tasks list should be empty when the lists are switched. */ \
+        /* 交换时pxDelayedTaskList需要为空 */ \
         configASSERT( ( listLIST_IS_EMPTY( pxDelayedTaskList ) ) );               \
                                                                                   \
         pxTemp = pxDelayedTaskList;                                               \
         pxDelayedTaskList = pxOverflowDelayedTaskList;                            \
         pxOverflowDelayedTaskList = pxTemp;                                       \
+        /* tick溢出计数加1 */\
         xNumOfOverflows++;                                                        \
+        /* 重置下一个阻塞任务的阻塞时间xNextTaskUnblockTime，如果当前pxDelayedTaskList为空，则为最大计数值，
+           不为空则为第一个列表项的值 */\
         prvResetNextTaskUnblockTime();                                            \
     }
 
 /*-----------------------------------------------------------*/
 
 /*
- * Place the task represented by pxTCB into the appropriate ready list for
- * the task.  It is inserted at the end of the list.
+ * 将 pxTCB 所指向的任务加入就绪状态列表，
+ * 根据对应的优先级，插入到对应优先级列表的最后一项
  */
 #define prvAddTaskToReadyList( pxTCB )                                                                 \
+    /* 调试相关 */\
     traceMOVED_TASK_TO_READY_STATE( pxTCB );                                                           \
+    /* 记录当前任务的优先级，如果使用了硬件优化的任务选择方法，则是把uxTopReadyPriority对应位置1 */\
+    /* 如果使用了一般的任务选择方法，则会比较当前任务的优先级与uxTopReadyPriority，\
+       将uxTopReadyPriority始终保持为就绪状态任务的最大的优先级 */\
     taskRECORD_READY_PRIORITY( ( pxTCB )->uxPriority );                                                \
+    /* 将TCB中的任务状态列表项插入对应优先级的就绪状态列表 */\
     listINSERT_END( &( pxReadyTasksLists[ ( pxTCB )->uxPriority ] ), &( ( pxTCB )->xStateListItem ) ); \
+    /* 调试相关 */\
     tracePOST_MOVED_TASK_TO_READY_STATE( pxTCB )
 /*-----------------------------------------------------------*/
 
@@ -231,6 +225,7 @@
  * task should be used in place of the parameter.  This macro simply checks to
  * see if the parameter is NULL and returns a pointer to the appropriate TCB.
  */
+//当pxHandle为NULL时，返回当前运行任务的TCB指针，即当前运行任务句柄。
 #define prvGetTCBFromHandle( pxHandle )    ( ( ( pxHandle ) == NULL ) ? pxCurrentTCB : ( pxHandle ) )
 
 /* The item value of the event list item is normally used to hold the priority
@@ -336,74 +331,78 @@ typedef struct tskTaskControlBlock       /* The old naming convention is used to
  * below to enable the use of older kernel aware debuggers. */
 typedef tskTCB TCB_t;
 
-/*lint -save -e956 A manual analysis and inspection has been used to determine
- * which static variables must be declared volatile. */
+/* 当前处于运行态的任务，有且只有一个任务处于运行态 */
 portDONT_DISCARD PRIVILEGED_DATA TCB_t * volatile pxCurrentTCB = NULL;
-
-/* Lists for ready and blocked tasks. --------------------
- * xDelayedTaskList1 and xDelayedTaskList2 could be moved to function scope but
- * doing so breaks some kernel aware debuggers and debuggers that rely on removing
- * the static qualifier. */
+/* 就绪状态的任务列表 */
 PRIVILEGED_DATA static List_t pxReadyTasksLists[ configMAX_PRIORITIES ]; /*< Prioritised ready tasks. */
+/* 阻塞状态的任务列表 */
 PRIVILEGED_DATA static List_t xDelayedTaskList1;                         /*< Delayed tasks. */
 PRIVILEGED_DATA static List_t xDelayedTaskList2;                         /*< Delayed tasks (two lists are used - one for delays that have overflowed the current tick count. */
 PRIVILEGED_DATA static List_t * volatile pxDelayedTaskList;              /*< Points to the delayed task list currently being used. */
 PRIVILEGED_DATA static List_t * volatile pxOverflowDelayedTaskList;      /*< Points to the delayed task list currently being used to hold tasks that have overflowed the current tick count. */
+/* 挂起状态的任务列表 */
 PRIVILEGED_DATA static List_t xPendingReadyList;                         /*< Tasks that have been readied while the scheduler was suspended.  They will be moved to the ready list when the scheduler is resumed. */
 
 #if ( INCLUDE_vTaskDelete == 1 )
-
-    PRIVILEGED_DATA static List_t xTasksWaitingTermination; /*< Tasks that have been deleted - but their memory not yet freed. */
+    /* 任务被删除了，但是内存还没有被清理 */
+    PRIVILEGED_DATA static List_t xTasksWaitingTermination; 
+    /* 等待被清理的任务数量 */
     PRIVILEGED_DATA static volatile UBaseType_t uxDeletedTasksWaitingCleanUp = ( UBaseType_t ) 0U;
 
 #endif
 
 #if ( INCLUDE_vTaskSuspend == 1 )
-
-    PRIVILEGED_DATA static List_t xSuspendedTaskList; /*< Tasks that are currently suspended. */
+    /* 被暂停的任务列表 */
+    PRIVILEGED_DATA static List_t xSuspendedTaskList; 
 
 #endif
 
-/* Global POSIX errno. Its value is changed upon context switching to match
- * the errno of the currently running task. */
+/* 全局的POSIX errno. 在任务切换的时候会改变，会一直保持为当前执行任务的errno */
 #if ( configUSE_POSIX_ERRNO == 1 )
     int FreeRTOS_errno = 0;
 #endif
 
 /* Other file private variables. --------------------------------*/
+/* 当前有多少个任务处于活动状态，包括正在运行的任务和处于就绪状态的任务，但不包括处于阻塞状态或挂起状态的任务。 */
 PRIVILEGED_DATA static volatile UBaseType_t uxCurrentNumberOfTasks = ( UBaseType_t ) 0U;
+/* 系统自启动以来的时钟 tick 数量 */
 PRIVILEGED_DATA static volatile TickType_t xTickCount = ( TickType_t ) configINITIAL_TICK_COUNT;
+/* 就绪队列中优先级最高的任务的优先级 */
 PRIVILEGED_DATA static volatile UBaseType_t uxTopReadyPriority = tskIDLE_PRIORITY;
+/* 调度器的运行状态， pdTRUE为正在运行，pdFALSE为停止运行 */
 PRIVILEGED_DATA static volatile BaseType_t xSchedulerRunning = pdFALSE;
+/* 用于存储在调度器被挂起期间应该累积的时钟 tick 数量 */
 PRIVILEGED_DATA static volatile TickType_t xPendedTicks = ( TickType_t ) 0U;
+/* 表示是否有一个任务请求了任务切换（yield）操作，但是切换尚未发生的状态 */
 PRIVILEGED_DATA static volatile BaseType_t xYieldPending = pdFALSE;
+/* 
+ * 用于记录时钟计数器发生溢出的次数, 时钟计数器通常用于跟踪系统自启动以来经过的时钟 tick 数量。
+ * 当时钟计数器达到其最大值并溢出时，会增加 xNumOfOverflows 的值，以便准确地跟踪系统时间。 
+*/
 PRIVILEGED_DATA static volatile BaseType_t xNumOfOverflows = ( BaseType_t ) 0;
+/* 任务计数器，用于记录从系统启动开始一共有多少个任务，每创建一个任务加1 */
 PRIVILEGED_DATA static UBaseType_t uxTaskNumber = ( UBaseType_t ) 0U;
-PRIVILEGED_DATA static volatile TickType_t xNextTaskUnblockTime = ( TickType_t ) 0U; /* Initialised to portMAX_DELAY before the scheduler starts. */
-PRIVILEGED_DATA static TaskHandle_t xIdleTaskHandle = NULL;                          /*< Holds the handle of the idle task.  The idle task is created automatically when the scheduler is started. */
+/* 用于存储下一个要解除阻塞的任务应该被唤醒的时间, 在调度器开始时需要被初始化为portMAX_DELAY */
+PRIVILEGED_DATA static volatile TickType_t xNextTaskUnblockTime = ( TickType_t ) 0U;
+/* 空闲任务的任务句柄，空闲任务会在调度器开始时被创建 */
+PRIVILEGED_DATA static TaskHandle_t xIdleTaskHandle = NULL;
 
-/* Improve support for OpenOCD. The kernel tracks Ready tasks via priority lists.
- * For tracking the state of remote threads, OpenOCD uses uxTopUsedPriority
- * to determine the number of priority lists to read back from the remote target. */
+/* 支持OpenOCD调试的变量，为当前系统使用的最大优先级 */
 const volatile UBaseType_t uxTopUsedPriority = configMAX_PRIORITIES - 1U;
 
-/* Context switches are held pending while the scheduler is suspended.  Also,
- * interrupts must not manipulate the xStateListItem of a TCB, or any of the
- * lists the xStateListItem can be referenced from, if the scheduler is suspended.
- * If an interrupt needs to unblock a task while the scheduler is suspended then it
- * moves the task's event list item into the xPendingReadyList, ready for the
- * kernel to move the task from the pending ready list into the real ready list
- * when the scheduler is unsuspended.  The pending ready list itself can only be
- * accessed from a critical section. */
+/* 
+ * 用于表示调度器是否被挂起。在 FreeRTOS 中，调度器可以被挂起，这意味着任务调度暂时停止，所有任务都会进入挂起状态，直到调度器被恢复。
+ * pdFALSE表示调度器没有被挂起，pdTRUE表示调度器被挂起
+ */
 PRIVILEGED_DATA static volatile UBaseType_t uxSchedulerSuspended = ( UBaseType_t ) pdFALSE;
 
+/* configGENERATE_RUN_TIME_STATS表示是否启用任务运行时间统计 */
 #if ( configGENERATE_RUN_TIME_STATS == 1 )
 
-/* Do not move these variables to function scope as doing so prevents the
- * code working with debuggers that need to remove the static qualifier. */
-    PRIVILEGED_DATA static configRUN_TIME_COUNTER_TYPE ulTaskSwitchedInTime = 0UL;    /*< Holds the value of a timer/counter the last time a task was switched in. */
-    PRIVILEGED_DATA static volatile configRUN_TIME_COUNTER_TYPE ulTotalRunTime = 0UL; /*< Holds the total amount of execution time as defined by the run time counter clock. */
-
+    /* 用于记录当前运行的任务，上一次任务切换到运行状态的时间点 */
+    PRIVILEGED_DATA static configRUN_TIME_COUNTER_TYPE ulTaskSwitchedInTime = 0UL;
+    /* 用于记录当前运行的任务，上一次任务的总运行时间 */
+    PRIVILEGED_DATA static volatile configRUN_TIME_COUNTER_TYPE ulTotalRunTime = 0UL;
 #endif
 
 /*lint -restore */
@@ -3024,17 +3023,19 @@ void vTaskSwitchContext( void )
 {
     if( uxSchedulerSuspended != ( UBaseType_t ) pdFALSE )
     {
-        /* The scheduler is currently suspended - do not allow a context
-         * switch. */
-        xYieldPending = pdTRUE;
+        /* 当前调度器暂停，不允许切换上下文 */
+        xYieldPending = pdTRUE;/* 将上下文切换Pending标志位置起 */
     }
     else
     {
+        /* 将上下文切换Pending标志位清除 */
         xYieldPending = pdFALSE;
-        traceTASK_SWITCHED_OUT();
+        traceTASK_SWITCHED_OUT();/* 调试使用 */
 
+        /* 如果使能运行时间统计, 更新当前任务的运行时间 */
         #if ( configGENERATE_RUN_TIME_STATS == 1 )
         {
+            /* 系统的运行时间 */
             #ifdef portALT_GET_RUN_TIME_COUNTER_VALUE
                 portALT_GET_RUN_TIME_COUNTER_VALUE( ulTotalRunTime );
             #else
@@ -3048,35 +3049,34 @@ void vTaskSwitchContext( void )
              * overflows.  The guard against negative values is to protect
              * against suspect run time stat counter implementations - which
              * are provided by the application, not the kernel. */
-            if( ulTotalRunTime > ulTaskSwitchedInTime )
+            if( ulTotalRunTime > ulTaskSwitchedInTime )//上次任务切换的时间
             {
-                pxCurrentTCB->ulRunTimeCounter += ( ulTotalRunTime - ulTaskSwitchedInTime );
+                pxCurrentTCB->ulRunTimeCounter += ( ulTotalRunTime - ulTaskSwitchedInTime );//更新当前任务的运行时间
             }
             else
             {
                 mtCOVERAGE_TEST_MARKER();
             }
 
-            ulTaskSwitchedInTime = ulTotalRunTime;
+            ulTaskSwitchedInTime = ulTotalRunTime;//更新任务切换的时间
         }
         #endif /* configGENERATE_RUN_TIME_STATS */
 
-        /* Check for stack overflow, if configured. */
+        /* 如果定义了堆栈溢出检测配置，检测任务的堆栈是否溢出 */
         taskCHECK_FOR_STACK_OVERFLOW();
 
-        /* Before the currently running task is switched out, save its errno. */
+        /* 在当前任务切换之前，保存其posix错误号 */
         #if ( configUSE_POSIX_ERRNO == 1 )
         {
             pxCurrentTCB->iTaskErrno = FreeRTOS_errno;
         }
         #endif
 
-        /* Select a new task to run using either the generic C or port
-         * optimised asm code. */
-        taskSELECT_HIGHEST_PRIORITY_TASK(); /*lint !e9079 void * is used as this macro is used with timers and co-routines too.  Alignment is known to be fine as the type of the pointer stored and retrieved is the same. */
-        traceTASK_SWITCHED_IN();
+        /* 选择一个新的任务来运行 */
+        taskSELECT_HIGHEST_PRIORITY_TASK();
+        traceTASK_SWITCHED_IN();//调试使用
 
-        /* After the new task is switched in, update the global errno. */
+        /* 新任务切换后，更新全局的posix错误号*/
         #if ( configUSE_POSIX_ERRNO == 1 )
         {
             FreeRTOS_errno = pxCurrentTCB->iTaskErrno;
