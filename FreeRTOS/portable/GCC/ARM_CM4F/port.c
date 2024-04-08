@@ -456,29 +456,29 @@ void xPortPendSVHandler( void )
         "	it eq								\n"/* 如果使用了FPU，则执行下一条指令，否则跳过下一条指令 */
         "	vstmdbeq r0!, {s16-s31}				\n"/* 将VFP的s16-s31寄存器压入当前的任务栈 */
         "										\n"
-        "	stmdb r0!, {r4-r11, r14}			\n"/* Save the core registers. */
-        "	str r0, [r2]						\n"/* Save the new top of stack into the first member of the TCB. */
+        "	stmdb r0!, {r4-r11, r14}			\n"/* 保存内核寄存器 */
+        "	str r0, [r2]						\n"/* 将现在的任务栈顶指针保存到TCB的第一个元素中 */
         "										\n"
-        "	stmdb sp!, {r0, r3}					\n"
+        "	stmdb sp!, {r0, r3}					\n"/* 将r0, r3压入当前的sp, 对于处理模式，使用的是msp */
         "	mov r0, %0 							\n"
-        "	msr basepri, r0						\n"
+        "	msr basepri, r0						\n"/* 将basepri寄存器赋值为configMAX_SYSCALL_INTERRUPT_PRIORITY，即屏蔽FreeRTOS管理的所有中断 */
         "	dsb									\n"
-        "	isb									\n"
-        "	bl vTaskSwitchContext				\n"
+        "	isb									\n"/* 流水线同步 */
+        "	bl vTaskSwitchContext				\n"/* 跳转到vTaskSwitchContext */
         "	mov r0, #0							\n"
-        "	msr basepri, r0						\n"
-        "	ldmia sp!, {r0, r3}					\n"
+        "	msr basepri, r0						\n"/* 将basepri寄存器赋值为0，打开中断 */
+        "	ldmia sp!, {r0, r3}					\n"/* 从当前的msp顶上两个字的数据出栈，加载到r0, r3*/
+        "										\n"/* r0: 任务栈顶指针, r3: pxCurrentTCB的地址*/
+        "	ldr r1, [r3]						\n"/* 将pxCurrentTCB加载到r1之中，即当前将要运行任务的TCB地址 */
+        "	ldr r0, [r1]						\n"/* 将pxCurrentTCB的第一个元素加载到r0之中，即当前任务的任务栈顶指针 */
         "										\n"
-        "	ldr r1, [r3]						\n"/* The first item in pxCurrentTCB is the task top of stack. */
-        "	ldr r0, [r1]						\n"
+        "	ldmia r0!, {r4-r11, r14}			\n"/* 任务栈出栈，恢复现场 */
         "										\n"
-        "	ldmia r0!, {r4-r11, r14}			\n"/* Pop the core registers. */
-        "										\n"
-        "	tst r14, #0x10						\n"/* Is the task using the FPU context?  If so, pop the high vfp registers too. */
+        "	tst r14, #0x10						\n"/* 判断当前任务是否使用到了FPU(浮点运算单元) */
         "	it eq								\n"
-        "	vldmiaeq r0!, {s16-s31}				\n"
+        "	vldmiaeq r0!, {s16-s31}				\n"/* 将VFP的s16-s31寄存器内容出栈 */
         "										\n"
-        "	msr psp, r0							\n"
+        "	msr psp, r0							\n"/* 将当前的任务栈顶指针赋值给psp */
         "	isb									\n"
         "										\n"
         #ifdef WORKAROUND_PMU_CM001 /* XMC4000 specific errata workaround. */
@@ -488,7 +488,7 @@ void xPortPendSVHandler( void )
             #endif
         #endif
         "										\n"
-        "	bx r14								\n"
+        "	bx r14								\n"/* 跳转到EXC_RETURN，退出异常处理 */
         "										\n"
         "	.align 4							\n"
         "pxCurrentTCBConst: .word pxCurrentTCB	\n"
@@ -503,17 +503,17 @@ void xPortSysTickHandler( void )
      * executes all interrupts must be unmasked.  There is therefore no need to
      * save and then restore the interrupt mask value as its value is already
      * known. */
-    portDISABLE_INTERRUPTS();
+    portDISABLE_INTERRUPTS();//屏蔽FreeRTOS管理的所有中断
     {
         /* Increment the RTOS tick. */
         if( xTaskIncrementTick() != pdFALSE )
         {
             /* A context switch is required.  Context switching is performed in
              * the PendSV interrupt.  Pend the PendSV interrupt. */
-            portNVIC_INT_CTRL_REG = portNVIC_PENDSVSET_BIT;
+            portNVIC_INT_CTRL_REG = portNVIC_PENDSVSET_BIT;//触发PendSV中断
         }
     }
-    portENABLE_INTERRUPTS();
+    portENABLE_INTERRUPTS();//开中断
 }
 /*-----------------------------------------------------------*/
 
