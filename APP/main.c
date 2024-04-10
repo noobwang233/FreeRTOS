@@ -64,9 +64,9 @@ static void LED2_Task(void* parameter)
     while (1)
     {
         gd_eval_led_on(LED2);
-        vTaskDelay(1000); /* 延时500 个tick */
+        vTaskDelay(800); /* 延时500 个tick */
         gd_eval_led_off(LED2);
-        vTaskDelay(1000); /* 延时500 个tick */
+        vTaskDelay(800); /* 延时500 个tick */
     }
 }
 
@@ -117,6 +117,7 @@ int main(void)
 
     gd_eval_led_init(LED1);
     gd_eval_led_init(LED2);
+    gd_eval_key_init(KEY_USER, KEY_MODE_GPIO);
     gd_eval_com_init(EVAL_COM1);
 
     xReturn = xTaskCreate(  (TaskFunction_t )TaskCreate_Task, /* 任务入口函数 */
