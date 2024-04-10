@@ -1,11 +1,11 @@
 {
-  "name": "Demo_GD32F303",
+  "name": "GD32E503",
   "type": "ARM",
   "dependenceList": [],
   "srcDirs": [
     ".eide/deps",
-    "APP",
-    "Borad"
+    "Borad",
+    "APP"
   ],
   "virtualFolder": {
     "name": "<virtual_root>",
@@ -15,10 +15,10 @@
         "name": "CMSIS",
         "files": [
           {
-            "path": "CMSIS/GD/GD32F30x/Source/ARM/startup_gd32f30x_hd.s"
+            "path": "GD32E50x_Firmware_Library/CMSIS/GD/GD32E50x/Source/ARM/startup_gd32e50x_hd.s"
           },
           {
-            "path": "CMSIS/GD/GD32F30x/Source/system_gd32f30x.c"
+            "path": "GD32E50x_Firmware_Library/CMSIS/GD/GD32E50x/Source/system_gd32e50x.c"
           }
         ],
         "folders": []
@@ -62,7 +62,10 @@
             "name": "portable",
             "files": [
               {
-                "path": "FreeRTOS/portable/GCC/ARM_CM4F/port.c"
+                "path": "FreeRTOS/portable/GCC/ARM_CM33_NTZ/non_secure/port.c"
+              },
+              {
+                "path": "FreeRTOS/portable/GCC/ARM_CM33_NTZ/non_secure/portasm.c"
               }
             ],
             "folders": []
@@ -71,98 +74,25 @@
       },
       {
         "name": "Standard_peripheral",
-        "files": [
-          {
-            "path": "GD32F30x_standard_peripheral/Source/gd32f30x_adc.c"
-          },
-          {
-            "path": "GD32F30x_standard_peripheral/Source/gd32f30x_bkp.c"
-          },
-          {
-            "path": "GD32F30x_standard_peripheral/Source/gd32f30x_can.c"
-          },
-          {
-            "path": "GD32F30x_standard_peripheral/Source/gd32f30x_crc.c"
-          },
-          {
-            "path": "GD32F30x_standard_peripheral/Source/gd32f30x_ctc.c"
-          },
-          {
-            "path": "GD32F30x_standard_peripheral/Source/gd32f30x_dac.c"
-          },
-          {
-            "path": "GD32F30x_standard_peripheral/Source/gd32f30x_dbg.c"
-          },
-          {
-            "path": "GD32F30x_standard_peripheral/Source/gd32f30x_dma.c"
-          },
-          {
-            "path": "GD32F30x_standard_peripheral/Source/gd32f30x_enet.c"
-          },
-          {
-            "path": "GD32F30x_standard_peripheral/Source/gd32f30x_exmc.c"
-          },
-          {
-            "path": "GD32F30x_standard_peripheral/Source/gd32f30x_exti.c"
-          },
-          {
-            "path": "GD32F30x_standard_peripheral/Source/gd32f30x_fmc.c"
-          },
-          {
-            "path": "GD32F30x_standard_peripheral/Source/gd32f30x_fwdgt.c"
-          },
-          {
-            "path": "GD32F30x_standard_peripheral/Source/gd32f30x_gpio.c"
-          },
-          {
-            "path": "GD32F30x_standard_peripheral/Source/gd32f30x_i2c.c"
-          },
-          {
-            "path": "GD32F30x_standard_peripheral/Source/gd32f30x_misc.c"
-          },
-          {
-            "path": "GD32F30x_standard_peripheral/Source/gd32f30x_pmu.c"
-          },
-          {
-            "path": "GD32F30x_standard_peripheral/Source/gd32f30x_rcu.c"
-          },
-          {
-            "path": "GD32F30x_standard_peripheral/Source/gd32f30x_rtc.c"
-          },
-          {
-            "path": "GD32F30x_standard_peripheral/Source/gd32f30x_sdio.c"
-          },
-          {
-            "path": "GD32F30x_standard_peripheral/Source/gd32f30x_spi.c"
-          },
-          {
-            "path": "GD32F30x_standard_peripheral/Source/gd32f30x_timer.c"
-          },
-          {
-            "path": "GD32F30x_standard_peripheral/Source/gd32f30x_usart.c"
-          },
-          {
-            "path": "GD32F30x_standard_peripheral/Source/gd32f30x_wwdgt.c"
-          }
-        ],
+        "files": [],
         "folders": []
       }
     ]
   },
   "outDir": "build",
-  "deviceName": "GD32F303CG",
-  "packDir": ".pack/GigaDevice/GD32F30x_DFP.2.2.3",
+  "deviceName": "GD32E503ZE",
+  "packDir": ".pack/GigaDevice/GD32E50x_DFP.1.5.0",
   "miscInfo": {
-    "uid": "26e66d9cf4ee1eb25339cd889766137c"
+    "uid": "43f46139542f550a71bdfb70ace5f0d5"
   },
   "targets": {
     "Debug": {
       "excludeList": [],
       "toolchain": "GCC",
       "compileConfig": {
-        "cpuType": "Cortex-M4",
+        "cpuType": "Cortex-M33",
         "floatingPointHardware": "single",
-        "scatterFilePath": "./GD32F303_Flash.lds",
+        "scatterFilePath": "./GD32F503_Flash.lds",
         "useCustomScatterFile": true,
         "storageLayout": {
           "RAM": [],
@@ -173,7 +103,7 @@
       "uploader": "OpenOCD",
       "uploadConfig": {
         "bin": "",
-        "target": "stm32f3x",
+        "target": "stm32f1x",
         "interface": "cmsis-dap",
         "baseAddr": "0x08000000"
       },
@@ -194,21 +124,21 @@
         "name": "default",
         "incList": [
           ".eide/deps",
-          "Borad",
           "APP",
-          "CMSIS",
-          "CMSIS/GD/GD32F30x/Include",
-          "GD32F30x_standard_peripheral/Include",
+          "Borad",
+          "GD32E50x_Firmware_Library/CMSIS",
+          "GD32E50x_Firmware_Library/CMSIS/GD/GD32E50x/Include",
+          "GD32E50x_Firmware_Library/GD32E50x_standard_peripheral/Include",
           "FreeRTOS/include",
-          "FreeRTOS/portable/GCC/ARM_CM4F",
-          "FreeRTOS"
+          "FreeRTOS",
+          "FreeRTOS/portable/GCC/ARM_CM33_NTZ/non_secure"
         ],
         "libList": [],
         "sourceDirList": [],
         "defineList": [
           "USE_STDPERIPH_DRIVER",
-          "GD32F30x",
-          "GD32F30X_XD"
+          "GD32E50X_HD",
+          "GD32E50X"
         ]
       }
     }

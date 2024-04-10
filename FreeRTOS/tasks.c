@@ -142,7 +142,7 @@
                                                                               \
         /* 选取最高优先级任务列表里的下一个列表项，所以处于同一优先级的任务拥有平等的执行权 */  \
         listGET_OWNER_OF_NEXT_ENTRY( pxCurrentTCB, &( pxReadyTasksLists[ uxTopPriority ] ) ); \
-        /* 更新当前就绪任务列表的最高优先级uxTopReadyPriority */
+        /* 更新当前就绪任务列表的最高优先级uxTopReadyPriority */\
         uxTopReadyPriority = uxTopPriority;                                                   \
     } /* taskSELECT_HIGHEST_PRIORITY_TASK */
 

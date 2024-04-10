@@ -35,13 +35,11 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#include "gd32f30x.h"
-#include "gd32f303c_start.h"
+#include "gd32e50x.h"
+#include "gd32e503z_eval.h"
 #include "FreeRTOS.h"
 #include "task.h"
-#include <stdint.h>
 #include <stdio.h>
-
 
 TaskHandle_t LED1_Task_Handle = NULL; /* 任务句柄 */
 TaskHandle_t LED2_Task_Handle = NULL;
@@ -117,8 +115,7 @@ int main(void)
 
     gd_eval_led_init(LED1);
     gd_eval_led_init(LED2);
-    gd_eval_key_init(KEY_USER, KEY_MODE_GPIO);
-    gd_eval_com_init(EVAL_COM1);
+    gd_eval_com_init(EVAL_COM0);
 
     xReturn = xTaskCreate(  (TaskFunction_t )TaskCreate_Task, /* 任务入口函数 */
                                 (const char* )"TaskCreate_Task",/* 任务名字 */
@@ -137,8 +134,8 @@ int _write (int fd, char *pBuffer, int size)
 {  
     for (int i = 0; i < size; i++)  
     {  
-		usart_data_transmit(EVAL_COM1, (uint8_t)pBuffer[i]);
-		while(RESET == usart_flag_get(EVAL_COM1, USART_FLAG_TBE));		
+		usart_data_transmit(EVAL_COM0, (uint8_t)pBuffer[i]);
+		while(RESET == usart_flag_get(EVAL_COM0, USART_FLAG_TBE));		
     }  
     return size;  
 }
