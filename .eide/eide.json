@@ -74,7 +74,92 @@
       },
       {
         "name": "Standard_peripheral",
-        "files": [],
+        "files": [
+          {
+            "path": "GD32E50x_Firmware_Library/GD32E50x_standard_peripheral/Source/gd32e50x_adc.c"
+          },
+          {
+            "path": "GD32E50x_Firmware_Library/GD32E50x_standard_peripheral/Source/gd32e50x_bkp.c"
+          },
+          {
+            "path": "GD32E50x_Firmware_Library/GD32E50x_standard_peripheral/Source/gd32e50x_can.c"
+          },
+          {
+            "path": "GD32E50x_Firmware_Library/GD32E50x_standard_peripheral/Source/gd32e50x_cmp.c"
+          },
+          {
+            "path": "GD32E50x_Firmware_Library/GD32E50x_standard_peripheral/Source/gd32e50x_crc.c"
+          },
+          {
+            "path": "GD32E50x_Firmware_Library/GD32E50x_standard_peripheral/Source/gd32e50x_ctc.c"
+          },
+          {
+            "path": "GD32E50x_Firmware_Library/GD32E50x_standard_peripheral/Source/gd32e50x_dac.c"
+          },
+          {
+            "path": "GD32E50x_Firmware_Library/GD32E50x_standard_peripheral/Source/gd32e50x_dbg.c"
+          },
+          {
+            "path": "GD32E50x_Firmware_Library/GD32E50x_standard_peripheral/Source/gd32e50x_dma.c"
+          },
+          {
+            "path": "GD32E50x_Firmware_Library/GD32E50x_standard_peripheral/Source/gd32e50x_enet.c"
+          },
+          {
+            "path": "GD32E50x_Firmware_Library/GD32E50x_standard_peripheral/Source/gd32e50x_exmc.c"
+          },
+          {
+            "path": "GD32E50x_Firmware_Library/GD32E50x_standard_peripheral/Source/gd32e50x_exti.c"
+          },
+          {
+            "path": "GD32E50x_Firmware_Library/GD32E50x_standard_peripheral/Source/gd32e50x_fmc.c"
+          },
+          {
+            "path": "GD32E50x_Firmware_Library/GD32E50x_standard_peripheral/Source/gd32e50x_fwdgt.c"
+          },
+          {
+            "path": "GD32E50x_Firmware_Library/GD32E50x_standard_peripheral/Source/gd32e50x_gpio.c"
+          },
+          {
+            "path": "GD32E50x_Firmware_Library/GD32E50x_standard_peripheral/Source/gd32e50x_i2c.c"
+          },
+          {
+            "path": "GD32E50x_Firmware_Library/GD32E50x_standard_peripheral/Source/gd32e50x_misc.c"
+          },
+          {
+            "path": "GD32E50x_Firmware_Library/GD32E50x_standard_peripheral/Source/gd32e50x_pmu.c"
+          },
+          {
+            "path": "GD32E50x_Firmware_Library/GD32E50x_standard_peripheral/Source/gd32e50x_rcu.c"
+          },
+          {
+            "path": "GD32E50x_Firmware_Library/GD32E50x_standard_peripheral/Source/gd32e50x_rtc.c"
+          },
+          {
+            "path": "GD32E50x_Firmware_Library/GD32E50x_standard_peripheral/Source/gd32e50x_sdio.c"
+          },
+          {
+            "path": "GD32E50x_Firmware_Library/GD32E50x_standard_peripheral/Source/gd32e50x_shrtimer.c"
+          },
+          {
+            "path": "GD32E50x_Firmware_Library/GD32E50x_standard_peripheral/Source/gd32e50x_spi.c"
+          },
+          {
+            "path": "GD32E50x_Firmware_Library/GD32E50x_standard_peripheral/Source/gd32e50x_sqpi.c"
+          },
+          {
+            "path": "GD32E50x_Firmware_Library/GD32E50x_standard_peripheral/Source/gd32e50x_timer.c"
+          },
+          {
+            "path": "GD32E50x_Firmware_Library/GD32E50x_standard_peripheral/Source/gd32e50x_tmu.c"
+          },
+          {
+            "path": "GD32E50x_Firmware_Library/GD32E50x_standard_peripheral/Source/gd32e50x_usart.c"
+          },
+          {
+            "path": "GD32E50x_Firmware_Library/GD32E50x_standard_peripheral/Source/gd32e50x_wwdgt.c"
+          }
+        ],
         "folders": []
       }
     ]
@@ -103,8 +188,8 @@
       "uploader": "OpenOCD",
       "uploadConfig": {
         "bin": "",
-        "target": "stm32f1x",
-        "interface": "cmsis-dap",
+        "target": "stm32l5x",
+        "interface": "ftdi/openocd-usb",
         "baseAddr": "0x08000000"
       },
       "uploadConfigMap": {
@@ -130,8 +215,8 @@
           "GD32E50x_Firmware_Library/CMSIS/GD/GD32E50x/Include",
           "GD32E50x_Firmware_Library/GD32E50x_standard_peripheral/Include",
           "FreeRTOS/include",
-          "FreeRTOS",
-          "FreeRTOS/portable/GCC/ARM_CM33_NTZ/non_secure"
+          "FreeRTOS/portable/GCC/ARM_CM33_NTZ/non_secure",
+          "FreeRTOS"
         ],
         "libList": [],
         "sourceDirList": [],

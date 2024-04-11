@@ -46,7 +46,7 @@
 extern uint32_t SystemCoreClock;
 
 /* Cortex M33 port configuration. */
-#define configENABLE_MPU								1
+#define configENABLE_MPU								0
 #define configENABLE_FPU								1
 #define configENABLE_TRUSTZONE							0
 
@@ -82,7 +82,7 @@ extern uint32_t SystemCoreClock;
 #define configUSE_MALLOC_FAILED_HOOK					0
 
 /* Constants provided for debugging and optimisation assistance. */
-#define configCHECK_FOR_STACK_OVERFLOW					2
+#define configCHECK_FOR_STACK_OVERFLOW					0
 #define configASSERT( x )								if( ( x ) == 0 ) { taskDISABLE_INTERRUPTS(); for( ;; ); }
 #define configQUEUE_REGISTRY_SIZE						0
 
@@ -162,6 +162,6 @@ extern uint32_t SystemCoreClock;
 #endif /* __IASMARM__ */
 
 /* Enable static allocation. */
-#define configSUPPORT_STATIC_ALLOCATION					1
-
+// #define configSUPPORT_STATIC_ALLOCATION					1
+#define configSUPPORT_DYNAMIC_ALLOCATION                1
 #endif /* FREERTOS_CONFIG_H */

@@ -839,8 +839,8 @@ void can_time_trigger_mode_disable(uint32_t can_periph)
 uint8_t can_message_transmit(uint32_t can_periph, can_trasnmit_message_struct *transmit_message)
 {
     uint8_t mailbox_number = CAN_MAILBOX0;
-    volatile uint32_t p_temp;
 #ifdef GD32E508
+    volatile uint32_t p_temp;
     uint8_t i = 0U;
     uint8_t hit = 0U;
     uint32_t canfd_en = 0U;
@@ -1060,8 +1060,8 @@ void can_transmission_stop(uint32_t can_periph, uint8_t mailbox_number)
 */
 void can_message_receive(uint32_t can_periph, uint8_t fifo_number, can_receive_message_struct *receive_message)
 {
-    volatile uint32_t p_temp;
 #ifdef GD32E508
+    volatile uint32_t p_temp;
     uint32_t canfd_en = 0U;
     uint32_t data_temp;
     uint8_t canfd_recv_cnt = 0U;

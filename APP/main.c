@@ -50,9 +50,9 @@ static void LED1_Task(void* parameter)
     while (1)
     {
         gd_eval_led_on(LED1);
-        vTaskDelay(500); /* 延时500 个tick */
+        vTaskDelay(pdMS_TO_TICKS(500)); /* 延时500 ms */
         gd_eval_led_off(LED1);
-        vTaskDelay(500); /* 延时500 个tick */
+        vTaskDelay(pdMS_TO_TICKS(500)); /* 延时500 ms */
     }
 }
 
@@ -62,9 +62,9 @@ static void LED2_Task(void* parameter)
     while (1)
     {
         gd_eval_led_on(LED2);
-        vTaskDelay(800); /* 延时500 个tick */
+        vTaskDelay(pdMS_TO_TICKS(800)); /* 延时800 ms */
         gd_eval_led_off(LED2);
-        vTaskDelay(800); /* 延时500 个tick */
+        vTaskDelay(pdMS_TO_TICKS(800)); /* 延时800 ms */
     }
 }
 
