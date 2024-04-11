@@ -37,8 +37,10 @@ OF SUCH DAMAGE.
 
 #include "gd32e50x.h"
 #include "gd32e503z_eval.h"
+#include "gd32e503z_lcd_eval.h"
 #include "FreeRTOS.h"
 #include "task.h"
+#include <stdint.h>
 #include <stdio.h>
 
 TaskHandle_t LED1_Task_Handle = NULL; /* 任务句柄 */
@@ -47,24 +49,28 @@ TaskHandle_t TaskCreate_Handle = NULL;
 
 static void LED1_Task(void* parameter)
 {
+    char_format_struct type1 = {CHAR_FONT_8_16, CHAR_DIRECTION_HORIZONTAL, LCD_COLOR_BLACK, LCD_COLOR_WHITE};
     while (1)
     {
         gd_eval_led_on(LED1);
         vTaskDelay(pdMS_TO_TICKS(500)); /* 延时500 ms */
         gd_eval_led_off(LED1);
         vTaskDelay(pdMS_TO_TICKS(500)); /* 延时500 ms */
+        lcd_char_display(10,10, 'A', type1);
     }
 }
 
 
 static void LED2_Task(void* parameter)
 {
+    char_format_struct type1 = {CHAR_FONT_8_16, CHAR_DIRECTION_HORIZONTAL, LCD_COLOR_BLACK, LCD_COLOR_WHITE};
     while (1)
     {
         gd_eval_led_on(LED2);
         vTaskDelay(pdMS_TO_TICKS(800)); /* 延时800 ms */
         gd_eval_led_off(LED2);
         vTaskDelay(pdMS_TO_TICKS(800)); /* 延时800 ms */
+        lcd_char_display(10,30, 'B', type1);
     }
 }
 
@@ -116,6 +122,8 @@ int main(void)
     gd_eval_led_init(LED1);
     gd_eval_led_init(LED2);
     gd_eval_com_init(EVAL_COM0);
+    exmc_lcd_init();
+    lcd_init();
 
     xReturn = xTaskCreate(  (TaskFunction_t )TaskCreate_Task, /* 任务入口函数 */
                                 (const char* )"TaskCreate_Task",/* 任务名字 */
@@ -136,6 +144,6 @@ int _write (int fd, char *pBuffer, int size)
     {  
 		usart_data_transmit(EVAL_COM0, (uint8_t)pBuffer[i]);
 		while(RESET == usart_flag_get(EVAL_COM0, USART_FLAG_TBE));		
-    }  
+    }
     return size;  
 }
