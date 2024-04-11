@@ -132,8 +132,6 @@ typedef struct
                             ((LINE) == EXTI_Line14) || ((LINE) == EXTI_Line15) || \
                             ((LINE) == EXTI_Line16) || ((LINE) == EXTI_Line17) || \
                             ((LINE) == EXTI_Line18) || ((LINE) == EXTI_Line19))
-
-                    
 /**
   * @}
   */
