@@ -188,8 +188,8 @@
       "uploader": "OpenOCD",
       "uploadConfig": {
         "bin": "",
-        "target": "stm32l5x",
-        "interface": "ftdi/openocd-usb",
+        "target": "gd32e50x",
+        "interface": "cmsis-dap",
         "baseAddr": "0x08000000"
       },
       "uploadConfigMap": {
