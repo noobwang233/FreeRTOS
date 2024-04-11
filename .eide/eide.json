@@ -246,25 +246,14 @@
           ],
           "libList": [],
           "defineList": []
-        },
-        {
-          "name": "StdPeriphDrivers.Framework",
-          "incList": [
-            ".pack/Keil/STM32F1xx_DFP.2.4.1/Device/StdPeriph_Driver/inc",
-            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.Framework"
-          ],
-          "sourceDirList": [
-            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.Framework"
-          ],
-          "libList": [],
-          "defineList": []
         }
       ]
     }
   ],
   "srcDirs": [
     ".eide/deps",
-    "APP"
+    "APP",
+    "Core"
   ],
   "virtualFolder": {
     "name": "<virtual_root>",
@@ -274,10 +263,10 @@
         "name": "CMSIS",
         "files": [
           {
-            "path": "Firmware_Library/CMSIS/core_cm3.c"
+            "path": "CMSIS/ST/STM32F10x/startup/gcc_ride7/startup_stm32f10x_hd.s"
           },
           {
-            "path": "Firmware_Library/CMSIS/ST/STM32F10x/system_stm32f10x.c"
+            "path": "CMSIS/ST/STM32F10x/system_stm32f10x.c"
           }
         ],
         "folders": []
@@ -381,10 +370,10 @@
           "Borad",
           "FreeRTOS/include",
           "FreeRTOS",
-          "Firmware_Library/standard_peripheral/Include",
-          "Firmware_Library/CMSIS",
-          "Firmware_Library/CMSIS/ST/STM32F10x",
-          "FreeRTOS/portable/GCC/ARM_CM3"
+          "FreeRTOS/portable/GCC/ARM_CM3",
+          "CMSIS",
+          "CMSIS/ST/STM32F10x",
+          "Core"
         ],
         "libList": [],
         "sourceDirList": [],
