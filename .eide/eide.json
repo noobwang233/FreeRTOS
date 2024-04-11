@@ -260,6 +260,21 @@
     "files": [],
     "folders": [
       {
+        "name": "Board",
+        "files": [],
+        "folders": [
+          {
+            "name": "LED",
+            "files": [
+              {
+                "path": "Board/LED/led.c"
+              }
+            ],
+            "folders": []
+          }
+        ]
+      },
+      {
         "name": "CMSIS",
         "files": [
           {
@@ -373,7 +388,37 @@
           "FreeRTOS/portable/GCC/ARM_CM3",
           "CMSIS",
           "CMSIS/ST/STM32F10x",
-          "Core"
+          "Core",
+          "Board/24CXX",
+          "Board/ADC",
+          "Board/BEEP",
+          "Board/CAN",
+          "Board/COM",
+          "Board/DAC",
+          "Board/DMA",
+          "Board/EXTI",
+          "Board/FWDG",
+          "Board/IIC",
+          "Board/ITEMP",
+          "Board/KEY",
+          "Board/LCD",
+          "Board/LED",
+          "Board/LSENS",
+          "Board/OLED",
+          "Board/OV7725",
+          "Board/PWM",
+          "Board/REMOTE",
+          "Board/RS485",
+          "Board/RTC",
+          "Board/SDIO",
+          "Board/SPI",
+          "Board/TIMER",
+          "Board/TOUCH",
+          "Board/TPAD",
+          "Board/VEEPROM",
+          "Board/W25QXX",
+          "Board/WKUP",
+          "Board/WWDG"
         ],
         "libList": [],
         "sourceDirList": [],
