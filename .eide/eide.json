@@ -261,7 +261,11 @@
     "folders": [
       {
         "name": "Board",
-        "files": [],
+        "files": [
+          {
+            "path": "Board/stm32f103_atk.c"
+          }
+        ],
         "folders": [
           {
             "name": "LED",
@@ -418,7 +422,8 @@
           "Board/VEEPROM",
           "Board/W25QXX",
           "Board/WKUP",
-          "Board/WWDG"
+          "Board/WWDG",
+          "Board"
         ],
         "libList": [],
         "sourceDirList": [],
