@@ -2,6 +2,106 @@
 #include <stdint.h>
 
 /* private variables */
+struct led_type led0 = {{GPIO_Pin_5, GPIO_Speed_50MHz, GPIO_Mode_Out_PP}, GPIOB, RCC_APB2Periph_GPIOB};
+struct led_type led1 = {{GPIO_Pin_5, GPIO_Speed_50MHz, GPIO_Mode_Out_PP}, GPIOE, RCC_APB2Periph_GPIOE};
+struct led_type beep = {{GPIO_Pin_8, GPIO_Speed_50MHz, GPIO_Mode_Out_PP}, GPIOB, RCC_APB2Periph_GPIOB};
+struct key_type key0 = {
+    {
+        GPIO_Pin_4, 
+        0, 
+        GPIO_Mode_IPU
+    }, 
+    GPIOE, 
+    RCC_APB2Periph_GPIOE, 
+    {
+        {
+            EXTI_Line4,
+            EXTI_Mode_Interrupt,
+            EXTI_Trigger_Falling,
+            ENABLE
+        },
+        GPIO_PortSourceGPIOE, 
+        GPIO_PinSource4, 
+    },
+    {
+        EXTI4_IRQn,
+        0x02,
+        0x03,
+        ENABLE
+    }
+};
+
+
+struct key_type key1 = {
+    {
+        GPIO_Pin_3, 
+        0, 
+        GPIO_Mode_IPU
+    }, 
+    GPIOE, 
+    RCC_APB2Periph_GPIOE, 
+    {
+        {
+            EXTI_Line3,
+            EXTI_Mode_Interrupt,
+            EXTI_Trigger_Falling,
+            ENABLE
+        },
+        GPIO_PortSourceGPIOE, 
+        GPIO_PinSource3, 
+    },
+    {
+        EXTI3_IRQn,
+        0x02,
+        0x02,
+        ENABLE
+    }
+};
+
+
+struct key_type key_up = {
+    {
+        GPIO_Pin_0, 
+        0, 
+        GPIO_Mode_IPU
+    }, 
+    GPIOA, 
+    RCC_APB2Periph_GPIOA, 
+    {
+        {
+            EXTI_Line0,
+            EXTI_Mode_Interrupt,
+            EXTI_Trigger_Falling,
+            ENABLE
+        },
+        GPIO_PortSourceGPIOA, 
+        GPIO_PinSource0, 
+    },
+    {
+        EXTI0_IRQn,
+        0x02,
+        0x02,
+        ENABLE
+    }
+};
+
+struct com_type com0 = {
+    USART1,
+    {
+        115200,
+        USART_WordLength_8b,
+        USART_StopBits_1,
+        USART_Parity_No,
+        USART_Mode_Rx | USART_Mode_Tx,
+        USART_HardwareFlowControl_None
+    },
+    RCC_APB2Periph_USART1, 
+    GPIO_Pin_9, 
+    GPIO_Pin_10, 
+    GPIOA, 
+    RCC_APB2Periph_GPIOA
+};
+
 struct key_type* KEYS[KEYn] = {&key0, &key1, &key_up};
 struct led_type* LEDS[KEYn] = {&led0, &led1, &beep};
 struct com_type* COMS[KEYn] = {&com0};

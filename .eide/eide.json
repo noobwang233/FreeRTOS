@@ -266,17 +266,7 @@
             "path": "Board/stm32f103_atk.c"
           }
         ],
-        "folders": [
-          {
-            "name": "LED",
-            "files": [
-              {
-                "path": "Board/LED/led.c"
-              }
-            ],
-            "folders": []
-          }
-        ]
+        "folders": []
       },
       {
         "name": "CMSIS",
