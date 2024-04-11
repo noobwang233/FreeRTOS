@@ -1,10 +1,269 @@
 {
   "name": "STM32F103",
   "type": "ARM",
-  "dependenceList": [],
+  "dependenceList": [
+    {
+      "groupName": "STM32F1xx_DFP",
+      "depList": [
+        {
+          "name": "StdPeriphDrivers.ADC",
+          "incList": [
+            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.ADC"
+          ],
+          "sourceDirList": [
+            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.ADC"
+          ],
+          "libList": [],
+          "defineList": []
+        },
+        {
+          "name": "StdPeriphDrivers.BKP",
+          "incList": [
+            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.BKP"
+          ],
+          "sourceDirList": [
+            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.BKP"
+          ],
+          "libList": [],
+          "defineList": []
+        },
+        {
+          "name": "StdPeriphDrivers.CAN",
+          "incList": [
+            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.CAN"
+          ],
+          "sourceDirList": [
+            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.CAN"
+          ],
+          "libList": [],
+          "defineList": []
+        },
+        {
+          "name": "StdPeriphDrivers.CEC",
+          "incList": [
+            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.CEC"
+          ],
+          "sourceDirList": [
+            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.CEC"
+          ],
+          "libList": [],
+          "defineList": []
+        },
+        {
+          "name": "StdPeriphDrivers.CRC",
+          "incList": [
+            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.CRC"
+          ],
+          "sourceDirList": [
+            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.CRC"
+          ],
+          "libList": [],
+          "defineList": []
+        },
+        {
+          "name": "StdPeriphDrivers.DAC",
+          "incList": [
+            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.DAC"
+          ],
+          "sourceDirList": [
+            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.DAC"
+          ],
+          "libList": [],
+          "defineList": []
+        },
+        {
+          "name": "StdPeriphDrivers.DBGMCU",
+          "incList": [
+            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.DBGMCU"
+          ],
+          "sourceDirList": [
+            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.DBGMCU"
+          ],
+          "libList": [],
+          "defineList": []
+        },
+        {
+          "name": "StdPeriphDrivers.DMA",
+          "incList": [
+            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.DMA"
+          ],
+          "sourceDirList": [
+            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.DMA"
+          ],
+          "libList": [],
+          "defineList": []
+        },
+        {
+          "name": "StdPeriphDrivers.EXTI",
+          "incList": [
+            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.EXTI"
+          ],
+          "sourceDirList": [
+            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.EXTI"
+          ],
+          "libList": [],
+          "defineList": []
+        },
+        {
+          "name": "StdPeriphDrivers.Flash",
+          "incList": [
+            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.Flash"
+          ],
+          "sourceDirList": [
+            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.Flash"
+          ],
+          "libList": [],
+          "defineList": []
+        },
+        {
+          "name": "StdPeriphDrivers.FSMC",
+          "incList": [
+            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.FSMC"
+          ],
+          "sourceDirList": [
+            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.FSMC"
+          ],
+          "libList": [],
+          "defineList": []
+        },
+        {
+          "name": "StdPeriphDrivers.GPIO",
+          "incList": [
+            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.GPIO"
+          ],
+          "sourceDirList": [
+            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.GPIO"
+          ],
+          "libList": [],
+          "defineList": []
+        },
+        {
+          "name": "StdPeriphDrivers.I2C",
+          "incList": [
+            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.I2C"
+          ],
+          "sourceDirList": [
+            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.I2C"
+          ],
+          "libList": [],
+          "defineList": []
+        },
+        {
+          "name": "StdPeriphDrivers.IWDG",
+          "incList": [
+            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.IWDG"
+          ],
+          "sourceDirList": [
+            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.IWDG"
+          ],
+          "libList": [],
+          "defineList": []
+        },
+        {
+          "name": "StdPeriphDrivers.PWR",
+          "incList": [
+            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.PWR"
+          ],
+          "sourceDirList": [
+            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.PWR"
+          ],
+          "libList": [],
+          "defineList": []
+        },
+        {
+          "name": "StdPeriphDrivers.RCC",
+          "incList": [
+            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.RCC"
+          ],
+          "sourceDirList": [
+            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.RCC"
+          ],
+          "libList": [],
+          "defineList": []
+        },
+        {
+          "name": "StdPeriphDrivers.RTC",
+          "incList": [
+            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.RTC"
+          ],
+          "sourceDirList": [
+            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.RTC"
+          ],
+          "libList": [],
+          "defineList": []
+        },
+        {
+          "name": "StdPeriphDrivers.SDIO",
+          "incList": [
+            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.SDIO"
+          ],
+          "sourceDirList": [
+            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.SDIO"
+          ],
+          "libList": [],
+          "defineList": []
+        },
+        {
+          "name": "StdPeriphDrivers.SPI",
+          "incList": [
+            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.SPI"
+          ],
+          "sourceDirList": [
+            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.SPI"
+          ],
+          "libList": [],
+          "defineList": []
+        },
+        {
+          "name": "StdPeriphDrivers.TIM",
+          "incList": [
+            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.TIM"
+          ],
+          "sourceDirList": [
+            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.TIM"
+          ],
+          "libList": [],
+          "defineList": []
+        },
+        {
+          "name": "StdPeriphDrivers.USART",
+          "incList": [
+            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.USART"
+          ],
+          "sourceDirList": [
+            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.USART"
+          ],
+          "libList": [],
+          "defineList": []
+        },
+        {
+          "name": "StdPeriphDrivers.WWDG",
+          "incList": [
+            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.WWDG"
+          ],
+          "sourceDirList": [
+            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.WWDG"
+          ],
+          "libList": [],
+          "defineList": []
+        },
+        {
+          "name": "StdPeriphDrivers.Framework",
+          "incList": [
+            ".pack/Keil/STM32F1xx_DFP.2.4.1/Device/StdPeriph_Driver/inc",
+            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.Framework"
+          ],
+          "sourceDirList": [
+            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.Framework"
+          ],
+          "libList": [],
+          "defineList": []
+        }
+      ]
+    }
+  ],
   "srcDirs": [
     ".eide/deps",
-    "Borad",
     "APP"
   ],
   "virtualFolder": {
@@ -68,81 +327,6 @@
             "folders": []
           }
         ]
-      },
-      {
-        "name": "Standard_peripheral",
-        "files": [
-          {
-            "path": "Firmware_Library/standard_peripheral/Source/misc.c"
-          },
-          {
-            "path": "Firmware_Library/standard_peripheral/Source/stm32f10x_adc.c"
-          },
-          {
-            "path": "Firmware_Library/standard_peripheral/Source/stm32f10x_bkp.c"
-          },
-          {
-            "path": "Firmware_Library/standard_peripheral/Source/stm32f10x_can.c"
-          },
-          {
-            "path": "Firmware_Library/standard_peripheral/Source/stm32f10x_cec.c"
-          },
-          {
-            "path": "Firmware_Library/standard_peripheral/Source/stm32f10x_crc.c"
-          },
-          {
-            "path": "Firmware_Library/standard_peripheral/Source/stm32f10x_dac.c"
-          },
-          {
-            "path": "Firmware_Library/standard_peripheral/Source/stm32f10x_dbgmcu.c"
-          },
-          {
-            "path": "Firmware_Library/standard_peripheral/Source/stm32f10x_dma.c"
-          },
-          {
-            "path": "Firmware_Library/standard_peripheral/Source/stm32f10x_exti.c"
-          },
-          {
-            "path": "Firmware_Library/standard_peripheral/Source/stm32f10x_flash.c"
-          },
-          {
-            "path": "Firmware_Library/standard_peripheral/Source/stm32f10x_fsmc.c"
-          },
-          {
-            "path": "Firmware_Library/standard_peripheral/Source/stm32f10x_gpio.c"
-          },
-          {
-            "path": "Firmware_Library/standard_peripheral/Source/stm32f10x_i2c.c"
-          },
-          {
-            "path": "Firmware_Library/standard_peripheral/Source/stm32f10x_iwdg.c"
-          },
-          {
-            "path": "Firmware_Library/standard_peripheral/Source/stm32f10x_pwr.c"
-          },
-          {
-            "path": "Firmware_Library/standard_peripheral/Source/stm32f10x_rcc.c"
-          },
-          {
-            "path": "Firmware_Library/standard_peripheral/Source/stm32f10x_rtc.c"
-          },
-          {
-            "path": "Firmware_Library/standard_peripheral/Source/stm32f10x_sdio.c"
-          },
-          {
-            "path": "Firmware_Library/standard_peripheral/Source/stm32f10x_spi.c"
-          },
-          {
-            "path": "Firmware_Library/standard_peripheral/Source/stm32f10x_tim.c"
-          },
-          {
-            "path": "Firmware_Library/standard_peripheral/Source/stm32f10x_usart.c"
-          },
-          {
-            "path": "Firmware_Library/standard_peripheral/Source/stm32f10x_wwdg.c"
-          }
-        ],
-        "folders": []
       }
     ]
   },
