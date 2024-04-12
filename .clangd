@@ -13,4 +13,4 @@ CompileFlags:
         - -Id:\software\gcc\10 2021.10\lib\gcc\arm-none-eabi\10.3.1\include-fixed
         - -Id:\software\gcc\10 2021.10\arm-none-eabi\include
     CompilationDatabase: ./build/Debug
-    Compiler: d:\software\GCC\10 2021.10\bin\arm-none-eabi-gcc.exe
+    Compiler: C:\workspace\MCU\Tools\gcc-arm-none-eabi-10.3-2021.10-win32\bin\arm-none-eabi-gcc.exe
