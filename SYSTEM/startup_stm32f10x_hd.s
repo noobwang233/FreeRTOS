@@ -37,6 +37,7 @@
 
 .global  g_pfnVectors
 .global  Default_Handler
+.global  Reset_Handler
 
 /* start address for the initialization values of the .data section. 
 defined in linker script */
@@ -61,9 +62,9 @@ defined in linker script */
  * @retval : None
 */
 
-    .section  .text.Reset_Handler
-  .weak  Reset_Handler
-  .type  Reset_Handler, %function
+.section  .text.Reset_Handler
+.weak  Reset_Handler
+.type  Reset_Handler, %function
 Reset_Handler:  
 
 /* Copy the data segment initializers from flash to SRAM */  
