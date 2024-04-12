@@ -1,6 +1,9 @@
 #ifndef __KEY_H
 #define __KEY_H	 
 #include "stm32f10x.h"
+#include "FreeRTOS.h"
+#include "task.h"
+#include <stdint.h>
 
 typedef enum
 {
@@ -14,6 +17,12 @@ typedef enum
     KEY_MODE_EXTI = 1
 } keymode_typedef_enum;
 
+typedef enum
+{
+    LOW_VALID = 0,
+    HIGH_VALID = !LOW_VALID
+} key_valid_type;
+
 struct exti_type
 {
     EXTI_InitTypeDef    exit_cfg;
@@ -22,31 +31,34 @@ struct exti_type
 };
 struct key_init_type
 {
-    GPIO_InitTypeDef    gpio_type;
-    GPIO_TypeDef *      gpio_port;
-    uint32_t            key_clk;
-    struct exti_type    key_exit;
-    NVIC_InitTypeDef    key_nvic;
+    GPIO_InitTypeDef        gpio_type;
+    GPIO_TypeDef *          gpio_port;
+    uint32_t                key_clk;
+    struct exti_type        key_exit;
+    NVIC_InitTypeDef        key_nvic;
+    const key_valid_type    key_valid;
 };
 
 typedef enum
 {
-    RELEASE_STATE,        //ø’œ–
-    SHORT_PRESS_STATE,    //∂Ã∞¥
-    LONG_PRESS_STATE,     //≥§∞¥
-    DOUBLE_PRESS_STATE,   //À´ª˜
+    RELEASE_STATE,        //Á©∫Èó≤
+    SHORT_PRESS_STATE,    //Áü≠Êåâ
+    LONG_PRESS_STATE,     //ÈïøÊåâ
+    DOUBLE_PRESS_STATE,   //ÂèåÂáª
 } KeyState;
 
-struct key
+struct key_task_type
 {
-    key_typedef_enum key;
+    uint8_t key_index;
     char * key_name;
     KeyState key_state;
-}
+    TaskHandle_t key_handle;
+};
 
 /* configure key */
-void key_init(key_typedef_enum key_num, keymode_typedef_enum key_mode);
+void key_init(uint8_t key_num, keymode_typedef_enum key_mode);
 /* return the selected key state */
-key_state key_state_get(key_typedef_enum key);
+key_gpio_state key_state_get(uint8_t key_num);
+void key_task_init(uint8_t key_num);
 
 #endif

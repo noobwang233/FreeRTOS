@@ -1,11 +1,9 @@
 #include "stm32f103_atk.h"
 #include <stdint.h>
+#include "key.h"
 
 /* private variables */
-static struct led_type led0 = {{GPIO_Pin_5, GPIO_Speed_50MHz, GPIO_Mode_Out_PP}, GPIOB, RCC_APB2Periph_GPIOB};
-static struct led_type led1 = {{GPIO_Pin_5, GPIO_Speed_50MHz, GPIO_Mode_Out_PP}, GPIOE, RCC_APB2Periph_GPIOE};
-static struct led_type beep = {{GPIO_Pin_8, GPIO_Speed_50MHz, GPIO_Mode_Out_PP}, GPIOB, RCC_APB2Periph_GPIOB};
-static struct key_type key0 = {
+static struct key_init_type key0 = {
     {
         GPIO_Pin_4, 
         0, 
@@ -28,11 +26,12 @@ static struct key_type key0 = {
         0x02,
         0x03,
         ENABLE
-    }
+    },
+    LOW_VALID
 };
 
 
-static struct key_type key1 = {
+static struct key_init_type key1 = {
     {
         GPIO_Pin_3, 
         0, 
@@ -55,11 +54,12 @@ static struct key_type key1 = {
         0x02,
         0x02,
         ENABLE
-    }
+    },
+    LOW_VALID
 };
 
 
-static struct key_type key_up = {
+static struct key_init_type key_up = {
     {
         GPIO_Pin_0, 
         0, 
@@ -82,7 +82,8 @@ static struct key_type key_up = {
         0x02,
         0x02,
         ENABLE
-    }
+    },
+    HIGH_VALID
 };
 
 static struct com_type com0 = {
@@ -102,8 +103,32 @@ static struct com_type com0 = {
     RCC_APB2Periph_GPIOA
 };
 
-static struct key_type* KEYS[KEYn] = {&key0, &key1, &key_up};
-static struct led_type* LEDS[KEYn] = {&led0, &led1, &beep};
+static struct key_init_type* key_cfg[KEYn] = {&key0, &key1, &key_up};
+struct key_init_type** key_cfgs = key_cfg;
+
+struct key_task_type key_0_task = 
+{
+    .key_index = KEY_0,
+    .key_name = "KEY_0",
+};
+struct key_task_type key_1_task = 
+{
+    .key_index = KEY_1,
+    .key_name = "KEY_1",
+};
+struct key_task_type key_up_task = 
+{
+    .key_index = KEY_UP,
+    .key_name = "KEY_UP",
+};
+static struct key_task_type* key_task[KEYn] = {&key_0_task, &key_1_task, &key_up_task};
+struct key_task_type** key_tasks = key_task;
+
+
+static struct led_type led0 = {{GPIO_Pin_5, GPIO_Speed_50MHz, GPIO_Mode_Out_PP}, GPIOB, RCC_APB2Periph_GPIOB};
+static struct led_type led1 = {{GPIO_Pin_5, GPIO_Speed_50MHz, GPIO_Mode_Out_PP}, GPIOE, RCC_APB2Periph_GPIOE};
+static struct led_type beep = {{GPIO_Pin_8, GPIO_Speed_50MHz, GPIO_Mode_Out_PP}, GPIOB, RCC_APB2Periph_GPIOB};
+struct led_type* LEDS[KEYn] = {&led0, &led1, &beep};
 
 /*!
     \brief      configure led GPIO
@@ -157,52 +182,6 @@ void board_led_toggle(led_typedef_enum led_num)
 {
     uint8_t led_state = GPIO_ReadOutputDataBit(LEDS[led_num]->gpio_port, LEDS[led_num]->gpio_type.GPIO_Pin);
     GPIO_WriteBit(LEDS[led_num]->gpio_port, LEDS[led_num]->gpio_type.GPIO_Pin, !led_state);
-}
-
-/*!
-    \brief      configure key
-    \param[in]  key_num: specify the key to be configured
-      \arg        KEY_USER: user key
-      \arg        KEY...
-    \param[in]  key_mode: specify button mode
-      \arg        KEY_MODE_GPIO: key will be used as simple IO
-      \arg        KEY_MODE_EXTI: key will be connected to EXTI line with interrupt
-    \param[out] none
-    \retval     none
-*/
-void board_key_init(key_typedef_enum key_num, keymode_typedef_enum key_mode)
-{
-    /* enable the key clock */
-    RCC_APB2PeriphClockCmd(KEYS[key_num]->key_clk, ENABLE);
-
-    /* configure button pin as input */
-    GPIO_Init(KEYS[key_num]->gpio_port, &KEYS[key_num]->gpio_type);
-
-    if (key_mode == KEY_MODE_EXTI) {
-        RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO,ENABLE);
-        
-        GPIO_EXTILineConfig(KEYS[key_num]->key_exit.port_source,KEYS[key_num]->key_exit.pin_source);
-        
-        EXTI_Init(&KEYS[key_num]->key_exit.exit_cfg);
-
-        NVIC_Init(&KEYS[key_num]->key_nvic);
-    }
-}
-
-/*!
-    \brief      return the selected key state
-    \param[in]  key: specify the key to be checked
-      \arg        KEY_USER: user key
-    \param[out] none
-    \retval     the key's GPIO pin value
-*/
-key_state board_key_state_get(key_typedef_enum key)
-{
-    key_state key_state = GPIO_ReadInputDataBit(KEYS[key]->gpio_port, KEYS[key]->gpio_type.GPIO_Pin);
-    if(key != KEY_UP)
-        return key_state;
-    else
-        return !key_state;
 }
 
 void board_com_init(uint32_t bound)

@@ -7,10 +7,11 @@
 #endif
 
 #include "stm32f10x.h"
-
+#include "key.h"
 
 
 /* exported types */
+#define LEDn                             3U
 typedef enum 
 {
     LED0,           //PB5
@@ -18,6 +19,7 @@ typedef enum
     BEEP            //PB8 BEEP
 } led_typedef_enum;
 
+#define KEYn                             3U
 typedef enum 
 {
     KEY_0 = 0,          //PE4
@@ -28,17 +30,12 @@ typedef enum
 #define COM   com0
 
 /* eval board low layer led */
-#define LEDn                             2U
 struct led_type
 {
     GPIO_InitTypeDef    gpio_type;
     GPIO_TypeDef *      gpio_port;
     uint32_t            led_clk;
 };
-
-/* user push-button */
-#define KEYn                             3U
-
 
 #define COMn                             1U
 struct com_type
@@ -51,8 +48,6 @@ struct com_type
     GPIO_TypeDef *      gpio_port;
     uint32_t            gpio_clk;
 };
-
-
 
 /* function declarations */
 /* configure led GPIO */

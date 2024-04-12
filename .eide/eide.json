@@ -28,17 +28,6 @@
           "defineList": []
         },
         {
-          "name": "StdPeriphDrivers.IWDG",
-          "incList": [
-            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.IWDG"
-          ],
-          "sourceDirList": [
-            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.IWDG"
-          ],
-          "libList": [],
-          "defineList": []
-        },
-        {
           "name": "StdPeriphDrivers.PWR",
           "incList": [
             ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.PWR"
@@ -61,29 +50,6 @@
           "defineList": []
         },
         {
-          "name": "StdPeriphDrivers.USART",
-          "incList": [
-            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.USART"
-          ],
-          "sourceDirList": [
-            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.USART"
-          ],
-          "libList": [],
-          "defineList": []
-        },
-        {
-          "name": "Startup",
-          "incList": [
-            ".pack/Keil/STM32F1xx_DFP.2.4.1/Device/Include",
-            ".eide/deps/STM32F1xx_DFP/Startup"
-          ],
-          "sourceDirList": [
-            ".eide/deps/STM32F1xx_DFP/Startup"
-          ],
-          "libList": [],
-          "defineList": []
-        },
-        {
           "name": "StdPeriphDrivers.Framework",
           "incList": [
             ".pack/Keil/STM32F1xx_DFP.2.4.1/Device/StdPeriph_Driver/inc",
@@ -91,6 +57,17 @@
           ],
           "sourceDirList": [
             ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.Framework"
+          ],
+          "libList": [],
+          "defineList": []
+        },
+        {
+          "name": "StdPeriphDrivers.USART",
+          "incList": [
+            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.USART"
+          ],
+          "sourceDirList": [
+            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.USART"
           ],
           "libList": [],
           "defineList": []
@@ -115,6 +92,21 @@
           }
         ],
         "folders": []
+      },
+      {
+        "name": "BSP",
+        "files": [],
+        "folders": [
+          {
+            "name": "KEY",
+            "files": [
+              {
+                "path": "BSP/KEY/key.c"
+              }
+            ],
+            "folders": []
+          }
+        ]
       },
       {
         "name": "FreeRTOS",
@@ -205,23 +197,6 @@
           "proType": 1,
           "speed": 8000,
           "otherCmds": ""
-        },
-        "OpenOCD": {
-          "bin": "",
-          "target": "stm32f1x",
-          "interface": "cmsis-dap",
-          "baseAddr": "0x08000000"
-        },
-        "STLink": {
-          "bin": "",
-          "proType": "SWD",
-          "resetMode": "default",
-          "runAfterProgram": true,
-          "speed": 4000,
-          "address": "0x08000000",
-          "elFile": "None",
-          "optionBytes": ".eide/debug.st.option.bytes.ini",
-          "otherCmds": ""
         }
       },
       "custom_dep": {
@@ -234,9 +209,8 @@
           "FreeRTOS/portable/GCC/ARM_CM3",
           "CMSIS",
           "CMSIS/ST/STM32F10x",
-          "Core",
-          "Board",
-          "SYSTEM"
+          "BSP/KEY",
+          "Board"
         ],
         "libList": [],
         "sourceDirList": [],
