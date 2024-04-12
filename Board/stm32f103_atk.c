@@ -63,7 +63,7 @@ static struct key_type key_up = {
     {
         GPIO_Pin_0, 
         0, 
-        GPIO_Mode_IPU
+        GPIO_Mode_IPD
     }, 
     GPIOA, 
     RCC_APB2Periph_GPIOA, 
@@ -71,7 +71,7 @@ static struct key_type key_up = {
         {
             EXTI_Line0,
             EXTI_Mode_Interrupt,
-            EXTI_Trigger_Falling,
+            EXTI_Trigger_Rising,
             ENABLE
         },
         GPIO_PortSourceGPIOA, 
@@ -196,9 +196,13 @@ void board_key_init(key_typedef_enum key_num, keymode_typedef_enum key_mode)
     \param[out] none
     \retval     the key's GPIO pin value
 */
-uint8_t board_key_state_get(key_typedef_enum key)
+key_state board_key_state_get(key_typedef_enum key)
 {
-    return GPIO_ReadInputDataBit(KEYS[key]->gpio_port, KEYS[key]->gpio_type.GPIO_Pin);
+    key_state key_state = GPIO_ReadInputDataBit(KEYS[key]->gpio_port, KEYS[key]->gpio_type.GPIO_Pin);
+    if(key != KEY_UP)
+        return key_state;
+    else
+        return !key_state;
 }
 
 void board_com_init(uint32_t bound)

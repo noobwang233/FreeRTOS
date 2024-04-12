@@ -27,6 +27,13 @@ typedef enum
 
 typedef enum 
 {
+    KEY_PRESS = 0,
+    KEY_RELEASE = !KEY_PRESS,
+} key_state;
+
+
+typedef enum 
+{
     KEY_MODE_GPIO = 0,
     KEY_MODE_EXTI = 1
 } keymode_typedef_enum;
@@ -86,7 +93,7 @@ void board_led_toggle(led_typedef_enum lednum);
 /* configure key */
 void board_key_init(key_typedef_enum key_num, keymode_typedef_enum key_mode);
 /* return the selected key state */
-uint8_t board_key_state_get(key_typedef_enum key);
+key_state board_key_state_get(key_typedef_enum key);
 /* configure COM port */
 void board_com_init(uint32_t com);
 #ifdef cplusplus
