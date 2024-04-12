@@ -20,25 +20,12 @@ typedef enum
 
 typedef enum 
 {
-    KEY_0,         //PE4
-    KEY_1,         //PE3
-    KEY_UP         //PA0  WK_UP
-} key_typedef_enum;
+    KEY_0 = 0,          //PE4
+    KEY_1,              //PE3
+    KEY_UP              //PA0  WK_UP
+} key_index;
 
-typedef enum 
-{
-    KEY_PRESS = 0,
-    KEY_RELEASE = !KEY_PRESS,
-} key_state;
-
-
-typedef enum 
-{
-    KEY_MODE_GPIO = 0,
-    KEY_MODE_EXTI = 1
-} keymode_typedef_enum;
-
-
+#define COM   com0
 
 /* eval board low layer led */
 #define LEDn                             2U
@@ -51,20 +38,6 @@ struct led_type
 
 /* user push-button */
 #define KEYn                             3U
-struct exti_type
-{
-    EXTI_InitTypeDef    exit_cfg;
-    uint8_t             port_source;
-    uint8_t             pin_source;
-};
-struct key_type
-{
-    GPIO_InitTypeDef    gpio_type;
-    GPIO_TypeDef *      gpio_port;
-    uint32_t            key_clk;
-    struct exti_type    key_exit;
-    NVIC_InitTypeDef    key_nvic;
-};
 
 
 #define COMn                             1U
@@ -79,7 +52,7 @@ struct com_type
     uint32_t            gpio_clk;
 };
 
-#define COM   com0
+
 
 /* function declarations */
 /* configure led GPIO */
@@ -90,10 +63,7 @@ void board_led_on(led_typedef_enum lednum);
 void board_led_off(led_typedef_enum lednum);
 /* toggle the selected led */
 void board_led_toggle(led_typedef_enum lednum);
-/* configure key */
-void board_key_init(key_typedef_enum key_num, keymode_typedef_enum key_mode);
-/* return the selected key state */
-key_state board_key_state_get(key_typedef_enum key);
+
 /* configure COM port */
 void board_com_init(uint32_t com);
 #ifdef cplusplus

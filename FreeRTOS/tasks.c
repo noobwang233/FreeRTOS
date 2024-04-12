@@ -352,7 +352,7 @@ PRIVILEGED_DATA static List_t xPendingReadyList;                         /*< Tas
 #endif
 
 #if ( INCLUDE_vTaskSuspend == 1 )
-    /* 被暂停的任务列表 */
+    /* 被挂起的任务列表 */
     PRIVILEGED_DATA static List_t xSuspendedTaskList; 
 
 #endif
@@ -2193,35 +2193,34 @@ BaseType_t xTaskResumeAll( void )
     TCB_t * pxTCB = NULL;
     BaseType_t xAlreadyYielded = pdFALSE;
 
-    /* If uxSchedulerSuspended is zero then this function does not match a
-     * previous call to vTaskSuspendAll(). */
+    /* 不会恢复没有被挂起的任务调度器 
+     * 当uxSchedulerSuspended为0时， 
+     * 表示任务调度器没有被挂起 
+     */
     configASSERT( uxSchedulerSuspended );
 
-    /* It is possible that an ISR caused a task to be removed from an event
-     * list while the scheduler was suspended.  If this was the case then the
-     * removed task will have been added to the xPendingReadyList.  Once the
-     * scheduler has been resumed it is safe to move all the pending ready
-     * tasks from this list into their appropriate ready list. */
+    /* ISR可能会导致某个任务从任务状态列表里删除，所以在调度器恢复的时候，要把这些任务放入待删除列表，
+       并且让pcurrentTask指向就绪列表数组里最高优先级的任务列表 */
     taskENTER_CRITICAL();
     {
         --uxSchedulerSuspended;
-
+        
+        /* 如果任务调度器挂起计数器减到0，说明任务调度器可以恢复运行了 */
         if( uxSchedulerSuspended == ( UBaseType_t ) pdFALSE )
         {
+            /* 任务数量计数器大于0 说明系统中有任务 */
             if( uxCurrentNumberOfTasks > ( UBaseType_t ) 0U )
             {
-                /* Move any readied tasks from the pending list into the
-                 * appropriate ready list. */
+                /* 把待转为就绪状态的任务加入到就绪列表中 */
                 while( listLIST_IS_EMPTY( &xPendingReadyList ) == pdFALSE )
                 {
-                    pxTCB = listGET_OWNER_OF_HEAD_ENTRY( ( &xPendingReadyList ) ); /*lint !e9079 void * is used as this macro is used with timers and co-routines too.  Alignment is known to be fine as the type of the pointer stored and retrieved is the same. */
+                    pxTCB = listGET_OWNER_OF_HEAD_ENTRY( ( &xPendingReadyList ) );
                     listREMOVE_ITEM( &( pxTCB->xEventListItem ) );
                     portMEMORY_BARRIER();
                     listREMOVE_ITEM( &( pxTCB->xStateListItem ) );
                     prvAddTaskToReadyList( pxTCB );
 
-                    /* If the moved task has a priority higher than or equal to
-                     * the current task then a yield must be performed. */
+                    /* 如果新加入的任务优先级较大，则标记需要进行任务切换 */
                     if( pxTCB->uxPriority >= pxCurrentTCB->uxPriority )
                     {
                         xYieldPending = pdTRUE;
@@ -2232,21 +2231,17 @@ BaseType_t xTaskResumeAll( void )
                     }
                 }
 
+                // 如果pxTCB非空，则表示在任务调度器挂起期间，有任务加入了待就绪列表
                 if( pxTCB != NULL )
                 {
-                    /* A task was unblocked while the scheduler was suspended,
-                     * which may have prevented the next unblock time from being
-                     * re-calculated, in which case re-calculate it now.  Mainly
-                     * important for low power tickless implementations, where
-                     * this can prevent an unnecessary exit from low power
-                     * state. */
+                    /* 因此需要重新计算下一个任务阻塞超时的时间 */
                     prvResetNextTaskUnblockTime();
                 }
 
-                /* If any ticks occurred while the scheduler was suspended then
-                 * they should be processed now.  This ensures the tick count does
-                 * not  slip, and that any delayed tasks are resumed at the correct
-                 * time. */
+                /* 处理在任务调度器挂起期间，未处理的系统使用节拍
+                 * 这样可以保证正确地计算阻塞任务的阻塞超时时间
+                 * 处理方式就是调用相同次数的函数xTaskIncrementTick()
+                 */
                 {
                     TickType_t xPendedCounts = xPendedTicks; /* Non-volatile copy. */
 
@@ -2273,7 +2268,7 @@ BaseType_t xTaskResumeAll( void )
                         mtCOVERAGE_TEST_MARKER();
                     }
                 }
-
+                /* 根据需要进行任务切换 */
                 if( xYieldPending != pdFALSE )
                 {
                     #if ( configUSE_PREEMPTION != 0 )
@@ -2281,7 +2276,7 @@ BaseType_t xTaskResumeAll( void )
                         xAlreadyYielded = pdTRUE;
                     }
                     #endif
-                    taskYIELD_IF_USING_PREEMPTION();
+                    taskYIELD_IF_USING_PREEMPTION();//如果使能抢占式调度，此时就会产生任务切换
                 }
                 else
                 {
@@ -2743,7 +2738,7 @@ BaseType_t xTaskIncrementTick( void )
     /* 调试使用 */
     traceTASK_INCREMENT_TICK( xTickCount );
 
-    /* 调度器是否暂停 */
+    /* 调度器是否挂起 */
     if( uxSchedulerSuspended == ( UBaseType_t ) pdFALSE )
     {
         /* tick计数加1，并且使用常量保存此时的tick计数防止其被改变 */
@@ -3440,7 +3435,8 @@ void vTaskMissedYield( void )
  * void prvIdleTask( void *pvParameters );
  *
  */
-static portTASK_FUNCTION( prvIdleTask, pvParameters )
+static portTASK_FUNCTION( prvIdleTask, /* 空闲任务函数的函数名 */
+                            pvParameters ) /* 空闲任务函数的函数参数 */
 {
     /* Stop warnings. */
     ( void ) pvParameters;
@@ -3448,40 +3444,33 @@ static portTASK_FUNCTION( prvIdleTask, pvParameters )
     /** THIS IS THE RTOS IDLE TASK - WHICH IS CREATED AUTOMATICALLY WHEN THE
      * SCHEDULER IS STARTED. **/
 
-    /* In case a task that has a secure context deletes itself, in which case
-     * the idle task is responsible for deleting the task's secure context, if
-     * any. */
+    /* 未定义，不用理会 */
     portALLOCATE_SECURE_CONTEXT( configMINIMAL_SECURE_STACK_SIZE );
 
     for( ; ; )
     {
-        /* See if any tasks have deleted themselves - if so then the idle task
-         * is responsible for freeing the deleted task's TCB and stack. */
+        /* 处理待删除任务列表中的待删除任务 */
         prvCheckTasksWaitingTermination();
 
         #if ( configUSE_PREEMPTION == 0 )
         {
-            /* If we are not using preemption we keep forcing a task switch to
-             * see if any other task has become available.  If we are using
-             * preemption we don't need to do this as any task becoming available
-             * will automatically get the processor anyway. */
+            /* 如果不使用抢占式调度，则强制切换任务， 
+             * 以确保其他任务（非空闲任务）可以获得CPU使用权， 
+             * 如果使能了抢占式调度，则不需要这么做， 
+             * 因为优先级高的就绪态任务会自动抢占CPU使用权 
+             */   
             taskYIELD();
         }
         #endif /* configUSE_PREEMPTION */
 
+
+        /* 宏configIDLE_SHOULD_YIELD用于使能空闲任务可以被同优先级的任务抢占 */
         #if ( ( configUSE_PREEMPTION == 1 ) && ( configIDLE_SHOULD_YIELD == 1 ) )
         {
-            /* When using preemption tasks of equal priority will be
-             * timesliced.  If a task that is sharing the idle priority is ready
-             * to run then the idle task should yield before the end of the
-             * timeslice.
-             *
-             * A critical region is not required here as we are just reading from
-             * the list, and an occasional incorrect value will not matter.  If
-             * the ready list at the idle priority contains more than one task
-             * then a task other than the idle task is ready to execute. */
+            /* 如果存在与空闲任务相同优先级的任务，则进行任务切换 */
             if( listCURRENT_LIST_LENGTH( &( pxReadyTasksLists[ tskIDLE_PRIORITY ] ) ) > ( UBaseType_t ) 1 )
             {
+                /* 注意，此时空闲任务后面的此任务和空闲任务共用一个时间片 */
                 taskYIELD();
             }
             else
@@ -3491,6 +3480,7 @@ static portTASK_FUNCTION( prvIdleTask, pvParameters )
         }
         #endif /* ( ( configUSE_PREEMPTION == 1 ) && ( configIDLE_SHOULD_YIELD == 1 ) ) */
 
+        /* 此宏用于使能空闲任务的钩子函数 * 空闲任务的钩子函数，需要用户自行定义 */
         #if ( configUSE_IDLE_HOOK == 1 )
         {
             extern void vApplicationIdleHook( void );
@@ -3504,10 +3494,7 @@ static portTASK_FUNCTION( prvIdleTask, pvParameters )
         }
         #endif /* configUSE_IDLE_HOOK */
 
-        /* This conditional compilation should use inequality to 0, not equality
-         * to 1.  This is to ensure portSUPPRESS_TICKS_AND_SLEEP() is called when
-         * user defined low power mode  implementations require
-         * configUSE_TICKLESS_IDLE to be set to a value other than 1. */
+        /* 此宏为低功耗的相关配置，configUSE_TICKLESS_IDLE设置为1时，低功耗下systick会暂停 */
         #if ( configUSE_TICKLESS_IDLE != 0 )
         {
             TickType_t xExpectedIdleTime;
@@ -3718,7 +3705,7 @@ static void prvCheckTasksWaitingTermination( void )
         {
             taskENTER_CRITICAL();
             {
-                pxTCB = listGET_OWNER_OF_HEAD_ENTRY( ( &xTasksWaitingTermination ) ); /*lint !e9079 void * is used as this macro is used with timers and co-routines too.  Alignment is known to be fine as the type of the pointer stored and retrieved is the same. */
+                pxTCB = listGET_OWNER_OF_HEAD_ENTRY( ( &xTasksWaitingTermination ) );
                 ( void ) uxListRemove( &( pxTCB->xStateListItem ) );
                 --uxCurrentNumberOfTasks;
                 --uxDeletedTasksWaitingCleanUp;
