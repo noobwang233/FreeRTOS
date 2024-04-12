@@ -2,10 +2,10 @@
 #include <stdint.h>
 
 /* private variables */
-struct led_type led0 = {{GPIO_Pin_5, GPIO_Speed_50MHz, GPIO_Mode_Out_PP}, GPIOB, RCC_APB2Periph_GPIOB};
-struct led_type led1 = {{GPIO_Pin_5, GPIO_Speed_50MHz, GPIO_Mode_Out_PP}, GPIOE, RCC_APB2Periph_GPIOE};
-struct led_type beep = {{GPIO_Pin_8, GPIO_Speed_50MHz, GPIO_Mode_Out_PP}, GPIOB, RCC_APB2Periph_GPIOB};
-struct key_type key0 = {
+static struct led_type led0 = {{GPIO_Pin_5, GPIO_Speed_50MHz, GPIO_Mode_Out_PP}, GPIOB, RCC_APB2Periph_GPIOB};
+static struct led_type led1 = {{GPIO_Pin_5, GPIO_Speed_50MHz, GPIO_Mode_Out_PP}, GPIOE, RCC_APB2Periph_GPIOE};
+static struct led_type beep = {{GPIO_Pin_8, GPIO_Speed_50MHz, GPIO_Mode_Out_PP}, GPIOB, RCC_APB2Periph_GPIOB};
+static struct key_type key0 = {
     {
         GPIO_Pin_4, 
         0, 
@@ -32,7 +32,7 @@ struct key_type key0 = {
 };
 
 
-struct key_type key1 = {
+static struct key_type key1 = {
     {
         GPIO_Pin_3, 
         0, 
@@ -59,7 +59,7 @@ struct key_type key1 = {
 };
 
 
-struct key_type key_up = {
+static struct key_type key_up = {
     {
         GPIO_Pin_0, 
         0, 
@@ -85,7 +85,7 @@ struct key_type key_up = {
     }
 };
 
-struct com_type com0 = {
+static struct com_type com0 = {
     USART1,
     {
         115200,
@@ -102,9 +102,9 @@ struct com_type com0 = {
     RCC_APB2Periph_GPIOA
 };
 
-struct key_type* KEYS[KEYn] = {&key0, &key1, &key_up};
-struct led_type* LEDS[KEYn] = {&led0, &led1, &beep};
-struct com_type* COMS[KEYn] = {&com0};
+static struct key_type* KEYS[KEYn] = {&key0, &key1, &key_up};
+static struct led_type* LEDS[KEYn] = {&led0, &led1, &beep};
+
 /*!
     \brief      configure led GPIO
     \param[in]  led_num: specify the led to be configured
