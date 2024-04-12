@@ -173,8 +173,7 @@
   "targets": {
     "Debug": {
       "excludeList": [
-        "<virtual_root>/CMSIS/startup_gd32e50x_hd.s",
-        "<virtual_root>/FreeRTOS"
+        "<virtual_root>/CMSIS/startup_gd32e50x_hd.s"
       ],
       "toolchain": "GCC",
       "compileConfig": {
