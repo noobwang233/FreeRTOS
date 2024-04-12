@@ -92,9 +92,9 @@
 #ifdef RTE_DEVICE_STDPERIPH_WWDG
 #include "stm32f10x_wwdg.h"
 #endif
-
+#ifdef RTE_DEVICE_STDPERIPH_FRAMEWORK
 #include "misc.h" /* High level functions for NVIC and SysTick (add-on to CMSIS functions) */
-
+#endif
 
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/

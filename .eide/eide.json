@@ -246,14 +246,37 @@
           ],
           "libList": [],
           "defineList": []
+        },
+        {
+          "name": "Startup",
+          "incList": [
+            ".pack/Keil/STM32F1xx_DFP.2.4.1/Device/Include",
+            ".eide/deps/STM32F1xx_DFP/Startup"
+          ],
+          "sourceDirList": [
+            ".eide/deps/STM32F1xx_DFP/Startup"
+          ],
+          "libList": [],
+          "defineList": []
+        },
+        {
+          "name": "StdPeriphDrivers.Framework",
+          "incList": [
+            ".pack/Keil/STM32F1xx_DFP.2.4.1/Device/StdPeriph_Driver/inc",
+            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.Framework"
+          ],
+          "sourceDirList": [
+            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.Framework"
+          ],
+          "libList": [],
+          "defineList": []
         }
       ]
     }
   ],
   "srcDirs": [
     ".eide/deps",
-    "APP",
-    "Core"
+    "APP"
   ],
   "virtualFolder": {
     "name": "<virtual_root>",
@@ -264,18 +287,6 @@
         "files": [
           {
             "path": "Board/stm32f103_atk.c"
-          }
-        ],
-        "folders": []
-      },
-      {
-        "name": "CMSIS",
-        "files": [
-          {
-            "path": "CMSIS/ST/STM32F10x/startup/gcc_ride7/startup_stm32f10x_hd.s"
-          },
-          {
-            "path": "CMSIS/ST/STM32F10x/system_stm32f10x.c"
           }
         ],
         "folders": []
@@ -368,6 +379,23 @@
           },
           "proType": 1,
           "speed": 8000,
+          "otherCmds": ""
+        },
+        "OpenOCD": {
+          "bin": "",
+          "target": "stm32f1x",
+          "interface": "cmsis-dap",
+          "baseAddr": "0x08000000"
+        },
+        "STLink": {
+          "bin": "",
+          "proType": "SWD",
+          "resetMode": "default",
+          "runAfterProgram": true,
+          "speed": 4000,
+          "address": "0x08000000",
+          "elFile": "None",
+          "optionBytes": ".eide/debug.st.option.bytes.ini",
           "otherCmds": ""
         }
       },
