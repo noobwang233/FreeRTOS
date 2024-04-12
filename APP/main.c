@@ -27,7 +27,7 @@ static void KEY_Task(void* parameter)
 {
     key_typedef_enum key = (key_typedef_enum)parameter;
     char * key_name = ((key == KEY_0) ? "KEY_0" : ((key == KEY_1) ? "KEY_1" : "KEY_UP"));
-    TaskHandle_t led_handle = ((key == KEY_0) ? LED0_Task_Handle : ((key == KEY_1) ? LED1_Task_Handle : KEY_UP_Task_Handle));
+    TaskHandle_t led_handle = ((key == KEY_0) ? LED0_Task_Handle : ((key == KEY_1) ? LED1_Task_Handle : LED1_Task_Handle));
     typedef enum
     {
         IDLE_STATE,   //空闲
@@ -40,7 +40,7 @@ static void KEY_Task(void* parameter)
     } ButtonState;
 
     TickType_t SHORT_CLICK_THRESHOLD = pdMS_TO_TICKS(100);     // 这个是第一次松开时间和第二次按下时间的判断时长 100ms
-    TickType_t LONG_PRESS_THRESHOLD = pdMS_TO_TICKS(1000);   // 定义长按的时间阈值1s
+    TickType_t LONG_PRESS_THRESHOLD = pdMS_TO_TICKS(800);   // 定义长按的时间阈值0.8s
     TickType_t PRESS_Time = pdMS_TO_TICKS(15);               // 判断毛刺时长 15ms
     TickType_t BUTTON_ERROR_Time = pdMS_TO_TICKS(50000);     // 按键长久状态卡死阈值50s
 
