@@ -1,7 +1,6 @@
 #include "stm32f10x.h"
 #include "misc.h"
 #include "stm32f103_atk.h"
-#include "FreeRTOS.h"
 #include "task.h"
 #include <stdint.h>
 #include <stdio.h>

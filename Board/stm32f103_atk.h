@@ -7,11 +7,8 @@
 #endif
 
 #include "stm32f10x.h"
-
-/* board perih */
-#include "key.h"
-#include "led.h"
-#include <lcd.h>
+#include "FreeRTOS.h"
+#include "bsp.h"
 
 /* exported types */
 #define LEDn                             3U
