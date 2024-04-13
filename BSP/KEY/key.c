@@ -4,8 +4,14 @@
 #include "task.h"
 #include "stdio.h"
 
+#define SHORT_CLICK     200     // è¿™ä¸ªæ˜¯ç¬¬ä¸€æ¬¡æ¾å¼€æ—¶é—´å’Œç¬¬äºŒæ¬¡æŒ‰ä¸‹æ—¶é—´çš„åˆ¤æ–­æ—¶é•¿ 200ms
+#define LONG_PRESS      700     // å®šä¹‰é•¿æŒ‰çš„æ—¶é—´é˜ˆå€¼0.7s
+#define PRESS           15      // åˆ¤æ–­æ¯›åˆºæ—¶é•¿ 15ms
+#define BUTTON_ERROR    10000   // æŒ‰é”®é•¿ä¹…çŠ¶æ€å¡æ­»é˜ˆå€¼10s
+
 extern struct key_init_type** key_cfgs;
 extern struct key_task_type** key_tasks;
+
 
 static void KEY_Task(void* parameter)
 {
@@ -13,91 +19,91 @@ static void KEY_Task(void* parameter)
 
     typedef enum
     {
-        IDLE_STATE,   //¿ÕÏĞ
-        PRESS_DETECTED_STATE,  //°´¼ü°´ÏÂ
-        RELEASE_DETECTED_STATE, //°´¼üÊÍ·Å
-        SHORT_PRESS_STATE,     //¶Ì°´
-        LONG_PRESS_STATE,     //³¤°´
-        DOUBLE_PRESS_STATE,    //Ë«»÷
-        LONG_PRESS_STATE_END //³¤°´½áÊø×´Ì¬
+        IDLE_STATE,   //ç©ºé—²
+        PRESS_DETECTED_STATE,  //æŒ‰é”®æŒ‰ä¸‹
+        RELEASE_DETECTED_STATE, //æŒ‰é”®é‡Šæ”¾
+        SHORT_PRESS_STATE,     //çŸ­æŒ‰
+        LONG_PRESS_STATE,     //é•¿æŒ‰
+        DOUBLE_PRESS_STATE,    //åŒå‡»
+        LONG_PRESS_STATE_END //é•¿æŒ‰ç»“æŸçŠ¶æ€
     } ButtonState;
 
-    TickType_t SHORT_CLICK_THRESHOLD = pdMS_TO_TICKS(100);     // Õâ¸öÊÇµÚÒ»´ÎËÉ¿ªÊ±¼äºÍµÚ¶ş´Î°´ÏÂÊ±¼äµÄÅĞ¶ÏÊ±³¤ 100ms
-    TickType_t LONG_PRESS_THRESHOLD = pdMS_TO_TICKS(800);   // ¶¨Òå³¤°´µÄÊ±¼äãĞÖµ0.8s
-    TickType_t PRESS_Time = pdMS_TO_TICKS(15);               // ÅĞ¶ÏÃ«´ÌÊ±³¤ 15ms
-    TickType_t BUTTON_ERROR_Time = pdMS_TO_TICKS(50000);     // °´¼ü³¤¾Ã×´Ì¬¿¨ËÀãĞÖµ50s
+    TickType_t SHORT_CLICK_THRESHOLD = pdMS_TO_TICKS(SHORT_CLICK);
+    TickType_t LONG_PRESS_THRESHOLD = pdMS_TO_TICKS(LONG_PRESS);       
+    TickType_t PRESS_Time = pdMS_TO_TICKS(PRESS);                  
+    TickType_t BUTTON_ERROR_Time = pdMS_TO_TICKS(BUTTON_ERROR);        
 
-    ButtonState buttonState = IDLE_STATE;  //°´¼ü×´Ì¬
-    TickType_t pressStartTime = 0;         //¼ÇÂ¼°´ÏÂÊ±¼ä
+    ButtonState buttonState = IDLE_STATE;  //æŒ‰é”®çŠ¶æ€
+    TickType_t pressStartTime = 0;         //è®°å½•æŒ‰ä¸‹æ—¶é—´
     TickType_t ReleaseTime = 0;
 
 
     while (1)
     {
-        int keyStatus = key_state_get(key->key_index);  //¼ì²â°´¼ü
+        int keyStatus = key_state_get(key->key_index);  //æ£€æµ‹æŒ‰é”®
         TickType_t currentTime = xTaskGetTickCount();
         switch (buttonState)
         {
             case IDLE_STATE:
-                if (keyStatus == 0)   //Èç¹û°´¼ü°´ÏÂ
+                if (keyStatus == 0)   //å¦‚æœæŒ‰é”®æŒ‰ä¸‹
                 {
-                    buttonState = PRESS_DETECTED_STATE; //ÇĞ»»µ½°´¼ü°´ÏÂ×´Ì¬
-                    pressStartTime = currentTime;       //¼ÇÂ¼°´ÏÂÊ±¼ä
+                    buttonState = PRESS_DETECTED_STATE; //åˆ‡æ¢åˆ°æŒ‰é”®æŒ‰ä¸‹çŠ¶æ€
+                    pressStartTime = currentTime;       //è®°å½•æŒ‰ä¸‹æ—¶é—´
                 }
                 break;
 
-            case PRESS_DETECTED_STATE:    //°´¼ü °´ÏÂ×´Ì¬
-                if (keyStatus == 1)       //¼ì²â°´¼üËÉ¿ªÊ±¼ä
+            case PRESS_DETECTED_STATE:    //æŒ‰é”® æŒ‰ä¸‹çŠ¶æ€
+                if (keyStatus == 1)       //æ£€æµ‹æŒ‰é”®æ¾å¼€æ—¶é—´
                 {
-                    ReleaseTime = currentTime;  //¼ÇÂ¼°´¼ü·ÅËÉÊ±¼ä
-                    buttonState = RELEASE_DETECTED_STATE;    //Èç¹û°´ÏÂºóÊÍ·ÅÔò½øÈëÕâÀï
+                    ReleaseTime = currentTime;  //è®°å½•æŒ‰é”®æ”¾æ¾æ—¶é—´
+                    buttonState = RELEASE_DETECTED_STATE;    //å¦‚æœæŒ‰ä¸‹åé‡Šæ”¾åˆ™è¿›å…¥è¿™é‡Œ
                 }
-                else if (currentTime - pressStartTime > LONG_PRESS_THRESHOLD) //ÅĞ¶Ï°´¼ü³¤°´µÄÊ±³¤Èç¹û·ûºÏÔòÌø×ªµ½ÕâÀï¡£
+                else if (currentTime - pressStartTime > LONG_PRESS_THRESHOLD) //åˆ¤æ–­æŒ‰é”®é•¿æŒ‰çš„æ—¶é•¿å¦‚æœç¬¦åˆåˆ™è·³è½¬åˆ°è¿™é‡Œã€‚
                 {
                     buttonState = LONG_PRESS_STATE;
                 }
-                else if(currentTime - pressStartTime > BUTTON_ERROR_Time) //·ÀÖ¹°´¼ü¿¨ËÀ
+                else if(currentTime - pressStartTime > BUTTON_ERROR_Time) //é˜²æ­¢æŒ‰é”®å¡æ­»
                 {
                     buttonState = IDLE_STATE;
                 }
                 break;
-            case LONG_PRESS_STATE_END:    //³¤°´½áÊøºóµÄ×´Ì¬Ìø×ªÕâÀïµÈ´ı°´¼üËÉ¿ª ·ÀÖ¹Ò»Ö±´¦ÓÚ³¤°´×´Ì¬   /
+            case LONG_PRESS_STATE_END:    //é•¿æŒ‰ç»“æŸåçš„çŠ¶æ€è·³è½¬è¿™é‡Œç­‰å¾…æŒ‰é”®æ¾å¼€ é˜²æ­¢ä¸€ç›´å¤„äºé•¿æŒ‰çŠ¶æ€   /
                 if (keyStatus == 1)
                 {
                     buttonState = IDLE_STATE;
                 }
                 break;
-            case RELEASE_DETECTED_STATE:    //°´¼üÊÍ·Å¹ıºóµÄ×´Ì¬
-                if ( (keyStatus == 0) && (currentTime - ReleaseTime < SHORT_CLICK_THRESHOLD))        //Èç¹û°´¼üÔÙ´Î°´ÏÂ²¢ÇÒµÚ¶ş´ÎÊ±³¤ÊÇÔÚ500msÒÔÄÚ°´ÏÂµÄ
+            case RELEASE_DETECTED_STATE:    //æŒ‰é”®é‡Šæ”¾è¿‡åçš„çŠ¶æ€
+                if ( (keyStatus == 0) && (currentTime - ReleaseTime < SHORT_CLICK_THRESHOLD))        //å¦‚æœæŒ‰é”®å†æ¬¡æŒ‰ä¸‹å¹¶ä¸”ç¬¬äºŒæ¬¡æ—¶é•¿æ˜¯åœ¨500msä»¥å†…æŒ‰ä¸‹çš„
                 {
                     buttonState = DOUBLE_PRESS_STATE;
                 }
-                else if ( (ReleaseTime - pressStartTime > PRESS_Time) && (currentTime - ReleaseTime > SHORT_CLICK_THRESHOLD)) //ÅĞ¶Ï°´¼ü°´ÏÂÊ±³¤·ÀÖ¹Ã«´Ì ÔÚÅĞ¶Ïµ±Ç°ÊÇ·ñÔÚË«»÷·¶Î§ÄÚ
+                else if ( (ReleaseTime - pressStartTime > PRESS_Time) && (currentTime - ReleaseTime > SHORT_CLICK_THRESHOLD)) //åˆ¤æ–­æŒ‰é”®æŒ‰ä¸‹æ—¶é•¿é˜²æ­¢æ¯›åˆº åœ¨åˆ¤æ–­å½“å‰æ˜¯å¦åœ¨åŒå‡»èŒƒå›´å†…
                 {
                     buttonState = SHORT_PRESS_STATE;
                 }
-                else if (currentTime - ReleaseTime > BUTTON_ERROR_Time) //°´¼ü³öÏÖÎŞ·¨ÅĞ¶ÏÇé¿ö»Øµ½³õÌ¬
+                else if (currentTime - ReleaseTime > BUTTON_ERROR_Time) //æŒ‰é”®å‡ºç°æ— æ³•åˆ¤æ–­æƒ…å†µå›åˆ°åˆæ€
                 {
                     buttonState = IDLE_STATE;
                 }
                 break;
 
             case SHORT_PRESS_STATE:
-                printf ("%s: µ¥»÷\r\n", key->key_name);
+                printf ("%s: å•å‡»\r\n", key->key_name);
                 buttonState = LONG_PRESS_STATE_END;
                 break;
 
             case LONG_PRESS_STATE:
-                printf ("%s: ³¤°´\r\n", key->key_name);
+                printf ("%s: é•¿æŒ‰\r\n", key->key_name);
                 buttonState = LONG_PRESS_STATE_END;
                 break;
 
             case DOUBLE_PRESS_STATE:
                 buttonState = LONG_PRESS_STATE_END;
-                printf ("%s: Ë«»÷\r\n", key->key_name);
+                printf ("%s: åŒå‡»\r\n", key->key_name);
                 break;
             }
-            vTaskDelay (10);
+            vTaskDelay (8);
     }
 }
 
@@ -147,17 +153,17 @@ key_gpio_state key_state_get(uint8_t key_index)
         return !key_state;
 }
 
-void key_task_init(uint8_t key_index)
+BaseType_t key_task_init(uint8_t key_index, uint16_t stack_size)
 {
     key_tasks[key_index]->key_state = RELEASE_STATE;
-    BaseType_t xReturn = pdPASS;/* ¶¨ÒåÒ»¸ö´´½¨ĞÅÏ¢·µ»ØÖµ£¬Ä¬ÈÏÎªpdPASS */
-    taskENTER_CRITICAL(); //½øÈëÁÙ½çÇø
-    xReturn = xTaskCreate(  (TaskFunction_t )KEY_Task, /* ÈÎÎñÈë¿Úº¯Êı */
-                                (const char* )key_tasks[key_index]->key_name,/* ÈÎÎñÃû×Ö */
-                            (uint16_t )256, /* ÈÎÎñÕ»´óĞ¡ */
-                            (void* )key_tasks[key_index], /* ÈÎÎñÈë¿Úº¯Êı²ÎÊı */
-                            (UBaseType_t )2, /* ÈÎÎñµÄÓÅÏÈ¼¶ */
-                            (TaskHandle_t* )&key_tasks[key_index]->key_handle);/* ÈÎÎñ¾ä±úÖ¸Õë */
+    BaseType_t xReturn = pdPASS;/* å®šä¹‰ä¸€ä¸ªåˆ›å»ºä¿¡æ¯è¿”å›å€¼ï¼Œé»˜è®¤ä¸ºpdPASS */
+    taskENTER_CRITICAL(); //è¿›å…¥ä¸´ç•ŒåŒº
+    xReturn = xTaskCreate(  (TaskFunction_t )KEY_Task, /* ä»»åŠ¡å…¥å£å‡½æ•° */
+                                (const char* )key_tasks[key_index]->key_name,/* ä»»åŠ¡åå­— */
+                            (uint16_t )stack_size, /* ä»»åŠ¡æ ˆå¤§å° */
+                            (void* )key_tasks[key_index], /* ä»»åŠ¡å…¥å£å‡½æ•°å‚æ•° */
+                            (UBaseType_t )2, /* ä»»åŠ¡çš„ä¼˜å…ˆçº§ */
+                            (TaskHandle_t* )&key_tasks[key_index]->key_handle);/* ä»»åŠ¡å¥æŸ„æŒ‡é’ˆ */
     if (pdPASS == xReturn)
     {
         printf("Create KEY_0_Task successfully!\r\n");
@@ -166,4 +172,6 @@ void key_task_init(uint8_t key_index)
     {
         printf("Create KEY_0_Task failed!\r\n");
     }
+    taskEXIT_CRITICAL(); //é€€å‡ºä¸´ç•ŒåŒº
+    return xReturn;
 }

@@ -62,50 +62,10 @@ static void TaskCreate_Task(void* parameter)
         printf("Create LED1_Task failed!\r\n");
     }
 
-    // xReturn = xTaskCreate(  (TaskFunction_t )KEY_Task, /* 任务入口函数 */
-    //                             (const char* )"KEY_0_Task",/* 任务名字 */
-    //                         (uint16_t )256, /* 任务栈大小 */
-    //                         (void* )KEY_0, /* 任务入口函数参数 */
-    //                         (UBaseType_t )2, /* 任务的优先级 */
-    //                         (TaskHandle_t* )&KEY_0_Task_Handle);/* 任务句柄指针 */
-    // if (pdPASS == xReturn)
-    // {
-    //     printf("Create KEY_0_Task successfully!\r\n");
-    // }
-    // else
-    // {
-    //     printf("Create KEY_0_Task failed!\r\n");
-    // }
+    configASSERT(key_task_init(KEY_0, 256));
+    configASSERT(key_task_init(KEY_1, 256));
+    configASSERT(key_task_init(KEY_UP, 256));
 
-    // xReturn = xTaskCreate(  (TaskFunction_t )KEY_Task, /* 任务入口函数 */
-    //                             (const char* )"KEY_1_Task",/* 任务名字 */
-    //                         (uint16_t )256, /* 任务栈大小 */
-    //                         (void* )KEY_1, /* 任务入口函数参数 */
-    //                         (UBaseType_t )2, /* 任务的优先级 */
-    //                         (TaskHandle_t* )&KEY_1_Task_Handle);/* 任务句柄指针 */
-    // if (pdPASS == xReturn)
-    // {
-    //     printf("Create KEY_1_Task successfully!\r\n");
-    // }
-    // else
-    // {
-    //     printf("Create KEY_1_Task failed!\r\n");
-    // }
-
-    // xReturn = xTaskCreate(  (TaskFunction_t )KEY_Task, /* 任务入口函数 */
-    //                             (const char* )"KEY_UP_Task",/* 任务名字 */
-    //                         (uint16_t )256, /* 任务栈大小 */
-    //                         (void* )KEY_UP, /* 任务入口函数参数 */
-    //                         (UBaseType_t )2, /* 任务的优先级 */
-    //                         (TaskHandle_t* )&KEY_UP_Task_Handle);/* 任务句柄指针 */
-    // if (pdPASS == xReturn)
-    // {
-    //     printf("Create KEY_UP_Task successfully!\r\n");
-    // }
-    // else
-    // {
-    //     printf("Create KEY_UP_Task failed!\r\n");
-    // }
     vTaskDelete(TaskCreate_Handle); //删除TaskCreate 任务
 
     taskEXIT_CRITICAL(); //退出临界区

@@ -58,7 +58,6 @@ void board_led_on(led_typedef_enum lednum);
 void board_led_off(led_typedef_enum lednum);
 /* toggle the selected led */
 void board_led_toggle(led_typedef_enum lednum);
-
 /* configure COM port */
 void board_com_init(uint32_t com);
 #ifdef cplusplus

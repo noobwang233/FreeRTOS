@@ -59,6 +59,6 @@ struct key_task_type
 void key_init(uint8_t key_num, keymode_typedef_enum key_mode);
 /* return the selected key state */
 key_gpio_state key_state_get(uint8_t key_num);
-void key_task_init(uint8_t key_num);
+BaseType_t key_task_init(uint8_t key_num, uint16_t stack_size);
 
 #endif
