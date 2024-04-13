@@ -1,8 +1,8 @@
 #include "lcd.h"
-#include "stdlib.h"
 #include "font.h"
-#include "usart.h"
-#include "delay.h"
+#include "stdio.h"
+#include "stm32f10x.h"
+#include <stdint.h>
 
 //////////////////////////////////////////////////////////////////////////////////
 //本程序只供学习使用，未经作者许可，不得用于其它任何用途
@@ -30,11 +30,13 @@
 //LCD的画笔颜色和背景色
 uint16_t POINT_COLOR=0x0000;         //画笔颜色
 uint16_t BACK_COLOR=0xFFFF;          //背景色 
-  
+
 //管理LCD重要参数
 //默认为竖屏
 _lcd_dev lcddev;
 
+static void delay_us(uint16_t delay);
+static void delay_ms(uint16_t delay);
 //写寄存器函数
 //regval:寄存器值
 void LCD_WR_REG(uint16_t regval)
@@ -53,7 +55,7 @@ void LCD_WR_DATA(uint16_t data)
 //返回值:读到的值
 uint16_t LCD_RD_DATA(void)
 {
-    vu16 ram;                   //防止被优化
+    volatile uint16_t ram;                   //防止被优化
     ram=LCD->LCD_RAM;
     return ram;	 
 }
@@ -583,7 +585,31 @@ void LCD_Set_Window(uint16_t sx, uint16_t sy, uint16_t width, uint16_t height)
         LCD_WR_DATA(theight & 0XFF);
     }
 }
+extern uint32_t SystemCoreClock;
+void delay_ms(uint16_t delay)
+{
+    volatile uint32_t i = 0;
+    volatile uint32_t j = 0;
 
+    for(j = 0; j < delay; j++)
+    {
+        for(i = 0; i < SystemCoreClock/1000; i++)
+        {
+        }
+    }
+}
+void delay_us(uint16_t delay)
+{
+    volatile uint32_t i = 0;
+    volatile uint32_t j = 0;
+
+    for(j = 0; j < delay; j++)
+    {
+        for(i = 0; i < SystemCoreClock/10000000; i++)
+        {
+        }
+    }
+}
 //初始化lcd
 //该初始化函数可以初始化各种ILI93XX液晶,但是其他函数是基于ILI9320的!!!
 //在其他型号的驱动芯片上没有测试!
@@ -2080,9 +2106,9 @@ void LCD_Init(void)
     }
     
     LCD_Display_Dir(0);         //默认为竖屏
-    LCD_LED = 1;                //点亮背光
+    LCD_BACK_LIGHT_ON; //点亮背光
     LCD_Clear(WHITE);
-}  
+}
 
 //清屏函数
 //color:要清屏的填充色

@@ -22,6 +22,9 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x_it.h"
+#include "stdio.h"
+#include <stdint.h>
+#include "stm32f103_atk.h"
 
 /** @addtogroup STM32F10x_StdPeriph_Template
   * @{
@@ -52,12 +55,27 @@ void NMI_Handler(void)
   * @param  None
   * @retval None
   */
+//硬件错误处理
 void HardFault_Handler(void)
 {
-  /* Go to infinite loop when Hard Fault exception occurs */
-  while (1)
-  {
-  }
+    unsigned int i;
+    uint8_t t=0;
+    unsigned int temp;
+    temp=SCB->CFSR;					//fault状态寄存器(@0XE000ED28)包括:MMSR,BFSR,UFSR
+    printf("CFSR:%8X\r\n",temp);	//显示错误值
+    temp=SCB->HFSR;					//硬件fault状态寄存器
+    printf("HFSR:%8X\r\n",temp);	//显示错误值
+    temp=SCB->DFSR;					//调试fault状态寄存器
+    printf("DFSR:%8X\r\n",temp);	//显示错误值
+    temp=SCB->AFSR;					//辅助fault状态寄存器
+    printf("AFSR:%8X\r\n",temp);	//显示错误值
+    while(t<5)
+    {
+        t++;
+        led_toggle(LED0);
+        //BEEP=!BEEP;
+        for(i=0;i<0X1FFFFF;i++);
+    }
 }
 
 /**

@@ -3,13 +3,14 @@
 #include "stm32f103_atk.h"
 #include "FreeRTOS.h"
 #include "task.h"
+#include <stdint.h>
 #include <stdio.h>
 
 TaskHandle_t LED0_Task_Handle = NULL; /* 任务句柄 */
 TaskHandle_t LED1_Task_Handle = NULL;
 TaskHandle_t BEEP_Task_Handle = NULL;
 TaskHandle_t TaskCreate_Handle = NULL;
-
+TaskHandle_t LCD_Task_Handle = NULL;
 static void LED_Task(void* parameter)
 {
     led_typedef_enum LED = (led_typedef_enum)parameter;
@@ -22,7 +23,18 @@ static void LED_Task(void* parameter)
     }
 }
 
-
+static void LCD_Task(void* parameter)
+{
+    uint8_t t = ' ';
+    while (1)
+    {
+        if(t > 'Z')
+            t = ' ';
+        LCD_ShowChar(10,10,t,24,0);
+        vTaskDelay(pdMS_TO_TICKS(1000)); /* 延时1s */
+        t++;
+    }
+}
 
 static void TaskCreate_Task(void* parameter)
 {
@@ -41,7 +53,12 @@ static void TaskCreate_Task(void* parameter)
                                 (void* )LED1, /* 任务入口函数参数 */
                                 (UBaseType_t )2, /* 任务的优先级 */
                                 (TaskHandle_t* )&LED1_Task_Handle)/* 任务句柄指针 */);
-
+    configASSERT(xTaskCreate(   (TaskFunction_t )LCD_Task, /* 任务入口函数 */
+                                (const char* )"LCD_Task",/* 任务名字 */
+                                (uint16_t )128, /* 任务栈大小 */
+                                (void* )NULL, /* 任务入口函数参数 */
+                                (UBaseType_t )2, /* 任务的优先级 */
+                                (TaskHandle_t* )&LCD_Task_Handle)/* 任务句柄指针 */);
     // configASSERT(xTaskCreate(   (TaskFunction_t )LED_Task, /* 任务入口函数 */
     //                             (const char* )"BEEP_Task",/* 任务名字 */
     //                             (uint16_t )128, /* 任务栈大小 */
@@ -68,7 +85,8 @@ int main()
     key_init(KEY_1, KEY_MODE_GPIO);
     key_init(KEY_UP, KEY_MODE_GPIO);
     board_com_init(115200);
-
+    LCD_Init();
+    LCD_Clear(WHITE);
     xReturn = xTaskCreate(  (TaskFunction_t )TaskCreate_Task, /* 任务入口函数 */
                                 (const char* )"TaskCreate_Task",/* 任务名字 */
                             (uint16_t )256, /* 任务栈大小 */

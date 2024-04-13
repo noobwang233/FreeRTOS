@@ -1,6 +1,6 @@
 #ifndef __LCD_H
 #define __LCD_H
-#include "stdlib.h"
+#include "stdint.h"
 
 //////////////////////////////////////////////////////////////////////////////////
 //本程序只供学习使用，未经作者许可，不得用于其它任何用途
@@ -45,13 +45,15 @@ extern uint16_t  BACK_COLOR;     //背景颜色.默认为白色
 
 //////////////////////////////////////////////////////////////////////////////////
 //-----------------LCD端口定义---------------- 
-#define	LCD_LED PBout(0) //LCD背光  PB0
+#define	LCD_BACK_LIGHT_ON   GPIO_WriteBit(GPIOB, GPIO_Pin_0, 1); //LCD背光  PB0
+#define	LCD_BACK_LIGHT_OFF  GPIO_WriteBit(GPIOB, GPIO_Pin_0, 0); //LCD背光  PB0
 
 //LCD地址结构体
 typedef struct
 {
-    vu16 LCD_REG;
-    vu16 LCD_RAM;
+    
+    volatile uint16_t LCD_REG;
+    volatile uint16_t LCD_RAM;
 } LCD_TypeDef;
 
 //使用NOR/SRAM的 Bank1.sector4,地址位HADDR[27,26]=11 A10作为数据命令区分线 

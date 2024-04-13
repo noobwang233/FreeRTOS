@@ -71,6 +71,17 @@
           ],
           "libList": [],
           "defineList": []
+        },
+        {
+          "name": "StdPeriphDrivers.FSMC",
+          "incList": [
+            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.FSMC"
+          ],
+          "sourceDirList": [
+            ".eide/deps/STM32F1xx_DFP/StdPeriphDrivers.FSMC"
+          ],
+          "libList": [],
+          "defineList": []
         }
       ]
     }
