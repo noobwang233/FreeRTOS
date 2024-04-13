@@ -105,6 +105,15 @@
               }
             ],
             "folders": []
+          },
+          {
+            "name": "LED",
+            "files": [
+              {
+                "path": "BSP/LED/led.c"
+              }
+            ],
+            "folders": []
           }
         ]
       },
@@ -216,7 +225,8 @@
           "CMSIS",
           "CMSIS/ST/STM32F10x",
           "BSP/KEY",
-          "Board"
+          "Board",
+          "BSP/LED"
         ],
         "libList": [],
         "sourceDirList": [],

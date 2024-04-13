@@ -1,6 +1,7 @@
 #include "stm32f103_atk.h"
 #include <stdint.h>
 #include "key.h"
+#include "led.h"
 
 /* private variables */
 static struct key_init_type key0 = {
@@ -86,23 +87,6 @@ static struct key_init_type key_up = {
     HIGH_VALID
 };
 
-static struct com_type com0 = {
-    USART1,
-    {
-        115200,
-        USART_WordLength_8b,
-        USART_StopBits_1,
-        USART_Parity_No,
-        USART_Mode_Rx | USART_Mode_Tx,
-        USART_HardwareFlowControl_None
-    },
-    RCC_APB2Periph_USART1, 
-    GPIO_Pin_9, 
-    GPIO_Pin_10, 
-    GPIOA, 
-    RCC_APB2Periph_GPIOA
-};
-
 static struct key_init_type* key_cfg[KEYn] = {&key0, &key1, &key_up};
 struct key_init_type** key_cfgs = key_cfg;
 
@@ -125,64 +109,30 @@ static struct key_task_type* key_task[KEYn] = {&key_0_task, &key_1_task, &key_up
 struct key_task_type** key_tasks = key_task;
 
 
-static struct led_type led0 = {{GPIO_Pin_5, GPIO_Speed_50MHz, GPIO_Mode_Out_PP}, GPIOB, RCC_APB2Periph_GPIOB};
-static struct led_type led1 = {{GPIO_Pin_5, GPIO_Speed_50MHz, GPIO_Mode_Out_PP}, GPIOE, RCC_APB2Periph_GPIOE};
-static struct led_type beep = {{GPIO_Pin_8, GPIO_Speed_50MHz, GPIO_Mode_Out_PP}, GPIOB, RCC_APB2Periph_GPIOB};
-struct led_type* LEDS[KEYn] = {&led0, &led1, &beep};
+static struct led_init_type led0 = {{GPIO_Pin_5, GPIO_Speed_50MHz, GPIO_Mode_Out_PP}, GPIOB, RCC_APB2Periph_GPIOB};
+static struct led_init_type led1 = {{GPIO_Pin_5, GPIO_Speed_50MHz, GPIO_Mode_Out_PP}, GPIOE, RCC_APB2Periph_GPIOE};
+static struct led_init_type beep = {{GPIO_Pin_8, GPIO_Speed_50MHz, GPIO_Mode_Out_PP}, GPIOB, RCC_APB2Periph_GPIOB};
+static struct led_init_type* led_cfg[LEDn] = {&led0, &led1, &beep};
+struct led_init_type** led_cfgs = led_cfg;
 
-/*!
-    \brief      configure led GPIO
-    \param[in]  led_num: specify the led to be configured
-      \arg        LED0
-    \param[out] none
-    \retval     none
-*/
-void  board_led_init (led_typedef_enum led_num)
-{
-    /* enable the led clock */
-    RCC_APB2PeriphClockCmd(LEDS[led_num]->led_clk, ENABLE);
-    /* configure led GPIO port */ 
-    GPIO_Init(LEDS[led_num]->gpio_port, &LEDS[led_num]->gpio_type);
 
-    GPIO_ResetBits(LEDS[led_num]->gpio_port, LEDS[led_num]->gpio_type.GPIO_Pin);
-}
+static struct com_type com0 = {
+    USART1,
+    {
+        115200,
+        USART_WordLength_8b,
+        USART_StopBits_1,
+        USART_Parity_No,
+        USART_Mode_Rx | USART_Mode_Tx,
+        USART_HardwareFlowControl_None
+    },
+    RCC_APB2Periph_USART1, 
+    GPIO_Pin_9, 
+    GPIO_Pin_10, 
+    GPIOA, 
+    RCC_APB2Periph_GPIOA
+};
 
-/*!
-    \brief      turn on selected led
-    \param[in]  led_num: specify the led to be turned on
-      \arg        LED0
-    \param[out] none
-    \retval     none
-*/
-void board_led_on(led_typedef_enum led_num)
-{
-    GPIO_SetBits(LEDS[led_num]->gpio_port, LEDS[led_num]->gpio_type.GPIO_Pin);
-}
-
-/*!
-    \brief      turn off selected led
-    \param[in]  led_num: specify the led to be turned off
-      \arg        LED0
-    \param[out] none
-    \retval     none
-*/
-void board_led_off(led_typedef_enum led_num)
-{
-    GPIO_ResetBits(LEDS[led_num]->gpio_port, LEDS[led_num]->gpio_type.GPIO_Pin);
-}
-
-/*!
-    \brief      toggle selected led
-    \param[in]  led_num: specify the led to be toggled
-      \arg        LED0
-    \param[out] none
-    \retval     none
-*/
-void board_led_toggle(led_typedef_enum led_num)
-{
-    uint8_t led_state = GPIO_ReadOutputDataBit(LEDS[led_num]->gpio_port, LEDS[led_num]->gpio_type.GPIO_Pin);
-    GPIO_WriteBit(LEDS[led_num]->gpio_port, LEDS[led_num]->gpio_type.GPIO_Pin, !led_state);
-}
 
 void board_com_init(uint32_t bound)
 {

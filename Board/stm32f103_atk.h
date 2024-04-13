@@ -7,7 +7,10 @@
 #endif
 
 #include "stm32f10x.h"
+
+/* board perih */
 #include "key.h"
+#include "led.h"
 
 
 /* exported types */
@@ -29,14 +32,6 @@ typedef enum
 
 #define COM   com0
 
-/* eval board low layer led */
-struct led_type
-{
-    GPIO_InitTypeDef    gpio_type;
-    GPIO_TypeDef *      gpio_port;
-    uint32_t            led_clk;
-};
-
 #define COMn                             1U
 struct com_type
 {
@@ -50,14 +45,7 @@ struct com_type
 };
 
 /* function declarations */
-/* configure led GPIO */
-void board_led_init(led_typedef_enum lednum);
-/* turn on selected led */
-void board_led_on(led_typedef_enum lednum);
-/* turn off selected led */
-void board_led_off(led_typedef_enum lednum);
-/* toggle the selected led */
-void board_led_toggle(led_typedef_enum lednum);
+
 /* configure COM port */
 void board_com_init(uint32_t com);
 #ifdef cplusplus
