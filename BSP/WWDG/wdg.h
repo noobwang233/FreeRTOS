@@ -2,23 +2,23 @@
 #define __WDG_H
 #include "sys.h"
 //////////////////////////////////////////////////////////////////////////////////	 
-//±¾³ÌĞòÖ»¹©Ñ§Ï°Ê¹ÓÃ£¬Î´¾­×÷ÕßĞí¿É£¬²»µÃÓÃÓÚÆäËüÈÎºÎÓÃÍ¾
-//Mini STM32¿ª·¢°å
-//¿´ÃÅ¹· Çı¶¯´úÂë		   
-//ÕıµãÔ­×Ó@ALIENTEK
-//¼¼ÊõÂÛÌ³:www.openedv.com
-//ĞŞ¸ÄÈÕÆÚ:2010/5/30
-//°æ±¾£ºV1.0
-//°æÈ¨ËùÓĞ£¬µÁ°æ±Ø¾¿¡£
-//Copyright(C) ÕıµãÔ­×Ó 2009-2019
+//æœ¬ç¨‹åºåªä¾›å­¦ä¹ ä½¿ç”¨ï¼Œæœªç»ä½œè€…è®¸å¯ï¼Œä¸å¾—ç”¨äºå…¶å®ƒä»»ä½•ç”¨é€”
+//Mini STM32å¼€å‘æ¿
+//çœ‹é—¨ç‹— é©±åŠ¨ä»£ç 		   
+//æ­£ç‚¹åŸå­@ALIENTEK
+//æŠ€æœ¯è®ºå›:www.openedv.com
+//ä¿®æ”¹æ—¥æœŸ:2010/5/30
+//ç‰ˆæœ¬ï¼šV1.0
+//ç‰ˆæƒæ‰€æœ‰ï¼Œç›—ç‰ˆå¿…ç©¶ã€‚
+//Copyright(C) æ­£ç‚¹åŸå­ 2009-2019
 //All rights reserved
 ////////////////////////////////////////////////////////////////////////////////// 	  
 
 
-void IWDG_Init(u8 prer,u16 rlr);
+void IWDG_Init(uint8_t prer,uint16_t rlr);
 void IWDG_Feed(void);
 
-void WWDG_Init(u8 tr,u8 wr,u32 fprer);//³õÊ¼»¯WWDG
-void WWDG_Set_Counter(u8 cnt);       //ÉèÖÃWWDGµÄ¼ÆÊıÆ÷
+void WWDG_Init(uint8_t tr,uint8_t wr,uint32_t fprer);//åˆå§‹åŒ–WWDG
+void WWDG_Set_Counter(uint8_t cnt);       //è®¾ç½®WWDGçš„è®¡æ•°å™¨
 void WWDG_NVIC_Init(void);
 #endif

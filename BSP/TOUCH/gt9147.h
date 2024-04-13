@@ -40,11 +40,11 @@
 #define GT_TP5_REG 		0X8170		//第五个触摸点数据地址  
  
  
-u8 GT9147_Send_Cfg(u8 mode);
-u8 GT9147_WR_Reg(u16 reg,u8 *buf,u8 len);
-void GT9147_RD_Reg(u16 reg,u8 *buf,u8 len); 
-u8 GT9147_Init(void);
-u8 GT9147_Scan(u8 mode); 
+uint8_t GT9147_Send_Cfg(uint8_t mode);
+uint8_t GT9147_WR_Reg(uint16_t reg,uint8_t *buf,uint8_t len);
+void GT9147_RD_Reg(uint16_t reg,uint8_t *buf,uint8_t len); 
+uint8_t GT9147_Init(void);
+uint8_t GT9147_Scan(uint8_t mode); 
 #endif
 
 

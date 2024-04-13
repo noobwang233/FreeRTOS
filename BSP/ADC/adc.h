@@ -14,7 +14,7 @@
 ////////////////////////////////////////////////////////////////////////////////// 
 
 void Adc_Init(void);
-u16  Get_Adc(u8 ch); 
-u16 Get_Adc_Average(u8 ch,u8 times); 
+uint16_t  Get_Adc(uint8_t ch); 
+uint16_t Get_Adc_Average(uint8_t ch,uint8_t times); 
  
 #endif 

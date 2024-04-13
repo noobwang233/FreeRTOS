@@ -58,7 +58,7 @@ void  Adc_Init(void)
 }				  
 //获得ADC值
 //ch:通道值 0~3
-u16 Get_Adc(u8 ch)   
+uint16_t Get_Adc(uint8_t ch)   
 {
   	//设置指定ADC的规则组通道，一个序列，采样时间
 	ADC_RegularChannelConfig(ADC1, ch, 1, ADC_SampleTime_239Cycles5 );	//ADC1,ADC通道,采样时间为239.5周期	  			    
@@ -70,10 +70,10 @@ u16 Get_Adc(u8 ch)
 	return ADC_GetConversionValue(ADC1);	//返回最近一次ADC1规则组的转换结果
 }
 
-u16 Get_Adc_Average(u8 ch,u8 times)
+uint16_t Get_Adc_Average(uint8_t ch,uint8_t times)
 {
-	u32 temp_val=0;
-	u8 t;
+	uint32_t temp_val=0;
+	uint8_t t;
 	for(t=0;t<times;t++)
 	{
 		temp_val+=Get_Adc(ch);

@@ -15,7 +15,7 @@
 ////////////////////////////////////////////////////////////////////////////////// 
 
 
-void IWDG_Init(u8 prer,u16 rlr);
+void IWDG_Init(uint8_t prer,uint16_t rlr);
 void IWDG_Feed(void);
 
 #endif

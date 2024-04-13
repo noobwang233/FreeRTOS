@@ -18,7 +18,7 @@
 //读取指定地址的半字(16位数据)
 //faddr:读地址(此地址必须为2的倍数!!)
 //返回值:对应数据.
-u16 STMFLASH_ReadHalfWord(u32 faddr)
+uint16_t STMFLASH_ReadHalfWord(uint32_t faddr)
 {
 	return *(vu16*)faddr; 
 }
@@ -27,9 +27,9 @@ u16 STMFLASH_ReadHalfWord(u32 faddr)
 //WriteAddr:起始地址
 //pBuffer:数据指针
 //NumToWrite:半字(16位)数   
-void STMFLASH_Write_NoCheck(u32 WriteAddr,u16 *pBuffer,u16 NumToWrite)   
+void STMFLASH_Write_NoCheck(uint32_t WriteAddr,uint16_t *pBuffer,uint16_t NumToWrite)   
 { 			 		 
-	u16 i;
+	uint16_t i;
 	for(i=0;i<NumToWrite;i++)
 	{
 		FLASH_ProgramHalfWord(WriteAddr,pBuffer[i]);
@@ -45,14 +45,14 @@ void STMFLASH_Write_NoCheck(u32 WriteAddr,u16 *pBuffer,u16 NumToWrite)
 #else 
 #define STM_SECTOR_SIZE	2048
 #endif		 
-u16 STMFLASH_BUF[STM_SECTOR_SIZE/2];//最多是2K字节
-void STMFLASH_Write(u32 WriteAddr,u16 *pBuffer,u16 NumToWrite)	
+uint16_t STMFLASH_BUF[STM_SECTOR_SIZE/2];//最多是2K字节
+void STMFLASH_Write(uint32_t WriteAddr,uint16_t *pBuffer,uint16_t NumToWrite)	
 {
-	u32 secpos;	   //扇区地址
-	u16 secoff;	   //扇区内偏移地址(16位字计算)
-	u16 secremain; //扇区内剩余地址(16位字计算)	   
- 	u16 i;    
-	u32 offaddr;   //去掉0X08000000后的地址
+	uint32_t secpos;	   //扇区地址
+	uint16_t secoff;	   //扇区内偏移地址(16位字计算)
+	uint16_t secremain; //扇区内剩余地址(16位字计算)	   
+ 	uint16_t i;    
+	uint32_t offaddr;   //去掉0X08000000后的地址
 	if(WriteAddr<STM32_FLASH_BASE||(WriteAddr>=(STM32_FLASH_BASE+1024*STM32_FLASH_SIZE)))return;//非法地址
 	FLASH_Unlock();						//解锁
 	offaddr=WriteAddr-STM32_FLASH_BASE;		//实际偏移地址.
@@ -96,9 +96,9 @@ void STMFLASH_Write(u32 WriteAddr,u16 *pBuffer,u16 NumToWrite)
 //ReadAddr:起始地址
 //pBuffer:数据指针
 //NumToWrite:半字(16位)数
-void STMFLASH_Read(u32 ReadAddr,u16 *pBuffer,u16 NumToRead)   	
+void STMFLASH_Read(uint32_t ReadAddr,uint16_t *pBuffer,uint16_t NumToRead)   	
 {
-	u16 i;
+	uint16_t i;
 	for(i=0;i<NumToRead;i++)
 	{
 		pBuffer[i]=STMFLASH_ReadHalfWord(ReadAddr);//读取2个字节.
@@ -109,7 +109,7 @@ void STMFLASH_Read(u32 ReadAddr,u16 *pBuffer,u16 NumToRead)
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 //WriteAddr:起始地址
 //WriteData:要写入的数据
-void Test_Write(u32 WriteAddr,u16 WriteData)   	
+void Test_Write(uint32_t WriteAddr,uint16_t WriteData)   	
 {
 	STMFLASH_Write(WriteAddr,&WriteData,1);//写入一个字 
 }

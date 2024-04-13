@@ -46,11 +46,11 @@
 
  	
 
-u8 OTT2001A_WR_Reg(u16 reg,u8 *buf,u8 len);		//写寄存器(实际无用)
-void OTT2001A_RD_Reg(u16 reg,u8 *buf,u8 len);	//读寄存器
-void OTT2001A_SensorControl(u8 cmd);//传感器打开/关闭操作
-u8 OTT2001A_Init(void); 			//4.3电容触摸屏始化函数
-u8 OTT2001A_Scan(u8 mode);			//电容触摸屏扫描函数
+uint8_t OTT2001A_WR_Reg(uint16_t reg,uint8_t *buf,uint8_t len);		//写寄存器(实际无用)
+void OTT2001A_RD_Reg(uint16_t reg,uint8_t *buf,uint8_t len);	//读寄存器
+void OTT2001A_SensorControl(uint8_t cmd);//传感器打开/关闭操作
+uint8_t OTT2001A_Init(void); 			//4.3电容触摸屏始化函数
+uint8_t OTT2001A_Scan(uint8_t mode);			//电容触摸屏扫描函数
 
 #endif
 

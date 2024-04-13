@@ -1,88 +1,88 @@
 #include "wdg.h"
 #include "led.h"
 //////////////////////////////////////////////////////////////////////////////////	 
-//±¾³ÌĞòÖ»¹©Ñ§Ï°Ê¹ÓÃ£¬Î´¾­×÷ÕßĞí¿É£¬²»µÃÓÃÓÚÆäËüÈÎºÎÓÃÍ¾
-//ALIENTEK¾«Ó¢STM32¿ª·¢°å
-//¿´ÃÅ¹· Çı¶¯´úÂë	   
-//ÕıµãÔ­×Ó@ALIENTEK
-//¼¼ÊõÂÛÌ³:www.openedv.com
-//ĞŞ¸ÄÈÕÆÚ:2012/9/3
-//°æ±¾£ºV1.1
-//°æÈ¨ËùÓĞ£¬µÁ°æ±Ø¾¿¡£
-//Copyright(C) ¹ãÖİÊĞĞÇÒíµç×Ó¿Æ¼¼ÓĞÏŞ¹«Ë¾ 2009-2019
+//æœ¬ç¨‹åºåªä¾›å­¦ä¹ ä½¿ç”¨ï¼Œæœªç»ä½œè€…è®¸å¯ï¼Œä¸å¾—ç”¨äºå…¶å®ƒä»»ä½•ç”¨é€”
+//ALIENTEKç²¾è‹±STM32å¼€å‘æ¿
+//çœ‹é—¨ç‹— é©±åŠ¨ä»£ç 	   
+//æ­£ç‚¹åŸå­@ALIENTEK
+//æŠ€æœ¯è®ºå›:www.openedv.com
+//ä¿®æ”¹æ—¥æœŸ:2012/9/3
+//ç‰ˆæœ¬ï¼šV1.1
+//ç‰ˆæƒæ‰€æœ‰ï¼Œç›—ç‰ˆå¿…ç©¶ã€‚
+//Copyright(C) å¹¿å·å¸‚æ˜Ÿç¿¼ç”µå­ç§‘æŠ€æœ‰é™å…¬å¸ 2009-2019
 //All rights reserved
 //********************************************************************************
 //V1.1 20120903
-//Ôö¼ÓÁË´°¿Ú¿´ÃÅ¹·Ïà¹Øº¯Êı¡£									  
+//å¢åŠ äº†çª—å£çœ‹é—¨ç‹—ç›¸å…³å‡½æ•°ã€‚									  
 ////////////////////////////////////////////////////////////////////////////////// 
 
-void IWDG_Init(u8 prer,u16 rlr) 
+void IWDG_Init(uint8_t prer,uint16_t rlr) 
 {	
- 	IWDG_WriteAccessCmd(IWDG_WriteAccess_Enable);  //Ê¹ÄÜ¶Ô¼Ä´æÆ÷IWDG_PRºÍIWDG_RLRµÄĞ´²Ù×÷
+ 	IWDG_WriteAccessCmd(IWDG_WriteAccess_Enable);  //ä½¿èƒ½å¯¹å¯„å­˜å™¨IWDG_PRå’ŒIWDG_RLRçš„å†™æ“ä½œ
 	
-	IWDG_SetPrescaler(prer);  //ÉèÖÃIWDGÔ¤·ÖÆµÖµ:ÉèÖÃIWDGÔ¤·ÖÆµÖµÎª64
+	IWDG_SetPrescaler(prer);  //è®¾ç½®IWDGé¢„åˆ†é¢‘å€¼:è®¾ç½®IWDGé¢„åˆ†é¢‘å€¼ä¸º64
 	
-	IWDG_SetReload(rlr);  //ÉèÖÃIWDGÖØ×°ÔØÖµ
+	IWDG_SetReload(rlr);  //è®¾ç½®IWDGé‡è£…è½½å€¼
 	
-	IWDG_ReloadCounter();  //°´ÕÕIWDGÖØ×°ÔØ¼Ä´æÆ÷µÄÖµÖØ×°ÔØIWDG¼ÆÊıÆ÷
+	IWDG_ReloadCounter();  //æŒ‰ç…§IWDGé‡è£…è½½å¯„å­˜å™¨çš„å€¼é‡è£…è½½IWDGè®¡æ•°å™¨
 	
-	IWDG_Enable();  //Ê¹ÄÜIWDG
+	IWDG_Enable();  //ä½¿èƒ½IWDG
 }
-//Î¹¶ÀÁ¢¿´ÃÅ¹·
+//å–‚ç‹¬ç«‹çœ‹é—¨ç‹—
 void IWDG_Feed(void)
 {   
- 	IWDG_ReloadCounter();	//ÖØÔØ¼ÆÊıÖµ									   
+ 	IWDG_ReloadCounter();	//é‡è½½è®¡æ•°å€¼									   
 }
 
 
-//±£´æWWDG¼ÆÊıÆ÷µÄÉèÖÃÖµ,Ä¬ÈÏÎª×î´ó. 
-u8 WWDG_CNT=0x7f; 
-//³õÊ¼»¯´°¿Ú¿´ÃÅ¹· 	
-//tr   :T[6:0],¼ÆÊıÆ÷Öµ 
-//wr   :W[6:0],´°¿ÚÖµ 
-//fprer:·ÖÆµÏµÊı£¨WDGTB£©,½ö×îµÍ2Î»ÓĞĞ§ 
+//ä¿å­˜WWDGè®¡æ•°å™¨çš„è®¾ç½®å€¼,é»˜è®¤ä¸ºæœ€å¤§. 
+uint8_t WWDG_CNT=0x7f; 
+//åˆå§‹åŒ–çª—å£çœ‹é—¨ç‹— 	
+//tr   :T[6:0],è®¡æ•°å™¨å€¼ 
+//wr   :W[6:0],çª—å£å€¼ 
+//fprer:åˆ†é¢‘ç³»æ•°ï¼ˆWDGTBï¼‰,ä»…æœ€ä½2ä½æœ‰æ•ˆ 
 //Fwwdg=PCLK1/(4096*2^fprer). 
 
-void WWDG_Init(u8 tr,u8 wr,u32 fprer)
+void WWDG_Init(uint8_t tr,uint8_t wr,uint32_t fprer)
 { 
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_WWDG, ENABLE);  //   WWDGÊ±ÖÓÊ¹ÄÜ
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_WWDG, ENABLE);  //   WWDGæ—¶é’Ÿä½¿èƒ½
 
-	WWDG_CNT=tr&WWDG_CNT;   //³õÊ¼»¯WWDG_CNT.   
-	WWDG_SetPrescaler(fprer);////ÉèÖÃIWDGÔ¤·ÖÆµÖµ
+	WWDG_CNT=tr&WWDG_CNT;   //åˆå§‹åŒ–WWDG_CNT.   
+	WWDG_SetPrescaler(fprer);////è®¾ç½®IWDGé¢„åˆ†é¢‘å€¼
 
-	WWDG_SetWindowValue(wr);//ÉèÖÃ´°¿ÚÖµ
+	WWDG_SetWindowValue(wr);//è®¾ç½®çª—å£å€¼
 
-	WWDG_Enable(WWDG_CNT);	 //Ê¹ÄÜ¿´ÃÅ¹· ,	ÉèÖÃ counter .                  
+	WWDG_Enable(WWDG_CNT);	 //ä½¿èƒ½çœ‹é—¨ç‹— ,	è®¾ç½® counter .                  
 
-	WWDG_ClearFlag();//Çå³ıÌáÇ°»½ĞÑÖĞ¶Ï±êÖ¾Î» 
+	WWDG_ClearFlag();//æ¸…é™¤æå‰å”¤é†’ä¸­æ–­æ ‡å¿—ä½ 
 
-	WWDG_NVIC_Init();//³õÊ¼»¯´°¿Ú¿´ÃÅ¹· NVIC
+	WWDG_NVIC_Init();//åˆå§‹åŒ–çª—å£çœ‹é—¨ç‹— NVIC
 
-	WWDG_EnableIT(); //¿ªÆô´°¿Ú¿´ÃÅ¹·ÖĞ¶Ï
+	WWDG_EnableIT(); //å¼€å¯çª—å£çœ‹é—¨ç‹—ä¸­æ–­
 } 
-//ÖØÉèÖÃWWDG¼ÆÊıÆ÷µÄÖµ
-void WWDG_Set_Counter(u8 cnt)
+//é‡è®¾ç½®WWDGè®¡æ•°å™¨çš„å€¼
+void WWDG_Set_Counter(uint8_t cnt)
 {
-    WWDG_Enable(cnt);//Ê¹ÄÜ¿´ÃÅ¹· ,	ÉèÖÃ counter .	 
+    WWDG_Enable(cnt);//ä½¿èƒ½çœ‹é—¨ç‹— ,	è®¾ç½® counter .	 
 }
-//´°¿Ú¿´ÃÅ¹·ÖĞ¶Ï·şÎñ³ÌĞò
+//çª—å£çœ‹é—¨ç‹—ä¸­æ–­æœåŠ¡ç¨‹åº
 void WWDG_NVIC_Init()
 {
 	NVIC_InitTypeDef NVIC_InitStructure;
-	NVIC_InitStructure.NVIC_IRQChannel = WWDG_IRQn;    //WWDGÖĞ¶Ï
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;   //ÇÀÕ¼2£¬×ÓÓÅÏÈ¼¶3£¬×é2	
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 3;	 //ÇÀÕ¼2£¬×ÓÓÅÏÈ¼¶3£¬×é2	
+	NVIC_InitStructure.NVIC_IRQChannel = WWDG_IRQn;    //WWDGä¸­æ–­
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;   //æŠ¢å 2ï¼Œå­ä¼˜å…ˆçº§3ï¼Œç»„2	
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 3;	 //æŠ¢å 2ï¼Œå­ä¼˜å…ˆçº§3ï¼Œç»„2	
   NVIC_InitStructure.NVIC_IRQChannelCmd=ENABLE; 
-	NVIC_Init(&NVIC_InitStructure);//NVIC³õÊ¼»¯
+	NVIC_Init(&NVIC_InitStructure);//NVICåˆå§‹åŒ–
 }
 
 void WWDG_IRQHandler(void)
 	{
 
-	WWDG_SetCounter(WWDG_CNT);	  //µ±½ûµô´Ë¾äºó,´°¿Ú¿´ÃÅ¹·½«²úÉú¸´Î»
+	WWDG_SetCounter(WWDG_CNT);	  //å½“ç¦æ‰æ­¤å¥å,çª—å£çœ‹é—¨ç‹—å°†äº§ç”Ÿå¤ä½
 
-	WWDG_ClearFlag();	  //Çå³ıÌáÇ°»½ĞÑÖĞ¶Ï±êÖ¾Î»
+	WWDG_ClearFlag();	  //æ¸…é™¤æå‰å”¤é†’ä¸­æ–­æ ‡å¿—ä½
 
-	LED1=!LED1;		 //LED×´Ì¬·­×ª
+	LED1=!LED1;		 //LEDçŠ¶æ€ç¿»è½¬
 	}
 

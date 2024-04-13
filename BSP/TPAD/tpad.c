@@ -9,11 +9,11 @@ vu16 tpad_default_val=0;//空载的时候(没有手按下),计数器需要的时间
 //初始化触摸按键
 //获得空载的时候触摸按键的取值.
 //返回值:0,初始化成功;1,初始化失败
-u8 TPAD_Init(u8 psc)
+uint8_t TPAD_Init(uint8_t psc)
 {
-	u16 buf[10];
-	u16 temp;
-	u8 j,i;
+	uint16_t buf[10];
+	uint16_t temp;
+	uint8_t j,i;
 	TIM5_CH2_Cap_Init(TPAD_ARR_MAX_VAL,psc-1);//以1Mhz的频率计数 
 	for(i=0;i<10;i++)//连续读取10次
 	{				 
@@ -64,7 +64,7 @@ void TPAD_Reset(void)
 }
 //得到定时器捕获值
 //如果超时,则直接返回定时器的计数值.
-u16 TPAD_Get_Val(void)
+uint16_t TPAD_Get_Val(void)
 {				   
 	TPAD_Reset();
 	while(TIM_GetFlagStatus(TIM5, TIM_IT_CC2) == RESET)//等待捕获上升沿
@@ -76,10 +76,10 @@ u16 TPAD_Get_Val(void)
 //读取n次,取最大值
 //n：连续获取的次数
 //返回值：n次读数里面读到的最大读数值
-u16 TPAD_Get_MaxVal(u8 n)
+uint16_t TPAD_Get_MaxVal(uint8_t n)
 {
-	u16 temp=0;
-	u16 res=0;
+	uint16_t temp=0;
+	uint16_t res=0;
 	while(n--)
 	{
 		temp=TPAD_Get_Val();//得到一次值
@@ -91,12 +91,12 @@ u16 TPAD_Get_MaxVal(u8 n)
 //mode:0,不支持连续触发(按下一次必须松开才能按下一次);1,支持连续触发(可以一直按下)
 //返回值:0,没有按下;1,有按下;										  
 #define TPAD_GATE_VAL 	100	//触摸的门限值,也就是必须大于tpad_default_val+TPAD_GATE_VAL,才认为是有效触摸.
-u8 TPAD_Scan(u8 mode)
+uint8_t TPAD_Scan(uint8_t mode)
 {
-	static u8 keyen=0;	//0,可以开始检测;>0,还不能开始检测	 
-	u8 res=0;
-	u8 sample=3;		//默认采样次数为3次	 
-	u16 rval;
+	static uint8_t keyen=0;	//0,可以开始检测;>0,还不能开始检测	 
+	uint8_t res=0;
+	uint8_t sample=3;		//默认采样次数为3次	 
+	uint16_t rval;
 	if(mode)
 	{
 		sample=6;		//支持连按的时候，设置采样次数为6次
@@ -113,7 +113,7 @@ u8 TPAD_Scan(u8 mode)
 	return res;
 }	
 //定时器2通道2输入捕获配置
-void TIM5_CH2_Cap_Init(u16 arr,u16 psc)
+void TIM5_CH2_Cap_Init(uint16_t arr,uint16_t psc)
 {
 	GPIO_InitTypeDef  GPIO_InitStructure; 
    	TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;

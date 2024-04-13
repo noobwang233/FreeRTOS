@@ -17,11 +17,11 @@
 //CAN接收RX0中断使能
 #define CAN_RX0_INT_ENABLE	0		//0,不使能;1,使能.								    
 										 							 				    
-u8 CAN_Mode_Init(u8 tsjw,u8 tbs2,u8 tbs1,u16 brp,u8 mode);//CAN初始化
+uint8_t CAN_Mode_Init(uint8_t tsjw,uint8_t tbs2,uint8_t tbs1,uint16_t brp,uint8_t mode);//CAN初始化
  
-u8 Can_Send_Msg(u8* msg,u8 len);						//发送数据
+uint8_t Can_Send_Msg(uint8_t* msg,uint8_t len);						//发送数据
 
-u8 Can_Receive_Msg(u8 *buf);							//接收数据
+uint8_t Can_Receive_Msg(uint8_t *buf);							//接收数据
 #endif
 
 

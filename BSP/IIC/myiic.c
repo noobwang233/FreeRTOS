@@ -50,9 +50,9 @@ void IIC_Stop(void)
 //等待应答信号到来
 //返回值：1，接收应答失败
 //        0，接收应答成功
-u8 IIC_Wait_Ack(void)
+uint8_t IIC_Wait_Ack(void)
 {
-	u8 ucErrTime=0;
+	uint8_t ucErrTime=0;
 	SDA_IN();      //SDA设置为输入  
 	IIC_SDA=1;delay_us(1);	   
 	IIC_SCL=1;delay_us(1);	 
@@ -94,9 +94,9 @@ void IIC_NAck(void)
 //返回从机有无应答
 //1，有应答
 //0，无应答			  
-void IIC_Send_Byte(u8 txd)
+void IIC_Send_Byte(uint8_t txd)
 {                        
-    u8 t;   
+    uint8_t t;   
 	SDA_OUT(); 	    
     IIC_SCL=0;//拉低时钟开始数据传输
     for(t=0;t<8;t++)
@@ -111,7 +111,7 @@ void IIC_Send_Byte(u8 txd)
     }	 
 } 	    
 //读1个字节，ack=1时，发送ACK，ack=0，发送nACK   
-u8 IIC_Read_Byte(unsigned char ack)
+uint8_t IIC_Read_Byte(unsigned char ack)
 {
 	unsigned char i,receive=0;
 	SDA_IN();//SDA设置为输入

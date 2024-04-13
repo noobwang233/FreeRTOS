@@ -57,7 +57,7 @@ void SPI2_Init(void)
 //SPI_BaudRatePrescaler_16  16分频  
 //SPI_BaudRatePrescaler_256 256分频 
   
-void SPI2_SetSpeed(u8 SPI_BaudRatePrescaler)
+void SPI2_SetSpeed(uint8_t SPI_BaudRatePrescaler)
 {
   assert_param(IS_SPI_BAUDRATE_PRESCALER(SPI_BaudRatePrescaler));
 	SPI2->CR1&=0XFFC7;
@@ -69,9 +69,9 @@ void SPI2_SetSpeed(u8 SPI_BaudRatePrescaler)
 //SPIx 读写一个字节
 //TxData:要写入的字节
 //返回值:读取到的字节
-u8 SPI2_ReadWriteByte(u8 TxData)
+uint8_t SPI2_ReadWriteByte(uint8_t TxData)
 {		
-	u8 retry=0;				 	
+	uint8_t retry=0;				 	
 	while (SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE) == RESET) //检查指定的SPI标志位设置与否:发送缓存空标志位
 		{
 		retry++;

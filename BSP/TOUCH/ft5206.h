@@ -40,10 +40,10 @@
 #define FT_ID_G_PERIODACTIVE	0x88   		//激活状态周期设置寄存器
 
 
-u8 FT5206_WR_Reg(u16 reg,u8 *buf,u8 len);
-void FT5206_RD_Reg(u16 reg,u8 *buf,u8 len);
-u8 FT5206_Init(void);
-u8 FT5206_Scan(u8 mode);
+uint8_t FT5206_WR_Reg(uint16_t reg,uint8_t *buf,uint8_t len);
+void FT5206_RD_Reg(uint16_t reg,uint8_t *buf,uint8_t len);
+uint8_t FT5206_Init(void);
+uint8_t FT5206_Scan(uint8_t mode);
 
 #endif
 

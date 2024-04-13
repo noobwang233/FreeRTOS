@@ -23,7 +23,7 @@
 //arr：自动重装值。
 //psc：时钟预分频数
 //这里使用的是定时器3!
-void TIM3_Int_Init(u16 arr,u16 psc)
+void TIM3_Int_Init(uint16_t arr,uint16_t psc)
 {
   TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
 	NVIC_InitTypeDef NVIC_InitStructure;
@@ -64,7 +64,7 @@ void TIM3_IRQHandler(void)   //TIM3中断
 //PWM输出初始化
 //arr：自动重装值
 //psc：时钟预分频数
-void TIM3_PWM_Init(u16 arr,u16 psc)
+void TIM3_PWM_Init(uint16_t arr,uint16_t psc)
 {  
 	GPIO_InitTypeDef GPIO_InitStructure;
 	TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;

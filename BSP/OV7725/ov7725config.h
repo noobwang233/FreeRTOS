@@ -162,7 +162,7 @@
 #define DSPAuto   0xAC
 
 //初始化寄存器序列及其对应的值
-const u8 ov7725_init_reg_tb1[][2]= 
+const uint8_t ov7725_init_reg_tb1[][2]= 
 {   
 	/*输出窗口设置*/
 	{CLKRC,     0x00}, //clock config

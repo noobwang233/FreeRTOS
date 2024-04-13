@@ -19,7 +19,7 @@
 #define LSENS_ADC_CHX		ADC_Channel_6	//定义光敏传感器所在的ADC通道编号
     
 void Lsens_Init(void); 				//初始化光敏传感器
-u8 Lsens_Get_Val(void);				//读取光敏传感器的值
+uint8_t Lsens_Get_Val(void);				//读取光敏传感器的值
 #endif 
 
 

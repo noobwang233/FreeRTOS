@@ -27,10 +27,10 @@ void Lsens_Init(void)
 }
 //读取Light Sens的值
 //0~100:0,最暗;100,最亮 
-u8 Lsens_Get_Val(void)
+uint8_t Lsens_Get_Val(void)
 {
-	u32 temp_val=0;
-	u8 t;
+	uint32_t temp_val=0;
+	uint8_t t;
 	for(t=0;t<LSENS_READ_TIMES;t++)
 	{
 		temp_val+=Get_Adc3(LSENS_ADC_CHX);	//读取ADC值
@@ -38,7 +38,7 @@ u8 Lsens_Get_Val(void)
 	}
 	temp_val/=LSENS_READ_TIMES;//得到平均值 
 	if(temp_val>4000)temp_val=4000;
-	return (u8)(100-(temp_val/40));
+	return (uint8_t)(100-(temp_val/40));
 }
 
 

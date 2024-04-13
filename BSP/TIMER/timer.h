@@ -15,6 +15,6 @@
 //////////////////////////////////////////////////////////////////////////////////   
 
 
-void TIM3_Int_Init(u16 arr,u16 psc);
+void TIM3_Int_Init(uint16_t arr,uint16_t psc);
  
 #endif

@@ -72,9 +72,9 @@ void SCCB_No_Ack(void)
 }
 //SCCB,写入一个字节
 //返回值:0,成功;1,失败. 
-u8 SCCB_WR_Byte(u8 dat)
+uint8_t SCCB_WR_Byte(uint8_t dat)
 {
-	u8 j,res;	 
+	uint8_t j,res;	 
 	for(j=0;j<8;j++) //循环8次发送数据
 	{
 		if(dat&0x80)SCCB_SDA=1;	
@@ -98,9 +98,9 @@ u8 SCCB_WR_Byte(u8 dat)
 //SCCB 读取一个字节
 //在SCL的上升沿,数据锁存
 //返回值:读到的数据
-u8 SCCB_RD_Byte(void)
+uint8_t SCCB_RD_Byte(void)
 {
-	u8 temp=0,j;    
+	uint8_t temp=0,j;    
 	SCCB_SDA_IN();		//设置SDA为输入  
 	for(j=8;j>0;j--) 	//循环8次接收数据
 	{		     	  
@@ -116,9 +116,9 @@ u8 SCCB_RD_Byte(void)
 } 							    
 //写寄存器
 //返回值:0,成功;1,失败.
-u8 SCCB_WR_Reg(u8 reg,u8 data)
+uint8_t SCCB_WR_Reg(uint8_t reg,uint8_t data)
 {
-	u8 res=0;
+	uint8_t res=0;
 	SCCB_Start(); 					//启动SCCB传输
 	if(SCCB_WR_Byte(SCCB_ID))res=1;	//写器件ID	  
 	delay_us(100);
@@ -130,9 +130,9 @@ u8 SCCB_WR_Reg(u8 reg,u8 data)
 }		  					    
 //读寄存器
 //返回值:读到的寄存器值
-u8 SCCB_RD_Reg(u8 reg)
+uint8_t SCCB_RD_Reg(uint8_t reg)
 {
-	u8 val=0;
+	uint8_t val=0;
 	SCCB_Start(); 				//启动SCCB传输
 	SCCB_WR_Byte(SCCB_ID);		//写器件ID	  
 	delay_us(100);	 

@@ -32,15 +32,15 @@ _m_tp_dev tp_dev=
 	0,	  	 		
 };					
 //默认为touchtype=0的数据.
-u8 CMD_RDX=0XD0;
-u8 CMD_RDY=0X90;
+uint8_t CMD_RDX=0XD0;
+uint8_t CMD_RDY=0X90;
  	 			    					   
 //SPI写数据
 //向触摸屏IC写入1byte数据    
 //num:要写入的数据
-void TP_Write_Byte(u8 num)    
+void TP_Write_Byte(uint8_t num)    
 {  
-	u8 count=0;   
+	uint8_t count=0;   
 	for(count=0;count<8;count++)  
 	{ 	  
 		if(num&0x80)TDIN=1;  
@@ -55,10 +55,10 @@ void TP_Write_Byte(u8 num)
 //从触摸屏IC读取adc值
 //CMD:指令
 //返回值:读到的数据	   
-u16 TP_Read_AD(u8 CMD)	  
+uint16_t TP_Read_AD(uint8_t CMD)	  
 { 	 
-	u8 count=0; 	  
-	u16 Num=0; 
+	uint8_t count=0; 	  
+	uint16_t Num=0; 
 	TCLK=0;		//先拉低时钟 	 
 	TDIN=0; 	//拉低数据线
 	TCS=0; 		//选中触摸屏IC
@@ -88,12 +88,12 @@ u16 TP_Read_AD(u8 CMD)
 //返回值:读到的数据
 #define READ_TIMES 5 	//读取次数
 #define LOST_VAL 1	  	//丢弃值
-u16 TP_Read_XOY(u8 xy)
+uint16_t TP_Read_XOY(uint8_t xy)
 {
-	u16 i, j;
-	u16 buf[READ_TIMES];
-	u16 sum=0;
-	u16 temp;
+	uint16_t i, j;
+	uint16_t buf[READ_TIMES];
+	uint16_t sum=0;
+	uint16_t temp;
 	for(i=0;i<READ_TIMES;i++)buf[i]=TP_Read_AD(xy);		 		    
 	for(i=0;i<READ_TIMES-1; i++)//排序
 	{
@@ -116,9 +116,9 @@ u16 TP_Read_XOY(u8 xy)
 //最小值不能少于100.
 //x,y:读取到的坐标值
 //返回值:0,失败;1,成功。
-u8 TP_Read_XY(u16 *x,u16 *y)
+uint8_t TP_Read_XY(uint16_t *x,uint16_t *y)
 {
-	u16 xtemp,ytemp;			 	 		  
+	uint16_t xtemp,ytemp;			 	 		  
 	xtemp=TP_Read_XOY(CMD_RDX);
 	ytemp=TP_Read_XOY(CMD_RDY);	  												   
 	//if(xtemp<100||ytemp<100)return 0;//读数失败
@@ -132,11 +132,11 @@ u8 TP_Read_XY(u16 *x,u16 *y)
 //x,y:读取到的坐标值
 //返回值:0,失败;1,成功。
 #define ERR_RANGE 50 //误差范围 
-u8 TP_Read_XY2(u16 *x,u16 *y) 
+uint8_t TP_Read_XY2(uint16_t *x,uint16_t *y) 
 {
-	u16 x1,y1;
- 	u16 x2,y2;
- 	u8 flag;    
+	uint16_t x1,y1;
+ 	uint16_t x2,y2;
+ 	uint8_t flag;    
     flag=TP_Read_XY(&x1,&y1);   
     if(flag==0)return(0);
     flag=TP_Read_XY(&x2,&y2);	   
@@ -155,7 +155,7 @@ u8 TP_Read_XY2(u16 *x,u16 *y)
 //用来校准用的
 //x,y:坐标
 //color:颜色
-void TP_Drow_Touch_Point(u16 x,u16 y,u16 color)
+void TP_Drow_Touch_Point(uint16_t x,uint16_t y,uint16_t color)
 {
 	POINT_COLOR=color;
 	LCD_DrawLine(x-12,y,x+13,y);//横线
@@ -169,7 +169,7 @@ void TP_Drow_Touch_Point(u16 x,u16 y,u16 color)
 //画一个大点(2*2的点)		   
 //x,y:坐标
 //color:颜色
-void TP_Draw_Big_Point(u16 x,u16 y,u16 color)
+void TP_Draw_Big_Point(uint16_t x,uint16_t y,uint16_t color)
 {	    
 	POINT_COLOR=color;
 	LCD_DrawPoint(x,y);//中心点 
@@ -182,7 +182,7 @@ void TP_Draw_Big_Point(u16 x,u16 y,u16 color)
 //tp:0,屏幕坐标;1,物理坐标(校准等特殊场合用)
 //返回值:当前触屏状态.
 //0,触屏无触摸;1,触屏有触摸
-u8 TP_Scan(u8 tp)
+uint8_t TP_Scan(uint8_t tp)
 {			   
 	if(PEN==0)//有按键按下
 	{
@@ -219,19 +219,19 @@ u8 TP_Scan(u8 tp)
 //保存校准参数										    
 void TP_Save_Adjdata(void)
 {
-	AT24CXX_Write(SAVE_ADDR_BASE,(u8*)&tp_dev.xfac,14);	//强制保存&tp_dev.xfac地址开始的14个字节数据，即保存到tp_dev.touchtype
+	AT24CXX_Write(SAVE_ADDR_BASE,(uint8_t*)&tp_dev.xfac,14);	//强制保存&tp_dev.xfac地址开始的14个字节数据，即保存到tp_dev.touchtype
  	AT24CXX_WriteOneByte(SAVE_ADDR_BASE+14,0X0A);		//在最后，写0X0A标记校准过了
 }
 //得到保存在EEPROM里面的校准值
 //返回值：1，成功获取数据
 //        0，获取失败，要重新校准
-u8 TP_Get_Adjdata(void)
+uint8_t TP_Get_Adjdata(void)
 {					  
-	u8 temp;
+	uint8_t temp;
 	temp=AT24CXX_ReadOneByte(SAVE_ADDR_BASE+14);//读取标记字,看是否校准过！ 		 
 	if(temp==0X0A)//触摸屏已经校准过了			   
  	{ 
-		AT24CXX_Read(SAVE_ADDR_BASE,(u8*)&tp_dev.xfac,14);//读取之前保存的校准数据 
+		AT24CXX_Read(SAVE_ADDR_BASE,(uint8_t*)&tp_dev.xfac,14);//读取之前保存的校准数据 
 		if(tp_dev.touchtype)//X,Y方向与屏幕相反
 		{
 			CMD_RDX=0X90;
@@ -246,10 +246,10 @@ u8 TP_Get_Adjdata(void)
 	return 0;
 }	 
 //提示字符串
-u8* const TP_REMIND_MSG_TBL="Please use the stylus click the cross on the screen.The cross will always move until the screen adjustment is completed.";
+uint8_t* const TP_REMIND_MSG_TBL="Please use the stylus click the cross on the screen.The cross will always move until the screen adjustment is completed.";
  					  
 //提示校准结果(各个参数)
-void TP_Adj_Info_Show(u16 x0,u16 y0,u16 x1,u16 y1,u16 x2,u16 y2,u16 x3,u16 y3,u16 fac)
+void TP_Adj_Info_Show(uint16_t x0,uint16_t y0,uint16_t x1,uint16_t y1,uint16_t x2,uint16_t y2,uint16_t x3,uint16_t y3,uint16_t fac)
 {	  
 	POINT_COLOR=RED;
 	LCD_ShowString(40,160,lcddev.width,lcddev.height,16,"x1:");
@@ -277,12 +277,12 @@ void TP_Adj_Info_Show(u16 x0,u16 y0,u16 x1,u16 y1,u16 x2,u16 y2,u16 x3,u16 y3,u1
 //得到四个校准参数
 void TP_Adjust(void)
 {								 
-	u16 pos_temp[4][2];//坐标缓存值
-	u8  cnt=0;	
-	u16 d1,d2;
-	u32 tem1,tem2;
+	uint16_t pos_temp[4][2];//坐标缓存值
+	uint8_t  cnt=0;	
+	uint16_t d1,d2;
+	uint32_t tem1,tem2;
 	double fac; 	
-	u16 outtime=0;
+	uint16_t outtime=0;
  	cnt=0;				
 	POINT_COLOR=BLUE;
 	BACK_COLOR =WHITE;
@@ -290,7 +290,7 @@ void TP_Adjust(void)
 	POINT_COLOR=RED;//红色 
 	LCD_Clear(WHITE);//清屏 	   
 	POINT_COLOR=BLACK;
-	LCD_ShowString(40,40,160,100,16,(u8*)TP_REMIND_MSG_TBL);//显示提示信息
+	LCD_ShowString(40,40,160,100,16,(uint8_t*)TP_REMIND_MSG_TBL);//显示提示信息
 	TP_Drow_Touch_Point(20,20,RED);//画点1 
 	tp_dev.sta=0;//消除触发信号 
 	tp_dev.xfac=0;//xfac用来标记是否校准过,所以校准之前必须清掉!以免错误	 
@@ -428,7 +428,7 @@ void TP_Adjust(void)
 //触摸屏初始化  		    
 //返回值:0,没有进行校准
 //       1,进行过校准
-u8 TP_Init(void)
+uint8_t TP_Init(void)
 {	
 	if(lcddev.id==0X5510)				//4.3寸电容触摸屏
 	{

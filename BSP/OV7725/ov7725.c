@@ -16,10 +16,10 @@
 //初始化OV7725
 //返回0:成功
 //返回其他值:错误代码
-u8 OV7725_Init(void)
+uint8_t OV7725_Init(void)
 {
-	u16 i=0;
-	u16 reg=0;
+	uint16_t i=0;
+	uint16_t reg=0;
 	//设置IO
  	GPIO_InitTypeDef  GPIO_InitStructure;
  	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA|RCC_APB2Periph_GPIOB|RCC_APB2Periph_GPIOC|RCC_APB2Periph_GPIOD|RCC_APB2Periph_GPIOG|RCC_APB2Periph_AFIO, ENABLE);//使能相关端口时钟
@@ -88,7 +88,7 @@ u8 OV7725_Init(void)
 //3,办公室
 //4,家里
 //5,夜晚
-void OV7725_Light_Mode(u8 mode)
+void OV7725_Light_Mode(uint8_t mode)
 {
 	switch(mode)
 	{
@@ -151,7 +151,7 @@ void OV7725_Color_Saturation(s8 sat)
 //bright：-4~+4
 void OV7725_Brightness(s8 bright)
 {
-	u8 bright_value,sign;
+	uint8_t bright_value,sign;
   	switch(bright)
 	{
 		case 4:
@@ -211,7 +211,7 @@ void OV7725_Contrast(s8 contrast)
 //4,偏绿色
 //5,偏蓝色
 //6,复古	    
-void OV7725_Special_Effects(u8 eft)
+void OV7725_Special_Effects(uint8_t eft)
 {
 	switch(eft)
 	{
@@ -256,10 +256,10 @@ void OV7725_Special_Effects(u8 eft)
 //height:输出图像高度,<=240
 //mode:0，QVGA输出模式；1，VGA输出模式
 //QVGA模式可视范围广但近物不是很清晰，VGA模式可视范围小近物清晰
-void OV7725_Window_Set(u16 width,u16 height,u8 mode)
+void OV7725_Window_Set(uint16_t width,uint16_t height,uint8_t mode)
 {
-	u8 raw,temp;
-	u16 sx,sy;
+	uint8_t raw,temp;
+	uint16_t sx,sy;
 	
 	if(mode)
 	{

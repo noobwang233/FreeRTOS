@@ -24,10 +24,10 @@
 //buf:数据缓缓存区
 //len:写数据长度
 //返回值:0,成功;1,失败.
-u8 OTT2001A_WR_Reg(u16 reg,u8 *buf,u8 len)
+uint8_t OTT2001A_WR_Reg(uint16_t reg,uint8_t *buf,uint8_t len)
 {
-	u8 i;
-	u8 ret=0;
+	uint8_t i;
+	uint8_t ret=0;
 	CT_IIC_Start();	
  	CT_IIC_Send_Byte(OTT_CMD_WR);   //发送写命令 	 
 	CT_IIC_Wait_Ack();
@@ -48,9 +48,9 @@ u8 OTT2001A_WR_Reg(u16 reg,u8 *buf,u8 len)
 //reg:起始寄存器地址
 //buf:数据缓缓存区
 //len:读数据长度			  
-void OTT2001A_RD_Reg(u16 reg,u8 *buf,u8 len)
+void OTT2001A_RD_Reg(uint16_t reg,uint8_t *buf,uint8_t len)
 {
-	u8 i; 
+	uint8_t i; 
  	CT_IIC_Start();	
  	CT_IIC_Send_Byte(OTT_CMD_WR);   //发送写命令 	 
 	CT_IIC_Wait_Ack();
@@ -69,17 +69,17 @@ void OTT2001A_RD_Reg(u16 reg,u8 *buf,u8 len)
 }
 //传感器打开/关闭操作
 //cmd:1,打开传感器;0,关闭传感器
-void OTT2001A_SensorControl(u8 cmd)
+void OTT2001A_SensorControl(uint8_t cmd)
 {
-	u8 regval=0X00;
+	uint8_t regval=0X00;
 	if(cmd)regval=0X80;
 	OTT2001A_WR_Reg(OTT_CTRL_REG,&regval,1); 
 } 
 //初始化触摸屏
 //返回值:0,初始化成功;1,初始化失败 
-u8 OTT2001A_Init(void)
+uint8_t OTT2001A_Init(void)
 {
- 	u8 regval=0;  
+ 	uint8_t regval=0;  
  	GPIO_InitTypeDef  GPIO_InitStructure;	
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOF, ENABLE);	 //使能PF端口时钟
 
@@ -107,17 +107,17 @@ u8 OTT2001A_Init(void)
 	return 1;
 }
 
-const u16 OTT_TPX_TBL[5]={OTT_TP1_REG,OTT_TP2_REG,OTT_TP3_REG,OTT_TP4_REG,OTT_TP5_REG};
+const uint16_t OTT_TPX_TBL[5]={OTT_TP1_REG,OTT_TP2_REG,OTT_TP3_REG,OTT_TP4_REG,OTT_TP5_REG};
 //扫描触摸屏(采用查询方式)
 //mode:0,正常扫描.
 //返回值:当前触屏状态.
 //0,触屏无触摸;1,触屏有触摸
-u8 OTT2001A_Scan(u8 mode)
+uint8_t OTT2001A_Scan(uint8_t mode)
 {
-	u8 buf[4];
-	u8 i=0;
-	u8 res=0;
-	static u8 t=0;//控制查询间隔,从而降低CPU占用率   
+	uint8_t buf[4];
+	uint8_t i=0;
+	uint8_t res=0;
+	static uint8_t t=0;//控制查询间隔,从而降低CPU占用率   
 	t++;
 	if((t%10)==0||t<10)//空闲时,每进入10次CTP_Scan函数才检测1次,从而节省CPU使用率
 	{
@@ -132,12 +132,12 @@ u8 OTT2001A_Scan(u8 mode)
 					OTT2001A_RD_Reg(OTT_TPX_TBL[i],buf,4);	//读取XY坐标值
 					if(tp_dev.touchtype&0X01)//横屏
 					{
-						tp_dev.y[i]=(((u16)buf[2]<<8)+buf[3])*OTT_SCAL_Y;
-						tp_dev.x[i]=800-((((u16)buf[0]<<8)+buf[1])*OTT_SCAL_X);
+						tp_dev.y[i]=(((uint16_t)buf[2]<<8)+buf[3])*OTT_SCAL_Y;
+						tp_dev.x[i]=800-((((uint16_t)buf[0]<<8)+buf[1])*OTT_SCAL_X);
 					}else
 					{
-						tp_dev.x[i]=(((u16)buf[2]<<8)+buf[3])*OTT_SCAL_Y;
-						tp_dev.y[i]=(((u16)buf[0]<<8)+buf[1])*OTT_SCAL_X;
+						tp_dev.x[i]=(((uint16_t)buf[2]<<8)+buf[3])*OTT_SCAL_Y;
+						tp_dev.y[i]=(((uint16_t)buf[0]<<8)+buf[1])*OTT_SCAL_X;
 					}  
 					//printf("x[%d]:%d,y[%d]:%d\r\n",i,tp_dev.x[i],i,tp_dev.y[i]);
 				}			

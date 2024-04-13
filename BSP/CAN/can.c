@@ -27,7 +27,7 @@
 //    其他,初始化失败;
 
 
-u8 CAN_Mode_Init(u8 tsjw,u8 tbs2,u8 tbs1,u16 brp,u8 mode)
+uint8_t CAN_Mode_Init(uint8_t tsjw,uint8_t tbs2,uint8_t tbs1,uint16_t brp,uint8_t mode)
 {
 
 	  GPIO_InitTypeDef GPIO_InitStructure; 
@@ -106,10 +106,10 @@ void USB_LP_CAN1_RX0_IRQHandler(void)
 //msg:数据指针,最大为8个字节.
 //返回值:0,成功;
 //		 其他,失败;
-u8 Can_Send_Msg(u8* msg,u8 len)
+uint8_t Can_Send_Msg(uint8_t* msg,uint8_t len)
 {	
-  u8 mbox;
-  u16 i=0;
+  uint8_t mbox;
+  uint16_t i=0;
   CanTxMsg TxMessage;
   TxMessage.StdId=0x12;					 // 标准标识符 
   TxMessage.ExtId=0x12;				   // 设置扩展标示符 
@@ -129,9 +129,9 @@ u8 Can_Send_Msg(u8* msg,u8 len)
 //buf:数据缓存区;	 
 //返回值:0,无数据被收到;
 //		 其他,接收的数据长度;
-u8 Can_Receive_Msg(u8 *buf)
+uint8_t Can_Receive_Msg(uint8_t *buf)
 {		   		   
- 	u32 i;
+ 	uint32_t i;
 	CanRxMsg RxMessage;
     if( CAN_MessagePending(CAN1,CAN_FIFO0)==0)return 0;		//没有接收到数据,直接退出 
     CAN_Receive(CAN1, CAN_FIFO0, &RxMessage);//读取数据	

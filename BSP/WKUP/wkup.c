@@ -2,95 +2,95 @@
 #include "led.h"
 #include "delay.h"
 //////////////////////////////////////////////////////////////////////////////////	 
-//±¾³ÌĞòÖ»¹©Ñ§Ï°Ê¹ÓÃ£¬Î´¾­×÷ÕßĞí¿É£¬²»µÃÓÃÓÚÆäËüÈÎºÎÓÃÍ¾
-//ALIENTEK¾«Ó¢STM32¿ª·¢°å
-//´ı»ú»½ĞÑ ´úÂë	   
-//ÕıµãÔ­×Ó@ALIENTEK
-//¼¼ÊõÂÛÌ³:www.openedv.com
-//ĞŞ¸ÄÈÕÆÚ:2012/9/7
-//°æ±¾£ºV1.0
-//°æÈ¨ËùÓĞ£¬µÁ°æ±Ø¾¿¡£
-//Copyright(C) ¹ãÖİÊĞĞÇÒíµç×Ó¿Æ¼¼ÓĞÏŞ¹«Ë¾ 2009-2019
+//æœ¬ç¨‹åºåªä¾›å­¦ä¹ ä½¿ç”¨ï¼Œæœªç»ä½œè€…è®¸å¯ï¼Œä¸å¾—ç”¨äºå…¶å®ƒä»»ä½•ç”¨é€”
+//ALIENTEKç²¾è‹±STM32å¼€å‘æ¿
+//å¾…æœºå”¤é†’ ä»£ç 	   
+//æ­£ç‚¹åŸå­@ALIENTEK
+//æŠ€æœ¯è®ºå›:www.openedv.com
+//ä¿®æ”¹æ—¥æœŸ:2012/9/7
+//ç‰ˆæœ¬ï¼šV1.0
+//ç‰ˆæƒæ‰€æœ‰ï¼Œç›—ç‰ˆå¿…ç©¶ã€‚
+//Copyright(C) å¹¿å·å¸‚æ˜Ÿç¿¼ç”µå­ç§‘æŠ€æœ‰é™å…¬å¸ 2009-2019
 //All rights reserved									  
 //////////////////////////////////////////////////////////////////////////////////
 	 
 void Sys_Standby(void)
 {  
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR, ENABLE);	//Ê¹ÄÜPWRÍâÉèÊ±ÖÓ
-	PWR_WakeUpPinCmd(ENABLE);  //Ê¹ÄÜ»½ĞÑ¹Ü½Å¹¦ÄÜ
-	PWR_EnterSTANDBYMode();	  //½øÈë´ıÃü£¨STANDBY£©Ä£Ê½ 		 
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR, ENABLE);	//ä½¿èƒ½PWRå¤–è®¾æ—¶é’Ÿ
+	PWR_WakeUpPinCmd(ENABLE);  //ä½¿èƒ½å”¤é†’ç®¡è„šåŠŸèƒ½
+	PWR_EnterSTANDBYMode();	  //è¿›å…¥å¾…å‘½ï¼ˆSTANDBYï¼‰æ¨¡å¼ 		 
 }
-//ÏµÍ³½øÈë´ı»úÄ£Ê½
+//ç³»ç»Ÿè¿›å…¥å¾…æœºæ¨¡å¼
 void Sys_Enter_Standby(void)
 {			 
-	RCC_APB2PeriphResetCmd(0X01FC,DISABLE);	//¸´Î»ËùÓĞIO¿Ú
+	RCC_APB2PeriphResetCmd(0X01FC,DISABLE);	//å¤ä½æ‰€æœ‰IOå£
 	Sys_Standby();
 }
-//¼ì²âWKUP½ÅµÄĞÅºÅ
-//·µ»ØÖµ1:Á¬Ğø°´ÏÂ3sÒÔÉÏ
-//      0:´íÎóµÄ´¥·¢	
-u8 Check_WKUP(void) 
+//æ£€æµ‹WKUPè„šçš„ä¿¡å·
+//è¿”å›å€¼1:è¿ç»­æŒ‰ä¸‹3sä»¥ä¸Š
+//      0:é”™è¯¯çš„è§¦å‘	
+uint8_t Check_WKUP(void) 
 {
-	u8 t=0;	//¼ÇÂ¼°´ÏÂµÄÊ±¼ä
-	LED0=0; //ÁÁµÆDS0 
+	uint8_t t=0;	//è®°å½•æŒ‰ä¸‹çš„æ—¶é—´
+	LED0=0; //äº®ç¯DS0 
 	while(1)
 	{
 		if(WKUP_KD)
 		{
-			t++;			//ÒÑ¾­°´ÏÂÁË 
+			t++;			//å·²ç»æŒ‰ä¸‹äº† 
 			delay_ms(30);
-			if(t>=100)		//°´ÏÂ³¬¹ı3ÃëÖÓ
+			if(t>=100)		//æŒ‰ä¸‹è¶…è¿‡3ç§’é’Ÿ
 			{
-				LED0=0;	 	//µãÁÁDS0 
-				return 1; 	//°´ÏÂ3sÒÔÉÏÁË
+				LED0=0;	 	//ç‚¹äº®DS0 
+				return 1; 	//æŒ‰ä¸‹3sä»¥ä¸Šäº†
 			}
 		}else 
 		{ 
 			LED0=1;
-			return 0; //°´ÏÂ²»×ã3Ãë
+			return 0; //æŒ‰ä¸‹ä¸è¶³3ç§’
 		}
 	}
 } 
-//ÖĞ¶Ï,¼ì²âµ½PA0½ÅµÄÒ»¸öÉÏÉıÑØ.	  
-//ÖĞ¶ÏÏß0ÏßÉÏµÄÖĞ¶Ï¼ì²â
+//ä¸­æ–­,æ£€æµ‹åˆ°PA0è„šçš„ä¸€ä¸ªä¸Šå‡æ²¿.	  
+//ä¸­æ–­çº¿0çº¿ä¸Šçš„ä¸­æ–­æ£€æµ‹
 
 
 void EXTI0_IRQHandler(void)
 { 		    		    				     		    
-	EXTI_ClearITPendingBit(EXTI_Line0); // Çå³ıLINE10ÉÏµÄÖĞ¶Ï±êÖ¾Î»		  
-	if(Check_WKUP())//¹Ø»ú?
+	EXTI_ClearITPendingBit(EXTI_Line0); // æ¸…é™¤LINE10ä¸Šçš„ä¸­æ–­æ ‡å¿—ä½		  
+	if(Check_WKUP())//å…³æœº?
 	{		  
 		Sys_Enter_Standby();  
 	}
 } 
-//PA0 WKUP»½ĞÑ³õÊ¼»¯
+//PA0 WKUPå”¤é†’åˆå§‹åŒ–
 void WKUP_Init(void)
 {	
   GPIO_InitTypeDef  GPIO_InitStructure;  		  
 	NVIC_InitTypeDef NVIC_InitStructure;
 	EXTI_InitTypeDef EXTI_InitStructure;
 
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_AFIO, ENABLE);//Ê¹ÄÜGPIOAºÍ¸´ÓÃ¹¦ÄÜÊ±ÖÓ
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_AFIO, ENABLE);//ä½¿èƒ½GPIOAå’Œå¤ç”¨åŠŸèƒ½æ—¶é’Ÿ
 
 	GPIO_InitStructure.GPIO_Pin =GPIO_Pin_0;	 //PA.0
-	GPIO_InitStructure.GPIO_Mode =GPIO_Mode_IPD;//ÉÏÀ­ÊäÈë
-	GPIO_Init(GPIOA, &GPIO_InitStructure);	//³õÊ¼»¯IO
-    //Ê¹ÓÃÍâ²¿ÖĞ¶Ï·½Ê½
-	GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource0);	//ÖĞ¶ÏÏß0Á¬½ÓGPIOA.0
+	GPIO_InitStructure.GPIO_Mode =GPIO_Mode_IPD;//ä¸Šæ‹‰è¾“å…¥
+	GPIO_Init(GPIOA, &GPIO_InitStructure);	//åˆå§‹åŒ–IO
+    //ä½¿ç”¨å¤–éƒ¨ä¸­æ–­æ–¹å¼
+	GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource0);	//ä¸­æ–­çº¿0è¿æ¥GPIOA.0
 
-  EXTI_InitStructure.EXTI_Line = EXTI_Line0;	//ÉèÖÃ°´¼üËùÓĞµÄÍâ²¿ÏßÂ·
-	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;			//ÉèÍâÍâ²¿ÖĞ¶ÏÄ£Ê½:EXTIÏßÂ·ÎªÖĞ¶ÏÇëÇó
-	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising;  //ÉÏÉıÑØ´¥·¢
+  EXTI_InitStructure.EXTI_Line = EXTI_Line0;	//è®¾ç½®æŒ‰é”®æ‰€æœ‰çš„å¤–éƒ¨çº¿è·¯
+	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;			//è®¾å¤–å¤–éƒ¨ä¸­æ–­æ¨¡å¼:EXTIçº¿è·¯ä¸ºä¸­æ–­è¯·æ±‚
+	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising;  //ä¸Šå‡æ²¿è§¦å‘
  	EXTI_InitStructure.EXTI_LineCmd = ENABLE;
-	EXTI_Init(&EXTI_InitStructure);	// ³õÊ¼»¯Íâ²¿ÖĞ¶Ï
+	EXTI_Init(&EXTI_InitStructure);	// åˆå§‹åŒ–å¤–éƒ¨ä¸­æ–­
 
-	NVIC_InitStructure.NVIC_IRQChannel = EXTI0_IRQn; //Ê¹ÄÜ°´¼üËùÔÚµÄÍâ²¿ÖĞ¶ÏÍ¨µÀ
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2; //ÏÈÕ¼ÓÅÏÈ¼¶2¼¶
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2; //´ÓÓÅÏÈ¼¶2¼¶
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE; //Ê¹ÄÜÍâ²¿ÖĞ¶ÏÍ¨µÀ
-	NVIC_Init(&NVIC_InitStructure); //¸ù¾İNVIC_InitStructÖĞÖ¸¶¨µÄ²ÎÊı³õÊ¼»¯ÍâÉèNVIC¼Ä´æÆ÷
+	NVIC_InitStructure.NVIC_IRQChannel = EXTI0_IRQn; //ä½¿èƒ½æŒ‰é”®æ‰€åœ¨çš„å¤–éƒ¨ä¸­æ–­é€šé“
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2; //å…ˆå ä¼˜å…ˆçº§2çº§
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2; //ä»ä¼˜å…ˆçº§2çº§
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE; //ä½¿èƒ½å¤–éƒ¨ä¸­æ–­é€šé“
+	NVIC_Init(&NVIC_InitStructure); //æ ¹æ®NVIC_InitStructä¸­æŒ‡å®šçš„å‚æ•°åˆå§‹åŒ–å¤–è®¾NVICå¯„å­˜å™¨
 
-	if(Check_WKUP()==0) Sys_Standby();    //²»ÊÇ¿ª»ú,½øÈë´ı»úÄ£Ê½  
+	if(Check_WKUP()==0) Sys_Standby();    //ä¸æ˜¯å¼€æœº,è¿›å…¥å¾…æœºæ¨¡å¼  
 	
 }
 

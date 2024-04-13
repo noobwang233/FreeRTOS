@@ -65,10 +65,10 @@ void Remote_Init(void)
 //[5]:保留	
 //[4]:标记上升沿是否已经被捕获								   
 //[3:0]:溢出计时器
-u8 	RmtSta=0;	  	  
-u16 Dval;		//下降沿时计数器的值
-u32 RmtRec=0;	//红外接收到的数据	   		    
-u8  RmtCnt=0;	//按键按下的次数	  
+uint8_t 	RmtSta=0;	  	  
+uint16_t Dval;		//下降沿时计数器的值
+uint32_t RmtRec=0;	//红外接收到的数据	   		    
+uint8_t  RmtCnt=0;	//按键按下的次数	  
 //定时器4中断服务程序	 
 void TIM4_IRQHandler(void)
 { 		    	 
@@ -132,19 +132,19 @@ void TIM4_IRQHandler(void)
 //返回值:
 //	 0,没有任何按键按下
 //其他,按下的按键键值.
-u8 Remote_Scan(void)
+uint8_t Remote_Scan(void)
 {        
-	u8 sta=0;       
-    u8 t1,t2;  
+	uint8_t sta=0;       
+    uint8_t t1,t2;  
 	if(RmtSta&(1<<6))//得到一个按键的所有信息了
 	{ 
 	    t1=RmtRec>>24;			//得到地址码
 	    t2=(RmtRec>>16)&0xff;	//得到地址反码 
- 	    if((t1==(u8)~t2)&&t1==REMOTE_ID)//检验遥控识别码(ID)及地址 
+ 	    if((t1==(uint8_t)~t2)&&t1==REMOTE_ID)//检验遥控识别码(ID)及地址 
 	    { 
 	        t1=RmtRec>>8;
 	        t2=RmtRec; 	
-	        if(t1==(u8)~t2)sta=t1;//键值正确	 
+	        if(t1==(uint8_t)~t2)sta=t1;//键值正确	 
 		}   
 		if((sta==0)||((RmtSta&0X80)==0))//按键数据错误/遥控已经没有按下了
 		{

@@ -24,10 +24,10 @@
 //buf:数据缓缓存区
 //len:写数据长度
 //返回值:0,成功;1,失败.
-u8 FT5206_WR_Reg(u16 reg,u8 *buf,u8 len)
+uint8_t FT5206_WR_Reg(uint16_t reg,uint8_t *buf,uint8_t len)
 {
-	u8 i;
-	u8 ret=0;
+	uint8_t i;
+	uint8_t ret=0;
 	CT_IIC_Start();	 
 	CT_IIC_Send_Byte(FT_CMD_WR);	//发送写命令 	 
 	CT_IIC_Wait_Ack(); 	 										  		   
@@ -46,9 +46,9 @@ u8 FT5206_WR_Reg(u16 reg,u8 *buf,u8 len)
 //reg:起始寄存器地址
 //buf:数据缓缓存区
 //len:读数据长度			  
-void FT5206_RD_Reg(u16 reg,u8 *buf,u8 len)
+void FT5206_RD_Reg(uint16_t reg,uint8_t *buf,uint8_t len)
 {
-	u8 i; 
+	uint8_t i; 
  	CT_IIC_Start();	
  	CT_IIC_Send_Byte(FT_CMD_WR);   	//发送写命令 	 
 	CT_IIC_Wait_Ack(); 	 										  		   
@@ -64,12 +64,12 @@ void FT5206_RD_Reg(u16 reg,u8 *buf,u8 len)
     CT_IIC_Stop();//产生一个停止条件     
 } 
 
-u8 CIP[5]; //用来存放触摸IC-GT911
+uint8_t CIP[5]; //用来存放触摸IC-GT911
 //初始化FT5206触摸屏
 //返回值:0,初始化成功;1,初始化失败 
-u8 FT5206_Init(void)
+uint8_t FT5206_Init(void)
 {
-	u8 temp[5];  		
+	uint8_t temp[5];  		
  	GPIO_InitTypeDef  GPIO_InitStructure;	
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOF, ENABLE);	 //使能PF端口时钟
 
@@ -100,14 +100,14 @@ u8 FT5206_Init(void)
 	FT5206_RD_Reg(FT_ID_G_LIB_VERSION,&temp[0],2);  
 	if(temp[0]==0X30&&temp[1]==0X03)//版本:0X3003
 	{ 
-		printf("CTP ID:%x\r\n",((u16)temp[0]<<8)+temp[1]);
+		printf("CTP ID:%x\r\n",((uint16_t)temp[0]<<8)+temp[1]);
 	} 
     else     //7寸屏的触摸IC还有GT系列的，所以这里需要兼容
     {
         GT9147_RD_Reg(GT_PID_REG,temp,4); //读取产品ID
         temp[4]=0;
         printf("CTP ID:%s\r\n", temp);  //打印ID
-        memcpy(CIP,temp, sizeof(u8)*4);
+        memcpy(CIP,temp, sizeof(uint8_t)*4);
         temp[0]=0X02;
         GT9147_WR_Reg(GT_CTRL_REG,temp,1);  //软复位GT9XXX 
         GT9147_RD_Reg(GT_CFGS_REG,temp,1);  //读取GT_CFGS_REG寄存器
@@ -118,23 +118,23 @@ u8 FT5206_Init(void)
     return 0;
 }
 
-const u16 FT5206_TPX_TBL[5]={FT_TP1_REG,FT_TP2_REG,FT_TP3_REG,FT_TP4_REG,FT_TP5_REG};
+const uint16_t FT5206_TPX_TBL[5]={FT_TP1_REG,FT_TP2_REG,FT_TP3_REG,FT_TP4_REG,FT_TP5_REG};
 //GT911属于GT9xx系列，所以直接调用gt9147的相关宏定义和调用相关函数
-const u16 GT911_TPX_TBL[5]={GT_TP1_REG,GT_TP2_REG,GT_TP3_REG,GT_TP4_REG,GT_TP5_REG};
-u8 g_gt_tnum=5;      //默认支持的触摸屏点数(5点触摸)
+const uint16_t GT911_TPX_TBL[5]={GT_TP1_REG,GT_TP2_REG,GT_TP3_REG,GT_TP4_REG,GT_TP5_REG};
+uint8_t g_gt_tnum=5;      //默认支持的触摸屏点数(5点触摸)
 
 //扫描触摸屏(采用查询方式)
 //mode:0,正常扫描.
 //返回值:当前触屏状态.
 //0,触屏无触摸;1,触屏有触摸
-u8 FT5206_Scan(u8 mode)
+uint8_t FT5206_Scan(uint8_t mode)
 {
-	u8 buf[4];
-	u8 i=0;
-	u8 res=0;
-	u8 temp;
-    u16 tempsta;
-	static u8 t=0;//控制查询间隔,从而降低CPU占用率   
+	uint8_t buf[4];
+	uint8_t i=0;
+	uint8_t res=0;
+	uint8_t temp;
+    uint16_t tempsta;
+	static uint8_t t=0;//控制查询间隔,从而降低CPU占用率   
 	t++;
 	if((t%10)==0||t<10)//空闲时,每进入10次CTP_Scan函数才检测1次,从而节省CPU使用率
 	{
@@ -170,13 +170,13 @@ u8 FT5206_Scan(u8 mode)
                         GT9147_RD_Reg(GT911_TPX_TBL[i],buf,4);   //读取XY坐标值
                         if(tp_dev.touchtype&0X01) //横屏
                         {
-                            tp_dev.x[i]=(((u16)buf[1]<<8)+buf[0]);
-                            tp_dev.y[i]=(((u16)buf[3]<<8)+buf[2]);
+                            tp_dev.x[i]=(((uint16_t)buf[1]<<8)+buf[0]);
+                            tp_dev.y[i]=(((uint16_t)buf[3]<<8)+buf[2]);
                         }
                         else
                         {
-                            tp_dev.y[i]=((u16)buf[1]<<8)+buf[0];
-                            tp_dev.x[i]=lcddev.width-(((u16)buf[3]<<8)+buf[2]);
+                            tp_dev.y[i]=((uint16_t)buf[1]<<8)+buf[0];
+                            tp_dev.x[i]=lcddev.width-(((uint16_t)buf[3]<<8)+buf[2]);
                         }
                     }
                     else
@@ -184,12 +184,12 @@ u8 FT5206_Scan(u8 mode)
                         FT5206_RD_Reg(FT5206_TPX_TBL[i],buf,4);	//读取XY坐标值 
                         if(tp_dev.touchtype&0X01)//横屏
                         {
-                            tp_dev.y[i]=((u16)(buf[0]&0X0F)<<8)+buf[1];
-                            tp_dev.x[i]=((u16)(buf[2]&0X0F)<<8)+buf[3];
+                            tp_dev.y[i]=((uint16_t)(buf[0]&0X0F)<<8)+buf[1];
+                            tp_dev.x[i]=((uint16_t)(buf[2]&0X0F)<<8)+buf[3];
                         }else
                         {
-                            tp_dev.x[i]=lcddev.width-(((u16)(buf[0]&0X0F)<<8)+buf[1]);
-                            tp_dev.y[i]=((u16)(buf[2]&0X0F)<<8)+buf[3];
+                            tp_dev.x[i]=lcddev.width-(((uint16_t)(buf[0]&0X0F)<<8)+buf[1]);
+                            tp_dev.y[i]=((uint16_t)(buf[2]&0X0F)<<8)+buf[3];
                         } 
                     }
 					//printf("x[%d]:%d,y[%d]:%d\r\n",i,tp_dev.x[i],i,tp_dev.y[i]);
