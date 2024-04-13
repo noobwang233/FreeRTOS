@@ -107,6 +107,15 @@
             "folders": []
           },
           {
+            "name": "LCD",
+            "files": [
+              {
+                "path": "BSP/LCD/lcd.c"
+              }
+            ],
+            "folders": []
+          },
+          {
             "name": "LED",
             "files": [
               {
@@ -226,7 +235,8 @@
           "CMSIS/ST/STM32F10x",
           "BSP/KEY",
           "Board",
-          "BSP/LED"
+          "BSP/LED",
+          "BSP/LCD"
         ],
         "libList": [],
         "sourceDirList": [],
