@@ -247,7 +247,8 @@
           "BSP/KEY",
           "Board",
           "BSP/LED",
-          "BSP/LCD"
+          "BSP/LCD",
+          "SYSTEM/delay"
         ],
         "libList": [],
         "sourceDirList": [],

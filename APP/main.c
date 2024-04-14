@@ -4,6 +4,7 @@
 #include "task.h"
 #include <stdint.h>
 #include <stdio.h>
+#include "delay.h"
 
 TaskHandle_t LED0_Task_Handle = NULL; /* 任务句柄 */
 TaskHandle_t LED1_Task_Handle = NULL;
@@ -77,6 +78,7 @@ int main()
 {
     BaseType_t xReturn = pdPASS;/* 定义一个创建信息返回值，默认为pdPASS */
     NVIC_SetPriorityGrouping(NVIC_PriorityGroup_4);
+    delay_init();
     led_init(LED0);
     led_init(LED1);
     led_init(BEEP);
@@ -85,7 +87,6 @@ int main()
     key_init(KEY_UP, KEY_MODE_GPIO);
     board_com_init(115200);
     LCD_Init();
-    LCD_Clear(WHITE);
     xReturn = xTaskCreate(  (TaskFunction_t )TaskCreate_Task, /* 任务入口函数 */
                                 (const char* )"TaskCreate_Task",/* 任务名字 */
                             (uint16_t )256, /* 任务栈大小 */

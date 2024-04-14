@@ -3,6 +3,7 @@
 #include "stdio.h"
 #include "stm32f10x.h"
 #include <stdint.h>
+#include "delay.h"
 
 //////////////////////////////////////////////////////////////////////////////////
 //本程序只供学习使用，未经作者许可，不得用于其它任何用途
@@ -35,8 +36,6 @@ uint16_t BACK_COLOR=0xFFFF;          //背景色
 //默认为竖屏
 _lcd_dev lcddev;
 
-static void delay_us(uint16_t delay);
-static void delay_ms(uint16_t delay);
 //写寄存器函数
 //regval:寄存器值
 void LCD_WR_REG(uint16_t regval)
@@ -583,31 +582,6 @@ void LCD_Set_Window(uint16_t sx, uint16_t sy, uint16_t width, uint16_t height)
         LCD_WR_DATA(sy & 0XFF);
         LCD_WR_DATA(theight >> 8);
         LCD_WR_DATA(theight & 0XFF);
-    }
-}
-extern uint32_t SystemCoreClock;
-void delay_ms(uint16_t delay)
-{
-    volatile uint32_t i = 0;
-    volatile uint32_t j = 0;
-
-    for(j = 0; j < delay; j++)
-    {
-        for(i = 0; i < SystemCoreClock/1000; i++)
-        {
-        }
-    }
-}
-void delay_us(uint16_t delay)
-{
-    volatile uint32_t i = 0;
-    volatile uint32_t j = 0;
-
-    for(j = 0; j < delay; j++)
-    {
-        for(i = 0; i < SystemCoreClock/10000000; i++)
-        {
-        }
     }
 }
 //初始化lcd

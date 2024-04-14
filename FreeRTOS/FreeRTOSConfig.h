@@ -114,6 +114,6 @@ extern int	printf (const char *__restrict, ...);
 #define RTE_CMSIS_RTOS_RTX
 #define xPortPendSVHandler PendSV_Handler
 #define vPortSVCHandler SVC_Handler
-#define xPortSysTickHandler SysTick_Handler
+// #define xPortSysTickHandler SysTick_Handler
 
 #endif /* FREERTOS_CONFIG_H */
