@@ -1,8 +1,11 @@
 #include "stm32f10x.h"
-#include "key.h"
+#include "key_drv.h"
+#include "stdio.h"
+
+#if SYSTEM_SUPPORT_OS
 #include "FreeRTOS.h"
 #include "task.h"
-#include "stdio.h"
+
 
 #define SHORT_CLICK     200     // 这个是第一次松开时间和第二次按下时间的判断时长 200ms
 #define LONG_PRESS      700     // 定义长按的时间阈值0.7s
@@ -106,7 +109,30 @@ static void KEY_Task(void* parameter)
             vTaskDelay (8);
     }
 }
+BaseType_t key_task_init(uint8_t key_index, uint16_t stack_size)
+{
+    key_tasks[key_index]->key_state = RELEASE_STATE;
+    BaseType_t xReturn = pdPASS;/* 定义一个创建信息返回值，默认为pdPASS */
+    taskENTER_CRITICAL(); //进入临界区
+    xReturn = xTaskCreate(  (TaskFunction_t )KEY_Task, /* 任务入口函数 */
+                                (const char* )key_tasks[key_index]->key_name,/* 任务名字 */
+                            (uint16_t )stack_size, /* 任务栈大小 */
+                            (void* )key_tasks[key_index], /* 任务入口函数参数 */
+                            (UBaseType_t )2, /* 任务的优先级 */
+                            (TaskHandle_t* )&key_tasks[key_index]->key_handle);/* 任务句柄指针 */
+    if (pdPASS == xReturn)
+    {
+        printf("Create KEY_0_Task successfully!\r\n");
+    }
+    else
+    {
+        printf("Create KEY_0_Task failed!\r\n");
+    }
+    taskEXIT_CRITICAL(); //退出临界区
+    return xReturn;
+}
 
+#endif
 /*!
     \brief      configure key
     \param[in]  key_num: specify the key to be configured
@@ -151,27 +177,4 @@ key_gpio_state key_state_get(uint8_t key_index)
         return key_state;
     else
         return !key_state;
-}
-
-BaseType_t key_task_init(uint8_t key_index, uint16_t stack_size)
-{
-    key_tasks[key_index]->key_state = RELEASE_STATE;
-    BaseType_t xReturn = pdPASS;/* 定义一个创建信息返回值，默认为pdPASS */
-    taskENTER_CRITICAL(); //进入临界区
-    xReturn = xTaskCreate(  (TaskFunction_t )KEY_Task, /* 任务入口函数 */
-                                (const char* )key_tasks[key_index]->key_name,/* 任务名字 */
-                            (uint16_t )stack_size, /* 任务栈大小 */
-                            (void* )key_tasks[key_index], /* 任务入口函数参数 */
-                            (UBaseType_t )2, /* 任务的优先级 */
-                            (TaskHandle_t* )&key_tasks[key_index]->key_handle);/* 任务句柄指针 */
-    if (pdPASS == xReturn)
-    {
-        printf("Create KEY_0_Task successfully!\r\n");
-    }
-    else
-    {
-        printf("Create KEY_0_Task failed!\r\n");
-    }
-    taskEXIT_CRITICAL(); //退出临界区
-    return xReturn;
 }

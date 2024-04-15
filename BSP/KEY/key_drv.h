@@ -1,9 +1,13 @@
-#ifndef __KEY_H
-#define __KEY_H	 
+#ifndef __KEY_DRV_H
+#define __KEY_DRV_H	 
 #include "stm32f10x.h"
+#include <stdint.h>
+#include "sys_configs.h"
+
+#if SYSTEM_SUPPORT_OS
 #include "FreeRTOS.h"
 #include "task.h"
-#include <stdint.h>
+#endif
 
 typedef enum
 {
@@ -39,6 +43,7 @@ struct key_init_type
     const key_valid_type    key_valid;
 };
 
+#if SYSTEM_SUPPORT_OS
 typedef enum
 {
     RELEASE_STATE,        //空闲
@@ -54,11 +59,13 @@ struct key_task_type
     KeyState key_state;
     TaskHandle_t key_handle;
 };
+BaseType_t key_task_init(uint8_t key_num, uint16_t stack_size);
+#endif
 
 /* configure key */
 void key_init(uint8_t key_num, keymode_typedef_enum key_mode);
 /* return the selected key state */
 key_gpio_state key_state_get(uint8_t key_num);
-BaseType_t key_task_init(uint8_t key_num, uint16_t stack_size);
+
 
 #endif

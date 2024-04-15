@@ -1,7 +1,8 @@
-#ifndef __LED_H
-#define __LED_H	 
+#ifndef __LED_DRV_H
+#define __LED_DRV_H
 
 #include "stm32f10x.h"
+#include <stdint.h>
 
 /* eval board low layer led */
 struct led_init_type

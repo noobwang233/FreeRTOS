@@ -1,5 +1,5 @@
 #include "delay.h"
-#include "stm32f103_atk.h"
+#include "stm32f10x.h"
 
 #include "FreeRTOS.h"					//FreeRTOS使用
 #include "task.h"
@@ -51,7 +51,7 @@ void delay_init()
 	SysTick->CTRL|=SysTick_CTRL_TICKINT_Msk;   	//开启SYSTICK中断
 	SysTick->LOAD=reload; 						//每1/configTICK_RATE_HZ秒中断一次	
 	SysTick->CTRL|=SysTick_CTRL_ENABLE_Msk;   	//开启SYSTICK    
-}								    
+}
 
 
 //延时nus

@@ -99,7 +99,16 @@
         "name": "Board",
         "files": [
           {
-            "path": "Board/stm32f103_atk.c"
+            "path": "Board/stm32f103_atk_elite/board_com.c"
+          },
+          {
+            "path": "Board/stm32f103_atk_elite/board_key.c"
+          },
+          {
+            "path": "Board/stm32f103_atk_elite/board_lcd.c"
+          },
+          {
+            "path": "Board/stm32f103_atk_elite/board_led.c"
           }
         ],
         "folders": []
@@ -109,10 +118,19 @@
         "files": [],
         "folders": [
           {
+            "name": "COM",
+            "files": [
+              {
+                "path": "BSP/COM/com_drv.c"
+              }
+            ],
+            "folders": []
+          },
+          {
             "name": "KEY",
             "files": [
               {
-                "path": "BSP/KEY/key.c"
+                "path": "BSP/KEY/key_drv.c"
               }
             ],
             "folders": []
@@ -130,7 +148,7 @@
             "name": "LED",
             "files": [
               {
-                "path": "BSP/LED/led.c"
+                "path": "BSP/LED/led_drv.c"
               }
             ],
             "folders": []
@@ -248,7 +266,9 @@
           "Board",
           "BSP/LED",
           "BSP/LCD",
-          "SYSTEM/delay"
+          "SYSTEM/delay",
+          "Board/stm32f103_atk_elite",
+          "BSP/COM"
         ],
         "libList": [],
         "sourceDirList": [],

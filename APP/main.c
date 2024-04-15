@@ -1,10 +1,10 @@
 #include "stm32f10x.h"
-#include "misc.h"
-#include "stm32f103_atk.h"
-#include "task.h"
-#include <stdint.h>
+#include "board_periph.h"
+#include "sys_configs.h"
 #include <stdio.h>
 #include "delay.h"
+#include "task.h"
+#include "lcd.h"
 
 TaskHandle_t LED0_Task_Handle = NULL; /* 任务句柄 */
 TaskHandle_t LED1_Task_Handle = NULL;
@@ -85,7 +85,7 @@ int main()
     key_init(KEY_0, KEY_MODE_GPIO);
     key_init(KEY_1, KEY_MODE_GPIO);
     key_init(KEY_UP, KEY_MODE_GPIO);
-    board_com_init(115200);
+    com_init(COM_IDEX,115200);
     LCD_Init();
     xReturn = xTaskCreate(  (TaskFunction_t )TaskCreate_Task, /* 任务入口函数 */
                                 (const char* )"TaskCreate_Task",/* 任务名字 */

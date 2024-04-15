@@ -24,7 +24,7 @@
 #include "stm32f10x_it.h"
 #include "stdio.h"
 #include <stdint.h>
-#include "stm32f103_atk.h"
+#include "board_periph.h"
 
 /** @addtogroup STM32F10x_StdPeriph_Template
   * @{
