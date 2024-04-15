@@ -87,21 +87,3 @@ static struct key_init_type key_up = {
 
 static struct key_init_type* key_cfg[KEYn] = {&key0, &key1, &key_up};
 struct key_init_type** key_cfgs = key_cfg;
-
-struct key_task_type key_0_task = 
-{
-    .key_index = KEY_0,
-    .key_name = "KEY_0",
-};
-struct key_task_type key_1_task = 
-{
-    .key_index = KEY_1,
-    .key_name = "KEY_1",
-};
-struct key_task_type key_up_task = 
-{
-    .key_index = KEY_UP,
-    .key_name = "KEY_UP",
-};
-static struct key_task_type* key_task[KEYn] = {&key_0_task, &key_1_task, &key_up_task};
-struct key_task_type** key_tasks = key_task;

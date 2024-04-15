@@ -89,7 +89,8 @@
   "srcDirs": [
     ".eide/deps",
     "APP",
-    "SYSTEM"
+    "SYSTEM",
+    "Tasks"
   ],
   "virtualFolder": {
     "name": "<virtual_root>",
@@ -268,7 +269,8 @@
           "BSP/LCD",
           "SYSTEM/delay",
           "Board/stm32f103_atk_elite",
-          "BSP/COM"
+          "BSP/COM",
+          "Tasks/key_scan"
         ],
         "libList": [],
         "sourceDirList": [],

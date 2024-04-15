@@ -1,10 +1,12 @@
 #include "stm32f10x.h"
 #include "board_periph.h"
-#include "sys_configs.h"
 #include <stdio.h>
 #include "delay.h"
+#include "FreeRTOS.h"
 #include "task.h"
 #include "lcd.h"
+
+#include "task_key_scan.h"
 
 TaskHandle_t LED0_Task_Handle = NULL; /* 任务句柄 */
 TaskHandle_t LED1_Task_Handle = NULL;

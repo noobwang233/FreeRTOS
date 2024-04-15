@@ -2,12 +2,6 @@
 #define __KEY_DRV_H	 
 #include "stm32f10x.h"
 #include <stdint.h>
-#include "sys_configs.h"
-
-#if SYSTEM_SUPPORT_OS
-#include "FreeRTOS.h"
-#include "task.h"
-#endif
 
 typedef enum
 {
@@ -42,25 +36,6 @@ struct key_init_type
     NVIC_InitTypeDef        key_nvic;
     const key_valid_type    key_valid;
 };
-
-#if SYSTEM_SUPPORT_OS
-typedef enum
-{
-    RELEASE_STATE,        //空闲
-    SHORT_PRESS_STATE,    //短按
-    LONG_PRESS_STATE,     //长按
-    DOUBLE_PRESS_STATE,   //双击
-} KeyState;
-
-struct key_task_type
-{
-    uint8_t key_index;
-    char * key_name;
-    KeyState key_state;
-    TaskHandle_t key_handle;
-};
-BaseType_t key_task_init(uint8_t key_num, uint16_t stack_size);
-#endif
 
 /* configure key */
 void key_init(uint8_t key_num, keymode_typedef_enum key_mode);
